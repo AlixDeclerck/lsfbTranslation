@@ -15,7 +15,9 @@ doc
 *.optim
 bdd_sqlite.db
 phoenix
-visual_genome
+attributes.json
+objects.json
+relationships.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

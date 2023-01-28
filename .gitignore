@@ -14,7 +14,6 @@ doc
 *.bin
 *.optim
 bdd_sqlite.db
-phoenix
 attributes.json
 objects.json
 relationships.json

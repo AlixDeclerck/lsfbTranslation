@@ -1,3 +1,20 @@
+# Personal files
+.idea
+*.zip
+*.iml
+*.pem
+__init__.py
+other_algorithms
+config.csv
+outputs
+output
+model
+result
+doc
+*.bin
+*.optim
+bdd_sqlite.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -5,7 +5,7 @@
 *.pem
 __init__.py
 other_algorithms
-config_encrypted.csv
+config_local.txt
 outputs
 output
 model

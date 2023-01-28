@@ -20,8 +20,8 @@ def get_phoenix(path):
     :param path: csv file path
     :return: phoenix dataframe
     """
-    phoenix = pandas.read_csv(path, sep='|', delimiter=None, header='infer', names=None, index_col=None)
-    phoenix.columns = ["directory", "file_name", "ufv1", "ufv2", "signer", "gloss", "text"]
+    phoenix = pandas.read_csv(path, sep=',', delimiter=None, header='infer', names=None, index_col=None)
+    phoenix.columns = ["gloss", "text"]
     return phoenix.filter(["text", "gloss"])
 
 

@@ -2,10 +2,14 @@ import dal as db
 import retrieve_data as ff
 
 
-def populate_db_from_german_phoenix(subset_type):
+def populate_db_from_phoenix(subset_type):
+    """
+    add in database a new population based on a translated version of the phoenix
+    :param subset_type: train, dev, test
+    """
     conn = db.data_provider("db_dev")
     mirrored_env = db.env_provider(subset_type)
-    path = "../../data/phoenix/PHOENIX-2014-T."+mirrored_env+".corpus.csv"
+    path = "../../../data/phoenix_fr/phoenix."+mirrored_env+".corpus.csv"
     fawkes = ff.get_phoenix(path)
 
     cpt = 0
@@ -32,8 +36,8 @@ def populate_db_from_german_phoenix(subset_type):
 
 if __name__ == "__main__":
     for env in db.EnvType:
-        print(db.env_provider(env.value[0]))
+        # print(db.env_provider(env.value[0]))
 
         # !! following line will insert the texts + glosses from provided files to selected database
-        # populate_db_from_files(env.value[0])
+        populate_db_from_phoenix(env.value[0])
 

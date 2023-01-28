@@ -2,9 +2,6 @@ from enum import Enum
 import mysql.connector
 import pandas
 
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
-
 
 class EnvType(Enum):
     """
@@ -31,25 +28,26 @@ def data_provider(db):
     @param db: db_dev or db_test
     @return: mysql connector
     """
-    encrypted = True
+    local = True
     address = "localhost"
     df = pandas.read_csv(CONFIG)
-    key = get_key()
 
-    if encrypted:
-        return mysql.connector.connect(
-            host=address,
-            user=key.decrypt(df["user"][0]),
-            password=key.decrypt(df["pwd"][0]),
-            database=df[db][0]
-        )
+    if local:
+        with open('../config_local.txt') as f:
+            lines = f.readlines()
+
+        user = lines[0]
+        pwd = lines[1]
+
     else:
-        return mysql.connector.connect(
-            host=address,
-            user=df["user"][0],
-            password=df["pwd"][0],
-            database=df[db][0]
-        )
+        user = df["user"][0]
+        pwd = df["pwd"][0]
+
+    return mysql.connector.connect(
+        host=address,
+        user=user,
+        password=pwd,
+        database=df[db][0])
 
 
 def select_mysql_datas_from(subset_type, conn):
@@ -65,11 +63,6 @@ def select_mysql_datas_from(subset_type, conn):
     conn.close()
 
     return query_result
-
-
-def get_key():
-    key = RSA.import_key(open("pem.pem").read())
-    return PKCS1_OAEP.new(key)
 
 
 # --------------------------------------------- tests purposes ------------
@@ -112,7 +105,7 @@ def delete_row(conn, text):
     conn.commit()
 
 
-CONFIG = "../../data_loader/config_encrypted.csv"
+CONFIG = "../../data_loader/config.csv"
 
 if __name__ == "__main__":
     txt_insert = "text_content"

@@ -112,7 +112,7 @@ def delete_row(conn, text):
     conn.commit()
 
 
-CONFIG = "../../data_loader/config.csv"
+CONFIG = "../../data_loader/config_encrypted.csv"
 
 if __name__ == "__main__":
     txt_insert = "text_content"

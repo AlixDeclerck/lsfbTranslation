@@ -1,0 +1,16 @@
+batch_size:                   32
+distributed:                  False
+num_epochs:                   8
+accum_iter:                   10
+base_lr:                      1.0
+max_padding:                  72
+warmup:                       3000
+model_path:                   "model/"
+model_prefix:                 "aiayn_model_"
+model_suffix:                 "final.pt"
+vocab_file_name:              "vocab.pt"
+layers:                       2                                 # originally 6
+dimension:                    512
+feed_forward_dimension:       2048
+h_attention_layers:           8                                 # h=8 parallel attention layers
+dropout:                      0.1

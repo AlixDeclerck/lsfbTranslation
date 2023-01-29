@@ -94,7 +94,7 @@ Some useful documentations
 
 Please see on each packages for details
 
-@inproceedings{wordsAreOurGlosses,
+@article{wordsAreOurGlosses,
 author = {Zelinka, Jan and Kanis, Jakub},
 year = {2020},
 month = {03},

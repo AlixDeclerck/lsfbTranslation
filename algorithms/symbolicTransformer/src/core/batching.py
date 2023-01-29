@@ -100,7 +100,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    full = retrieve_phoenix_dataset(EnvType.DEV.value[1])
+    full = retrieve_phoenix_dataset(EnvType.TEST)
     train_iter, tmp_iter = split_list(full)
 
     test_iter, valid_iter = split_list(tmp_iter)

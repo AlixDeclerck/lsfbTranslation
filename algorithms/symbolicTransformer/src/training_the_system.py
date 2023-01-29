@@ -124,21 +124,21 @@ def train_distributed_model(vocab_src, vocab_tgt, spacy_de, config):
     )
 
 
-def train_model(vocab_src, vocab_tgt, spacy_de, config):
+def train_model(vocab_src, vocab_tgt, spacy_fr, config):
     if config["distributed"]:
         train_distributed_model(
-            vocab_src, vocab_tgt, spacy_de, config
+            vocab_src, vocab_tgt, spacy_fr, config
         )
     else:
         train_worker(
-            0, 1, vocab_src, vocab_tgt, spacy_de, config, False
+            0, 1, vocab_src, vocab_tgt, spacy_fr, config, False
         )
 
 
-def load_trained_model(vocab_src, vocab_tgt, spacy_de, config):
+def load_trained_model(vocab_src, vocab_tgt, spacy_fr, config):
     model_path = str(config["model_path"])+str(config["model_prefix"])+str(config["model_suffix"])
     if not exists(model_path):
-        train_model(vocab_src, vocab_tgt, spacy_de, config)
+        train_model(vocab_src, vocab_tgt, spacy_fr, config)
 
     model = make_model(len(vocab_src), len(vocab_tgt), config)
     model.load_state_dict(torch.load(model_path))
@@ -149,8 +149,8 @@ def load_trained_model(vocab_src, vocab_tgt, spacy_de, config):
 
 learning_configuration = load_config()
 
-token_de = load_tokenizers()
-src_vocabulary, tgt_vocabulary = load_vocab(token_de, learning_configuration)
+token_fr = load_tokenizers()
+src_vocabulary, tgt_vocabulary = load_vocab(token_fr, learning_configuration)
 
-trained_model = load_trained_model(src_vocabulary, tgt_vocabulary, token_de, learning_configuration)
+trained_model = load_trained_model(src_vocabulary, tgt_vocabulary, token_fr, learning_configuration)
 print(trained_model)

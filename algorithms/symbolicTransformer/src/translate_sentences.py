@@ -93,4 +93,4 @@ chart = visualize_layer(
     model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
 )
 
-chart.save('output/translation_attention_german.html', embed_options={'renderer': 'svg'})
+chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})

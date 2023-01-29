@@ -18,6 +18,9 @@ attributes.json
 objects.json
 relationships.json
 
+#tmp -> phoenix.train.corpus.csv
+phoenix.train.corpus_tmp.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,47 +1,46 @@
 # lsfbTranslation
-Implementing and compare state of the art model to generate sign language glosses wih NLP
-This `umons` project under the PhD Dupont direction is intended to translate french texts to glosses where glosses are a temporary step to generate visual signs. This is the Alix Declerck's Master 1 end of studies project. This repository gather algorithms they are used to do NLP learning.
+Implementing and compare state-of-the-art model to generate sign language glosses wih NLP.
 
-## Installation
+This `umons` project under the `PhD Dupont` direction is intended to translate French texts to glosses where glosses are a temporary step to generate visual signs. This is the Alix Declerck's Master 1 memory. 
 
-### Documentation
+This repository gather algorithms they are used to do NLP learning.
+
+## Installation documentation
+
 https://conda.io/projects/conda/en/latest/commands.html
 
 We run a python 3.9 environment with anaconda 22.9 using the following installation commands :
+
 `conda info --envs & conda activate conda activate lsfbTranslation`
 
-
+## Packages and libraries
 
 ### Data loader
 
+- Reading CSV (initially for the Ben Sanders csv sources for learning)
+- Handling database (populate, loadings, ...)
+
+The `database creation folder` is destined to database sql creation scripts
+
 ```
 python -m pip install mysql-connector-python
-conda install -c conda-forge pycryptodome
-conda install -c anaconda cryptography
 ```
 
 ### Other algorith
 
+Local or general scripts quoted here only for libraries compatibility purpose
+
 ```
 conda install -c conda-forge matplotlib
+conda install -c conda-forge pycryptodome
+conda install -c anaconda cryptography
 ```
 
-
-### Progressive transformer
-
-```
-conda install -c conda-forge opencv-python (opencv)
-./pip install torch-lr-scheduler
-```
-
-[a version stay's in signTranslation module]
-
-```
-conda install -c pytorch torchtext==0.08 (or ..)
-conda install -c pytorch torchtext==0.11 (needed for import from torchtext.legacy.data import Dataset, Iterator, Field
-```
 
 ### Symbolic transformer
+
+Based on `Progressive transformer` and `annotated transformer`
+datasets : translated (from german with deepl) version of the `phoenix`
 
 ```
 conda install -c anaconda numpy
@@ -55,10 +54,11 @@ conda install -c conda-forge gputil
 conda install -c pytorch torchtext==0.12
 conda install -c anaconda altair
 conda install -c anaconda pyyaml
-+ installing package jupyter in intelliJ (pro)
 ```
 
 ### Words are our glosses
+
+seq2seq with meteo texts : French input, english output
 
 ```
 conda install -c conda-forge docopt
@@ -67,30 +67,12 @@ conda install -c anaconda nltk
 
 ### Syntax analysis
 
+A graph that bring some prior knowledge that can be use as pre-processing ?
+Visual Genome : http://visualgenome.org/
+
 ```
 conda install -c conda-forge stanza
 ```
-
-
-## Presentation
-
-### Data loader
-- Reading CSV (initially for the Ben Sanders csv sources for learning)
-- Handling database (populate, loadings, ...)
-
-#### DB Creation
-The databases creation scripts
-
-### Symbolic transformer AIAYN
-Based on Progressive transformer
-Adapted from http://nlp.seas.harvard.edu/annotated-transformer/
-
-### Words are our glosses
-seq2seq with meteo texts : French input, english output
-
-### Syntax analysis
-A graph that bring some prior knowledge that can be use as pre-processing ?
-Visual Genome : http://visualgenome.org/
 
 ## Documentation links
 Some useful documentations
@@ -106,8 +88,10 @@ Some useful documentations
 - memory usage : https://www.kaggle.com/getting-started/140636
 - code optimization : https://towardsdatascience.com/optimize-pytorch-performance-for-speed-and-memory-efficiency-2022-84f453916ea6
 - https://pytorch.org/text/0.8.1/datasets.html
+- https://github.com/marketplace/actions/python-coverage
 
 ## Credit and sources
+
 Please see on each packages for details
 
 @inproceedings{wordsAreOurGlosses,
@@ -118,7 +102,6 @@ pages = {3384-3392},
 title = {Neural Sign Language Synthesis: Words Are Our Glosses},
 doi = {10.1109/WACV45572.2020.9093516}
 }
-
 
 @article{progressiveTransformer,
 doi = {10.48550/ARXIV.2004.14874},
@@ -138,10 +121,16 @@ year    = "2018",
 journal = "web"
 }
 
-
 @article{the_annotated_transformer,
 author  = {Austin Huang, Suraj Subramanian, Jonathan Sum, Khalid Almubarak, and Stella Biderman},
 title   = "\url{http://nlp.seas.harvard.edu/annotated-transformer/}",
 year    = "2022",
 journal = "web"
+}
+
+@article{NMT_seq2seq_Standford,
+author  = "Pencheng Yin, Sahil Chopra, Vera Lin",
+title   = "Neural Machine Translation with sequence-to-sequence, attention, and subwords",
+year    = "2019",
+journal = "Standford"
 }

@@ -18,6 +18,9 @@ attributes.json
 objects.json
 relationships.json
 
+# Configuration
+.github
+
 #tmp -> phoenix.train.corpus.csv
 phoenix.train.corpus_tmp.csv
 

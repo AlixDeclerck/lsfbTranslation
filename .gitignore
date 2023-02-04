@@ -17,6 +17,7 @@ bdd_sqlite.db
 attributes.json
 objects.json
 relationships.json
+spacy_subtree.py
 
 # Configuration
 .github

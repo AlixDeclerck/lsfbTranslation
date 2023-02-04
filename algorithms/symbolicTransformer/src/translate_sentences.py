@@ -67,7 +67,7 @@ def check_outputs(
 def run_model_example(config, n_examples=5):
 
     token_fr = load_tokenizers()
-    vocab = Vocab(token_fr, learning_configuration, application_path, EnvType.DEV)
+    vocab = Vocab(token_fr, config, EnvType.DEV)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(

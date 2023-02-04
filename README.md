@@ -36,7 +36,6 @@ conda install -c conda-forge pycryptodome
 conda install -c anaconda cryptography
 ```
 
-
 ### Symbolic transformer
 
 Based on `Progressive transformer` and `annotated transformer`
@@ -72,6 +71,7 @@ Visual Genome : http://visualgenome.org/
 
 ```
 conda install -c conda-forge stanza
+conda install -c conda-forge textacy
 ```
 
 ## Documentation links
@@ -89,6 +89,7 @@ Some useful documentations
 - code optimization : https://towardsdatascience.com/optimize-pytorch-performance-for-speed-and-memory-efficiency-2022-84f453916ea6
 - https://pytorch.org/text/0.8.1/datasets.html
 - https://github.com/marketplace/actions/python-coverage
+- https://developers.google.com/machine-learning/guides/text-classification/step-3?hl=fr
 
 ## Credit and sources
 

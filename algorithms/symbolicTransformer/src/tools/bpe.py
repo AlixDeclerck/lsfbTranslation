@@ -11,17 +11,17 @@ Usage:
 # https://towardsdatascience.com/byte-pair-encoding-subword-based-tokenization-algorithm-77828a70bee0
 # https://towardsdatascience.com/byte-pair-encoding-the-dark-horse-of-modern-nlp-eb36c7df4f10
 
+import os
 import re
 from collections import Counter, defaultdict
 
-from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from docopt import docopt
-import os
-from algorithms.data_loader.src.dal import EnvType
-from common.constant import dir_separator
 
+from algorithms.data_loader.src.dal import EnvType
+from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers
 from algorithms.symbolicTransformer.src.tools.helper import load_config
+from common.constant import dir_separator
 
 
 def build_vocab(corpus: str) -> dict:

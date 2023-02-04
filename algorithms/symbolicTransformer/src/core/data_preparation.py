@@ -38,14 +38,14 @@ def load_tokenizers():
 
 class Vocab:
 
-    def __init__(self, token_fr, config, application_path, env):
+    def __init__(self, token_fr, config, env):
         self.vocab_src = None
         self.vocab_tgt = None
         self.environment = env
         self.french_tokens = token_fr
         self.vocab_handler(
             config["model_path"]+config["vocab_file_name"],
-            application_path)
+            config["application_path"])
 
     def vocab_handler(self, file_path, application_path):
         if not exists(file_path):
@@ -87,4 +87,3 @@ class Vocab:
     def save_vocab(self, file_path):
         if file_path is not None and self.vocab_src is not None and self.vocab_tgt is not None:
             torch.save((self.vocab_src, self.vocab_tgt), file_path)
-

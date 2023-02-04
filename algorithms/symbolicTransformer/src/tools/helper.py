@@ -74,3 +74,12 @@ def tile(x, count, dim=0):
         x = x.permute(perm).contiguous()
     return x
 
+
+# todo:in new version of annotated transformer
+def tokenize(text, tokenizer):
+    return [tok.text for tok in tokenizer.tokenizer(text)]
+
+
+def yield_tokens(data_iter, tokenizer, index):
+    for from_to_tuple in data_iter:
+        yield tokenizer(from_to_tuple[index])

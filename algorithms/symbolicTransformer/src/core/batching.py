@@ -78,21 +78,21 @@ def create_dataloaders(
         device,
         vocab_src,
         vocab_tgt,
-        spacy_de,
+        tokens,
         application_path,
         batch_size=12000,
         max_padding=128,
         is_distributed=True,
 ):
 
-    def tokenize_de(text):
-        return tokenize(text, spacy_de)
+    def tokenize_fr(text):
+        return tokenize(text, tokens)
 
     def collate_fn(batch):
         return collate_batch(
             batch,
-            tokenize_de,
-            tokenize_de,
+            tokenize_fr,
+            tokenize_fr,
             vocab_src,
             vocab_tgt,
             device,
@@ -144,7 +144,7 @@ class Batch:
             self.tgt = tgt[:, :-1]
             self.tgt_y = tgt[:, 1:]
             self.tgt_mask = self.make_std_mask(self.tgt, pad)
-            self.ntokens = (self.tgt_y != pad).data.sum()
+            self.n_tokens = (self.tgt_y != pad).data.sum()
 
     @staticmethod
     def make_std_mask(tgt, pad):

@@ -1,8 +1,20 @@
-import torch
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+"""
+Usage:
+    translate_sentences.py train --app-path=<file>
+"""
+
+import torch
+from common.constant import dir_separator
+from docopt import docopt
+import os
+
+from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import make_model
 from algorithms.symbolicTransformer.src.tools.attention_visualization import visualize_layer, get_decoder_self
-from algorithms.symbolicTransformer.src.core.vocabulary_builder import load_vocab, load_tokenizers
+from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders
 from algorithms.symbolicTransformer.src.core.batching import Batch
 from algorithms.symbolicTransformer.src.core.output_decoder import greedy_decode
@@ -54,43 +66,50 @@ def check_outputs(
 
 def run_model_example(config, n_examples=5):
 
-    spacy_de = load_tokenizers()
-    vocab_src, vocab_tgt = load_vocab(spacy_de, config)
+    token_fr = load_tokenizers()
+    vocab = Vocab(token_fr, learning_configuration, application_path, EnvType.DEV)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(
         torch.device("cpu"),
-        vocab_src,
-        vocab_tgt,
-        spacy_de,
+        vocab.vocab_src,
+        vocab.vocab_tgt,
+        token_fr,
+        application_path,
         batch_size=1,
         is_distributed=False,
     )
 
     print("Loading Trained Model ...")
 
-    model = make_model(len(vocab_src), len(vocab_tgt), config)
+    model = make_model(len(vocab.vocab_src), len(vocab.vocab_tgt), config)
     model.load_state_dict(
         torch.load(config["model_path"]+config["model_prefix"]+config["model_suffix"], map_location=torch.device("cpu"))
     )
 
     print("Checking Model Outputs:")
     example_data = check_outputs(
-        valid_dataloader, model, vocab_src, vocab_tgt, n_examples=n_examples
+        valid_dataloader, model, vocab.vocab_src, vocab.vocab_tgt, n_examples=n_examples
     )
     return model, example_data
 
 
 # ---------------------------------------------------------------------------
-torch.cuda.empty_cache()
 
-learning_configuration = load_config()
+if __name__ == '__main__':
 
-model_learned, data_learned = run_model_example(config=learning_configuration)
-data_graph = data_learned[len(data_learned) - 1]
+    args = docopt(__doc__)
+    application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
 
-chart = visualize_layer(
-    model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
-)
+    torch.cuda.empty_cache()
 
-chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})
+    learning_configuration = load_config()
+
+    model_learned, data_learned = run_model_example(config=learning_configuration)
+    data_graph = data_learned[len(data_learned) - 1]
+
+    chart = visualize_layer(
+        model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
+    )
+
+    chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})

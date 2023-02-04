@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Usage:
+    training_the_system.py train --app-path=<file>
+"""
+
 import os
 from os.path import exists
 
@@ -7,27 +15,32 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim.lr_scheduler import LambdaLR
+from common.constant import dir_separator
+from docopt import docopt
+
+from algorithms.data_loader.src.dal import EnvType
 
 from algorithms.symbolicTransformer.src.core.batching import Batch, create_dataloaders
 from algorithms.symbolicTransformer.src.tools.helper import DummyOptimizer, DummyScheduler
 from algorithms.symbolicTransformer.src.core.loss_functions import SimpleLossCompute
 from algorithms.symbolicTransformer.src.core.architecture import make_model, LabelSmoothing
 from algorithms.symbolicTransformer.src.core.training import TrainState, rate, run_epoch
-from algorithms.symbolicTransformer.src.core.vocabulary_builder import load_tokenizers, load_vocab
+from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.tools.helper import load_config
 
 
 def train_worker(
         gpu,
         ngpus_per_node,
-        vocab_src,
-        vocab_tgt,
-        spacy_de,
         config,
         is_distributed=False):
 
     print(f"Train worker process using GPU: {gpu} for training", flush=True)
     torch.cuda.set_device(gpu)
+
+    vocab_src = vocab.vocab_src
+    vocab_tgt = vocab.vocab_tgt
+    token_fr = vocab.french_tokens
 
     pad_idx = vocab_tgt["<blank>"]
     d_model = 512
@@ -52,7 +65,8 @@ def train_worker(
         gpu,
         vocab_src,
         vocab_tgt,
-        spacy_de,
+        token_fr,
+        application_path,
         batch_size=config["batch_size"] // ngpus_per_node,
         max_padding=config["max_padding"],
         is_distributed=is_distributed,
@@ -110,7 +124,11 @@ def train_worker(
     torch.save(module.state_dict(), file_path)
 
 
-def train_distributed_model(vocab_src, vocab_tgt, spacy_de, config):
+def train_distributed_model(config):
+
+    vocab_src = vocab.vocab_src
+    vocab_tgt = vocab.vocab_tgt
+    token_fr = vocab.french_tokens
 
     number_of_gpu = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
@@ -120,37 +138,46 @@ def train_distributed_model(vocab_src, vocab_tgt, spacy_de, config):
     numpy.spawn(
         train_worker,
         nprocs=number_of_gpu,
-        args=(number_of_gpu, vocab_src, vocab_tgt, spacy_de, config, True)
+        args=(number_of_gpu, vocab_src, vocab_tgt, token_fr, config, True)
     )
 
 
-def train_model(vocab_src, vocab_tgt, spacy_fr, config):
+def train_model(config):
     if config["distributed"]:
         train_distributed_model(
-            vocab_src, vocab_tgt, spacy_fr, config
+            config
         )
     else:
         train_worker(
-            0, 1, vocab_src, vocab_tgt, spacy_fr, config, False
+            0, 1, config, False
         )
 
 
-def load_trained_model(vocab_src, vocab_tgt, spacy_fr, config):
+def load_trained_model(vocab_src_len, vocab_tgt_len, config):
     model_path = str(config["model_path"])+str(config["model_prefix"])+str(config["model_suffix"])
     if not exists(model_path):
-        train_model(vocab_src, vocab_tgt, spacy_fr, config)
+        train_model(config)
 
-    model = make_model(len(vocab_src), len(vocab_tgt), config)
+    model = make_model(vocab_src_len, vocab_tgt_len, config)
     model.load_state_dict(torch.load(model_path))
     return model
 
 
 # ---------------------------------------------------------------
 
-learning_configuration = load_config()
 
-token_fr = load_tokenizers()
-src_vocabulary, tgt_vocabulary = load_vocab(token_fr, learning_configuration)
+if __name__ == '__main__':
 
-trained_model = load_trained_model(src_vocabulary, tgt_vocabulary, token_fr, learning_configuration)
-print(trained_model)
+    # CONFIGURATION
+    args = docopt(__doc__)
+    application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
+    learning_configuration = load_config()
+
+    # PREPROCESSING
+    vocab = Vocab(load_tokenizers(), learning_configuration, application_path, EnvType.DEV)
+
+    # TRAINING
+    trained_model = load_trained_model(len(vocab.vocab_src), len(vocab.vocab_tgt), learning_configuration)
+
+    # OUTPUT
+    print(trained_model)

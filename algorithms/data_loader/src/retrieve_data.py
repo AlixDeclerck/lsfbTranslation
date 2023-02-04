@@ -25,10 +25,10 @@ def get_phoenix(path):
     return phoenix.filter(["text", "gloss"])
 
 
-def retrieve_mysql_datas_from(subset_type):
+def retrieve_mysql_datas_from(subset_type, application_path):
     res = []
     request = "select p.text, p.gloss from PARALLEL_ITEM as p inner join ENVIRONMENT as e on p.env_type = e.envId where e.type = '"+str(subset_type)+"';"
-    pt = dal.data_provider("db_dev")
+    pt = dal.data_provider("db_dev", application_path)
     cur = pt.cursor()
     cur.execute(request)
 

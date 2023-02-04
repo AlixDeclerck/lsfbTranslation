@@ -43,7 +43,7 @@ class DummyScheduler:
 # source : https://github.com/BenSaunders27/ProgressiveTransformersSLP
 def load_config(path="config.yaml") -> dict:
     """
-    Loads and parses a YAML configuration file.
+    Loads and parses a YAML configuration file
     :param path: path to YAML configuration file
     :return: configuration dictionary
     """

@@ -22,7 +22,7 @@ def env_provider(subset_type):
     return None
 
 
-def data_provider(db):
+def data_provider(db, application_path):
     """
     A persisted data provider
     @param db: db_dev or db_test
@@ -30,10 +30,10 @@ def data_provider(db):
     """
     local = True
     address = "localhost"
-    df = pandas.read_csv(CONFIG)
+    df = pandas.read_csv(application_path+CONFIG)
 
     if local:
-        with open('../config_local.txt') as f:
+        with open(application_path+CONFIG_LOCAL) as f:
             lines = f.readlines()
 
         user = lines[0]
@@ -105,7 +105,12 @@ def delete_row(conn, text):
     conn.commit()
 
 
-CONFIG = "../../data_loader/config.csv"
+# --------------------------------------------- Execution ----- -----------
+
+
+CONFIG = "algorithms/data_loader/config.csv"                # generic information included in the project
+CONFIG_LOCAL = "algorithms/data_loader/config_local.txt"    # connection information specific to your local configuration
+
 
 if __name__ == "__main__":
     txt_insert = "text_content"

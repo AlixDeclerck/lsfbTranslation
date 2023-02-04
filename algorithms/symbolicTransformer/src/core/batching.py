@@ -6,7 +6,7 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
 from algorithms.symbolicTransformer.src.tools.helper import tokenize, split_list
-from algorithms.symbolicTransformer.src.core.vocabulary_builder import retrieve_phoenix_dataset
+from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_phoenix_dataset
 from algorithms.symbolicTransformer.src.core.output_decoder import subsequent_mask
 from algorithms.data_loader.src.dal import EnvType
 
@@ -79,6 +79,7 @@ def create_dataloaders(
         vocab_src,
         vocab_tgt,
         spacy_de,
+        application_path,
         batch_size=12000,
         max_padding=128,
         is_distributed=True,
@@ -100,7 +101,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    full = retrieve_phoenix_dataset(EnvType.TEST)
+    full = retrieve_phoenix_dataset(EnvType.TEST, application_path)
     train_iter, tmp_iter = split_list(full)
 
     test_iter, valid_iter = split_list(tmp_iter)

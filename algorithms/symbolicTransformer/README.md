@@ -22,3 +22,17 @@ torch.utils.data.DataLoader is an iterator which provides all these features. Pa
 - https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 - https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 
+### optimizer
+
+- https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
+
+### scheduler and learning rate
+
+- https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LambdaLR.html
+
+
+
+
+
+
+

@@ -7,6 +7,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim.lr_scheduler import LambdaLR
 from os.path import exists
 import os
+from common.constant import Tag
 
 from algorithms.symbolicTransformer.src.core.batching import Batch, create_dataloaders
 from algorithms.symbolicTransformer.src.tools.helper import DummyOptimizer, DummyScheduler
@@ -65,7 +66,7 @@ def train_worker(
     print(f"Train worker process using GPU: {gpu} for training", flush=True)
     torch.cuda.set_device(gpu)
 
-    pad_idx = vocab.vocab_tgt["<blank>"]
+    pad_idx = vocab.vocab_tgt[Tag.BLANK.value]
     d_model = 512
     model = make_model(len(vocab.vocab_src), len(vocab.vocab_tgt), config)
     model.cuda(gpu)

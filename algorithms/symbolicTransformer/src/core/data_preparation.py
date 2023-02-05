@@ -4,29 +4,36 @@ from os.path import exists
 import spacy
 import torch
 from torchtext.vocab import build_vocab_from_iterator
+from common.constant import Tag
 
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 from algorithms.symbolicTransformer.src.tools.helper import tokenize
 
 
 def retrieve_phoenix_dataset(env, application_path):
-    examples = []
-
-    # Extract the parallel src, trg and file(s) from database
+    """
+    Extract the parallel sentences and glosses from database
+    :param env: a chosen environment {train, test, dev}
+    :param application_path: the given code path
+    :return: corpus dataframe
+    """
+    db_dataset = []
     for d in retrieve_mysql_datas_from(env.value[1], application_path):
 
         src_line = d.get("src")
         trg_line = d.get("tgt")
 
-        # Create a dataset examples out of the Source, Target Frames and FilesPath
         if src_line != 'text_content' and trg_line != 'glosses_content':
-            examples.append((src_line, trg_line))
+            db_dataset.append((src_line, trg_line))
 
-    return examples
+    return db_dataset
 
 
 def load_tokenizers():
-
+    """
+    get a French doc (https://spacy.io/api/doc) object from internet if not already present.
+    :return: a spacy object
+    """
     try:
         spacy_fr = spacy.load("fr_core_news_sm")
     except IOError:
@@ -37,7 +44,11 @@ def load_tokenizers():
 
 
 class Vocab:
-
+    """
+    Create source and target torchtext vocabulary (named vocab_file_name) which are
+    yield into tokens filled (by dataset text or glosses) into itos units by
+    build_vocab_from_iterator (https://pytorch.org/text/stable/vocab.html)
+    """
     def __init__(self, token_fr, config, env):
         self.vocab_src = None
         self.vocab_tgt = None
@@ -57,6 +68,7 @@ class Vocab:
     def vocab_builder(self, application_path):
 
         learning_corpus = retrieve_phoenix_dataset(self.environment, application_path)
+        special_tag = [Tag.START.value, Tag.STOP.value, Tag.BLANK.value, Tag.UNKNOWN.value]
 
         def tokenize_fr(text):
             return tokenize(text, self.french_tokens)
@@ -69,18 +81,18 @@ class Vocab:
         vocab_src = build_vocab_from_iterator(
             yield_tokens(learning_corpus, tokenize_fr, index=0),
             min_freq=2,
-            specials=["<s>", "</s>", "<blank>", "<unk>"],
+            specials=special_tag,
         )
 
         print("Building glosses Vocabulary ...")
         vocab_tgt = build_vocab_from_iterator(
             yield_tokens(learning_corpus, tokenize_fr, index=1),
-            min_freq=2,
-            specials=["<s>", "</s>", "<blank>", "<unk>"],
+            min_freq=1,
+            specials=special_tag,
         )
 
-        vocab_src.set_default_index(vocab_src["<unk>"])
-        vocab_tgt.set_default_index(vocab_tgt["<unk>"])
+        vocab_src.set_default_index(vocab_src[Tag.UNKNOWN.value])
+        vocab_tgt.set_default_index(vocab_tgt[Tag.UNKNOWN.value])
 
         return vocab_src, vocab_tgt
 

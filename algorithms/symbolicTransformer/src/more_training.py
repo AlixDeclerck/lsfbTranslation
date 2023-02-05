@@ -7,6 +7,7 @@ Usage:
 """
 
 import os
+import torch
 
 from common.constant import dir_separator
 from docopt import docopt
@@ -20,6 +21,11 @@ if __name__ == '__main__':
 
     # CONFIGURATION
     config = load_config()
+    torch.cuda.empty_cache()
+
+    # RuntimeError: CUDA error: out of memory
+    # CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+    # For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
 
     # update configuration of given parameters
     args = docopt(__doc__)

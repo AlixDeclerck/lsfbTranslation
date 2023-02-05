@@ -16,3 +16,4 @@ feed_forward_dimension:       2048
 h_attention_layers:           8                                 # h=8 parallel attention layers
 dropout:                      0.1
 application_path:             "/"
+remove_punctuation:           False                             #todo : implement, check with quotes signs for instance

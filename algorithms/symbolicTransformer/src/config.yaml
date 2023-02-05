@@ -1,7 +1,8 @@
-batch_size:                   32
+batch_size:                   16                                  # originally 32
 distributed:                  False
-num_epochs:                   8
+num_epochs:                   80                                  # originally 8
 accum_iter:                   10
+accum_step:                   10                                  # originally 40 but shrank due to small training corpus
 base_lr:                      1.0
 max_padding:                  72
 warmup:                       3000

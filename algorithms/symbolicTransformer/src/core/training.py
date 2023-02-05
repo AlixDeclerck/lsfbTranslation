@@ -131,6 +131,7 @@ def train_worker(
             SimpleLossCompute(module.generator, criterion),
             optimizer,
             lr_scheduler,
+            accum_step=config["accum_step"],
             mode="train+log",
             accum_iter=config["accum_iter"],
             train_state=train_state,
@@ -152,6 +153,7 @@ def train_worker(
             SimpleLossCompute(module.generator, criterion),
             DummyOptimizer(),
             DummyScheduler(),
+            accum_step=config["accum_step"],
             mode="eval",
         )
 
@@ -159,7 +161,7 @@ def train_worker(
         print(simple_loss)
         torch.cuda.empty_cache()
 
-    # save trained result
+    # todo: save trained result and be able to improve
     file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
     torch.save(module.state_dict(), file_path)
 
@@ -170,6 +172,7 @@ def run_epoch(
         loss_compute,
         optimizer,
         scheduler,
+        accum_step,
         mode="train",
         accum_iter=1,
         train_state=TrainState(),
@@ -201,7 +204,7 @@ def run_epoch(
         total_loss += loss
         total_tokens += batch.n_tokens
         tokens += batch.n_tokens
-        if i % 40 == 1 and (mode == "train" or mode == "train+log"):
+        if i % accum_step == 1 and (mode == "train" or mode == "train+log"):
             lr = optimizer.param_groups[0]["lr"]
             elapsed = time.time() - start
             print(

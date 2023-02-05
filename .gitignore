@@ -18,6 +18,7 @@ attributes.json
 objects.json
 relationships.json
 spacy_subtree.py
+other_phoenix
 
 # Configuration
 .github

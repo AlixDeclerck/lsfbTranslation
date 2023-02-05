@@ -8,7 +8,7 @@ def loss(x, crit):
 
 
 class SimpleLossCompute:
-    "A simple loss compute and train function."
+    """A simple loss compute and train function."""
 
     def __init__(self, generator, criterion):
         self.generator = generator

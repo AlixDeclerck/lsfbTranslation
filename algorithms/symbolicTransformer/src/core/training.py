@@ -61,6 +61,7 @@ def train_worker(
         ngpus_per_node,
         vocab,
         config,
+        model_saving_strategy=False,
         is_distributed=False):
 
     print(f"Train worker process using GPU: {gpu} for training", flush=True)
@@ -84,7 +85,7 @@ def train_worker(
 
     # label smoothing
     criterion = LabelSmoothing(
-        size=len(vocab.vocab_tgt), padding_idx=pad_idx, smoothing=0.1
+        size=len(vocab.vocab_tgt), padding_idx=pad_idx, smoothing=config["target_label_smoothing"]
     )
     criterion.cuda(gpu)
 
@@ -102,7 +103,12 @@ def train_worker(
 
     # optimizer
     optimizer = torch.optim.Adam(
-        model.parameters(), lr=config["base_lr"], betas=(0.9, 0.98), eps=1e-9
+        model.parameters(),
+        lr=config["base_lr"],                               # learning rate (default: 1e-3)
+        betas=(0.9, 0.98),                                  # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
+        eps=1e-9,                                           # term added to the denominator to improve numerical stability
+        weight_decay=config["optimizer_weight_decay"],      # weight decay (L2 penalty) (default: 0)
+        amsgrad=False                                       # AMSGrad variant (default: False)
     )
 
     # scheduler
@@ -139,9 +145,10 @@ def train_worker(
 
         # saving module
         GPUtil.showUtilization()
-        if is_main_process:
+        if is_main_process and model_saving_strategy:
             file_path = "%s%.2d.pt" % (config["model_path"]+config["model_prefix"], epoch)
             torch.save(module.state_dict(), file_path)
+
         torch.cuda.empty_cache()
 
         # model evaluation
@@ -157,13 +164,14 @@ def train_worker(
             mode="eval",
         )
 
-        # loss function
+        # loss function in evaluation mode
         print(simple_loss)
         torch.cuda.empty_cache()
 
     # todo: save trained result and be able to improve
-    file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
-    torch.save(module.state_dict(), file_path)
+    if model_saving_strategy:
+        file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
+        torch.save(module.state_dict(), file_path)
 
 
 def run_epoch(

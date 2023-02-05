@@ -26,18 +26,31 @@ if __name__ == '__main__':
     # retrieve loss
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-02-05.csv")
     loss_column = df.iloc[:, [2]]
+    validation_column = df.iloc[:, [0]]
 
     res = []
+    i = 0
     for ln in loss_column.values.tolist():
         if str(ln[0]) != 'nan' and ln[0][0:5] == " Loss":
-            tmp = ln[0].split(" ")[4]
-            res.append(tmp)
+            i += 1
+            if i % 2 == 0:
+                tmp = ln[0].split(" ")[4]
+                res.append(float(tmp))
+
+    res_eval = []
+    for ln in validation_column.values.tolist():
+        if str(ln[0]) != 'nan' and ln[0][0] == "(":
+            tmp = ln[0].split("(")[2].split(",")[0]
+            res_eval.append(float(tmp))
 
     # display loss curve
-    plt.plot(range(len(res)), res, c=curves_color1, label="symbolic transformer loss")
+    plt.plot(range(len(res)), res, c=curves_color1, label="symbolic transformer loss in training")
+    plt.plot(range(len(res_eval)), res_eval, c=curves_color2, label="symbolic transformer loss in validation")
     plt.legend()
     plt.ylabel("Learning")
-    plt.gca().invert_yaxis()
-    plt.savefig('img/learning_curves_ST_2023-02-05.png')
+    plt.xlabel("overtraining around 40 epochs")
+    # plt.gca().invert_yaxis()
+    # plt.gca().invert_xaxis()
+    plt.savefig('img/learning_curves_ST_2023-02-06.png')
     plt.show()
 

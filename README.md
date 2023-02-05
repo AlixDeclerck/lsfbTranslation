@@ -90,6 +90,7 @@ Some useful documentations
 - https://pytorch.org/text/0.8.1/datasets.html
 - https://github.com/marketplace/actions/python-coverage
 - https://developers.google.com/machine-learning/guides/text-classification/step-3?hl=fr
+- https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 
 ## Credit and sources
 

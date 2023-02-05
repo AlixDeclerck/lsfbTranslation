@@ -9,20 +9,24 @@ Second step, basing on the `annotated transformer` last the state-of-the-art imp
 
 ### distributed
 
-A `distributed` boolean configure behaviors of the project, seam to be a gpu processing parallelization
-
-The DataParallel package enables single-machine multi-GPU parallelism with the lowest coding hurdle.
+A `distributed` boolean configure behaviors of the project for multiple gpu processing parallelization
 
 - https://pytorch.org/tutorials/beginner/dist_overview.html
 
 ### dataloaders
+A `label smoothing` using `The Kullback-Leibler divergence loss` criterion
 
-torch.utils.data.DataLoader is an iterator which provides all these features. Parameters used below should be clear. One parameter of interest is collate_fn. You can specify how exactly the samples need to be batched using collate_fn. However, default collate should work fine for most use cases.
+- https://pytorch.org/docs/stable/generated/torch.nn.KLDivLoss.html
+
+### dataloaders
+
+The `torch.utils.data.DataLoader` is an iterator which provides features. 
 
 - https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-- https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 
 ### optimizer
+
+The optimizer implements `Adam algorithm`
 
 - https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
 

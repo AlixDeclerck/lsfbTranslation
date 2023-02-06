@@ -78,19 +78,11 @@ conda install -c conda-forge textacy
 Some useful documentations
 
 - https://www.tensorflow.org/s/results/?q=vocab&hl=fr
-- https://altair-viz.github.io/user_guide/customization.html
-- https://github.com/rsennrich/subword-nmt
-- https://github.com/OpenNMT/OpenNMT-py/
-- https://pytorch.org/tutorials/beginner/saving_loading_models.html
-- BPE : https://medium.com/@pierre_guillou/nlp-fastai-sentencepiece-d6922b5480d6
-- CVS 2 JSON : https://csvjson.com/csv2json
-- Image filtering with python : https://plainenglish.io/blog/image-filtering-and-editing-in-python-with-code-e878d2a4415d
 - memory usage : https://www.kaggle.com/getting-started/140636
 - code optimization : https://towardsdatascience.com/optimize-pytorch-performance-for-speed-and-memory-efficiency-2022-84f453916ea6
 - https://pytorch.org/text/0.8.1/datasets.html
-- https://github.com/marketplace/actions/python-coverage
 - https://developers.google.com/machine-learning/guides/text-classification/step-3?hl=fr
-- https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
+
 
 ## Credit and sources
 

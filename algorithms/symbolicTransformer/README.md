@@ -13,7 +13,7 @@ A `distributed` boolean configure behaviors of the project for multiple gpu proc
 
 - https://pytorch.org/tutorials/beginner/dist_overview.html
 
-### dataloaders
+### label smoothing
 A `label smoothing` using `The Kullback-Leibler divergence loss` criterion
 
 - https://pytorch.org/docs/stable/generated/torch.nn.KLDivLoss.html

@@ -29,9 +29,7 @@ def train_model(vocab, config):
     if config["distributed"]:
         train_distributed_model(vocab, config)
     else:
-        train_worker(
-            0, 1, vocab, config, False
-        )
+        train_worker(0, 1, vocab, config, True, False)
 
 
 def train_distributed_model(vocab, config):
@@ -44,7 +42,7 @@ def train_distributed_model(vocab, config):
     numpy.spawn(
         train_worker,
         nprocs=number_of_gpu,
-        args=(number_of_gpu, vocab.vocab_src, vocab.vocab_tgt, vocab.french_tokens, config, True)
+        args=(number_of_gpu, vocab, config, True, True)
     )
 
 
@@ -168,7 +166,7 @@ def train_worker(
         print(simple_loss)
         torch.cuda.empty_cache()
 
-    # todo: save trained result and be able to improve
+    # todo: save trained result and be able to improve ?
     if model_saving_strategy:
         file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
         torch.save(module.state_dict(), file_path)

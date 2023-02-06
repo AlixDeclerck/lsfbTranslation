@@ -1,0 +1,20 @@
+Example 0 ========,
+Source Text (Input)        , <s> etwas milder vor allen dingen an den küsten oder auch im südwesten minus ein oder minus zwei grad </s>
+Target Text (Ground Truth) , <s> ABER MILD MEHR MEER IX ODER SUEDWEST MINUS EINS MINUS ZWEI GRAD UNGEFAEHR MEHR </s>
+Model Output               , <s> HEUTE NACHT NORD REGION MINUS FUENF GRAD </s>
+Example 1 ========,
+Source Text (Input)        , <s> und nun die wettervorhersage für morgen sonntag den siebten oktober </s>
+Target Text (Ground Truth) , <s> JETZT WETTER WIE-AUSSEHEN MORGEN SONNTAG SIEBTE OKTOBER </s>
+Model Output               , <s> JETZT WETTER WIE-AUSSEHEN MORGEN SONNTAG SONNTAG SONNTAG SONNTAG </s>
+Example 2 ========,
+Source Text (Input)        , <s> morgen meist schwacher bis mäßiger wind aus südwest bis west </s>
+Target Text (Ground Truth) , <s> MORGEN SCHWACH MAESSIG ZEIGEN-BILDSCHIRM WIND </s>
+Model Output               , <s> MORGEN WIND SCHWACH MAESSIG WEHEN </s>
+Example 3 ========,
+Source Text (Input)        , <s> und nun die wettervorhersage für morgen dienstag den dreißigsten märz </s>
+Target Text (Ground Truth) , <s> JETZT MORGEN WETTER WIE-AUSSEHEN DIENSTAG DREISSIG MAERZ </s>
+Model Output               , <s> JETZT WETTER MORGEN MITTWOCH DONNERSTAG DREISSIG </s>
+Example 4 ========,
+Source Text (Input)        , <s> in der nacht muss vor allem im norden und in der mitte mit teilweise heftigen gewitterschauern gerechnet werden </s>
+Target Text (Ground Truth) , <s> HAUPTSAECHLICH NORD MITTE REGEN GEWITTER </s>
+Model Output               , <s> NACHT NORD REGEN KOENNEN SEHEN NORD REGION REGEN </s>

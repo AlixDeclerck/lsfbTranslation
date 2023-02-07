@@ -24,16 +24,3 @@ CREATE TABLE PARALLEL_ITEM (
                                FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(envId)
 );
 
-GRANT Alter ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Create ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Create view ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Delete ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Drop ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Grant option ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Index ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Insert ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT References ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Select ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Show view ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Trigger ON signTranslation.* TO 'myosotis'@'localhost';
-GRANT Update ON signTranslation.* TO 'myosotis'@'localhost' WITH GRANT OPTION;

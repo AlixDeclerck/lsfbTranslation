@@ -1,6 +1,8 @@
 from enum import Enum
+from collections import namedtuple
 
 dir_separator = "/"
+Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
 
 class Tag(Enum):

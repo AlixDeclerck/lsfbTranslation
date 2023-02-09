@@ -21,7 +21,7 @@ from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 
 from model_embeddings import ModelEmbeddings
 
-Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
+from common.constant import Hypothesis
 
 
 def attention(query, key, value, mask=None, dropout=None):

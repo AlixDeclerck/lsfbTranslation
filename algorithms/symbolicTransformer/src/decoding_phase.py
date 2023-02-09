@@ -17,9 +17,9 @@ from algorithms.symbolicTransformer.src.tools.attention_visualization import vis
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders
 from algorithms.symbolicTransformer.src.core.batching import Batch
-from algorithms.symbolicTransformer.src.core.output_decoder import greedy_decode
+from common.output_decoder import greedy_decode, beam_search
 from algorithms.symbolicTransformer.src.tools.helper import load_config
-from common.decoder.search import beam_search
+from common.metrics.bleu import compute_corpus_level_bleu_score
 
 
 def check_outputs(
@@ -52,25 +52,30 @@ def check_outputs(
             "Target Text (Ground Truth) : "
             + " ".join(tgt_tokens).replace("\n", "")
         )
+
         if int(learning_configuration["beam_search"]) == 1:
-            hypothesis = greedy_decode(model, rb.src, rb.src_mask, 72, 0)[0]
-        else:
-            hypothesis = beam_search(model, rb.src,
+            decoded = beam_search(model, rb.src,
                                      beam_size=int(learning_configuration["beam"]['beam-size']),
                                      max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+        else:
+            decoded = greedy_decode(model, rb.src, rb.src_mask, 72, 0)[0]
 
-        model_txt = (
+        model_output = (
                 " ".join(
-                    [vocab_tgt.get_itos()[x] for x in hypothesis if x != pad_idx]
+                    [vocab_tgt.get_itos()[x] for x in decoded if x != pad_idx]
                 ).split(eos_string, 1)[0]
                 + eos_string
         )
-        print("Model Output               : " + model_txt.replace("\n", ""))
-        results[idx] = (rb, src_tokens, tgt_tokens, hypothesis, model_txt)
+        print("Model Output               : " + model_output.replace("\n", ""))
+        results[idx] = (rb, src_tokens, tgt_tokens, decoded, model_output)
 
-        print("BLEU score : ")
-        # top_hypotheses = [hyps[0] for hyps in hypothesis]
-        # bleu_score = compute_corpus_level_bleu_score(test_data_tgt, top_hypotheses)
+        hypothesis = []
+        mo = model_output.split(" ")
+        for h in mo:
+            hypothesis.append(h)
+        top_hypothesis = [hyps[0] for hyps in hypothesis]
+        bleu_score = compute_corpus_level_bleu_score(tgt_tokens, hypothesis)
+        print(f"BLEU score : {bleu_score*100} ---")
 
     return results
 

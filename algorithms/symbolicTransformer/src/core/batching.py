@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from algorithms.symbolicTransformer.src.tools.helper import tokenize, split_list
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_phoenix_dataset
-from algorithms.symbolicTransformer.src.core.output_decoder import subsequent_mask
+from common.output_decoder import subsequent_mask
 from algorithms.data_loader.src.dal import EnvType
 
 

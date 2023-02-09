@@ -20,3 +20,7 @@ remove_punctuation:           False                             # todo : impleme
 target_label_smoothing:       0.1                               # velocity of label smoothing
 optimizer_weight_decay:       0                                 # L2 penalty
 log_in_database:              False                             # todo: create tables to receive losses, ... by hyper-parameters
+beam_search:                  1                                 # 0 = greedy search & 1 = beam search
+beam:
+    beam-size:                5
+    max-decoding-time-step:  70

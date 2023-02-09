@@ -3,7 +3,7 @@
 
 """
 Usage:
-    learning_phase.py train --app-path=<file>
+    plot_ST_learning.py --app-path=<file>
 """
 
 import os
@@ -51,6 +51,6 @@ if __name__ == '__main__':
     plt.xlabel("overtraining around 40 epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-02-06.png')
+    plt.savefig('img/learning_curves_ST_2023-02-09.png')
     plt.show()
 

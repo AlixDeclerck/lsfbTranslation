@@ -19,8 +19,8 @@ def collate_batch(
         tgt_vocab,
         device,
         max_padding=128,
-        pad_id=2,
-):
+        pad_id=2):
+
     bs_id = torch.tensor([0], device=device)  # <s> token id
     eos_id = torch.tensor([1], device=device)  # </s> token id
     src_list, tgt_list = [], []
@@ -75,10 +75,8 @@ def collate_batch(
 
 
 def create_dataloaders(
+        vocab,
         device,
-        vocab_src,
-        vocab_tgt,
-        tokens,
         application_path,
         batch_size=12000,
         max_padding=128,
@@ -86,18 +84,18 @@ def create_dataloaders(
 ):
 
     def tokenize_fr(text):
-        return tokenize(text, tokens)
+        return tokenize(text, vocab.french_tokens)
 
     def collate_fn(batch):
         return collate_batch(
             batch,
             tokenize_fr,
             tokenize_fr,
-            vocab_src,
-            vocab_tgt,
+            vocab.vocab_src,
+            vocab.vocab_tgt,
             device,
             max_padding=max_padding,
-            pad_id=vocab_src.get_stoi()["<blank>"],
+            pad_id=vocab.vocab_src.get_stoi()["<blank>"],
         )
 
     # Dataset that will do the batches

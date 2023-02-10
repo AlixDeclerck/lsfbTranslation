@@ -89,14 +89,12 @@ def train_worker(
 
     # dataloaders
     train_dataloader, valid_dataloader = create_dataloaders(
+        vocab,
         gpu,
-        vocab.vocab_src,
-        vocab.vocab_tgt,
-        vocab.french_tokens,
         application_path=config["application_path"],
         batch_size=config["batch_size"] // ngpus_per_node,
         max_padding=config["max_padding"],
-        is_distributed=is_distributed,
+        is_distributed=is_distributed
     )
 
     # optimizer

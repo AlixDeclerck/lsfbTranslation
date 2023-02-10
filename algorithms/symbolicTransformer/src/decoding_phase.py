@@ -3,7 +3,7 @@
 
 """
 Usage:
-    decoding_phase.py train --app-path=<file>
+    decoding_phase.py --app-path=<file>
 """
 
 import torch
@@ -11,37 +11,37 @@ from common.constant import dir_separator
 from docopt import docopt
 import os
 
+from common.constant import Tag
 from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import make_model
 from algorithms.symbolicTransformer.src.tools.attention_visualization import visualize_layer, get_decoder_self
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
-from algorithms.symbolicTransformer.src.core.batching import create_dataloaders
-from algorithms.symbolicTransformer.src.core.batching import Batch
-from common.output_decoder import greedy_decode, beam_search
+from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.tools.helper import load_config
+from common.output_decoder import greedy_decode, beam_search
 from common.metrics.bleu import compute_corpus_level_bleu_score
 
 
 def check_outputs(
-        valid_dataloader,
         model,
-        vocab_src,
-        vocab_tgt,
+        vocab,
+        dataloader_validation,
         n_examples=15,
         pad_idx=2,
-        eos_string="</s>"):
+        eos_string=Tag.STOP.value):
 
     results = [()] * n_examples
-    for idx in range(n_examples):
-        print("\nExample %d ========\n" % idx)
-        b = next(iter(valid_dataloader))
-        rb = Batch(b[0], b[1], pad_idx)
+    for example_id in range(n_examples):
+
+        print("\nExample %d ========\n" % example_id)
+        data_val = next(iter(dataloader_validation))
+        data_val_batch = Batch(data_val[0], data_val[1], pad_idx)
 
         src_tokens = [
-            vocab_src.get_itos()[x] for x in rb.src[0] if x != pad_idx
+            vocab.vocab_src.get_itos()[x] for x in data_val_batch.src[0] if x != pad_idx
         ]
         tgt_tokens = [
-            vocab_tgt.get_itos()[x] for x in rb.tgt[0] if x != pad_idx
+            vocab.vocab_tgt.get_itos()[x] for x in data_val_batch.tgt[0] if x != pad_idx
         ]
 
         print(
@@ -54,26 +54,28 @@ def check_outputs(
         )
 
         if int(learning_configuration["beam_search"]) == 1:
-            decoded = beam_search(model, rb.src,
+            decoded = beam_search(model, data_val_batch.src,
                                      beam_size=int(learning_configuration["beam"]['beam-size']),
                                      max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+            # top_hypothesis = [hyps[0] for hyps in hypothesis]
+
         else:
-            decoded = greedy_decode(model, rb.src, rb.src_mask, 72, 0)[0]
+            decoded = greedy_decode(model, data_val_batch.src, data_val_batch.src_mask, 72, 0)[0]
 
         model_output = (
                 " ".join(
-                    [vocab_tgt.get_itos()[x] for x in decoded if x != pad_idx]
+                    [vocab.vocab_tgt.get_itos()[x] for x in decoded if x != pad_idx]
                 ).split(eos_string, 1)[0]
                 + eos_string
         )
         print("Model Output               : " + model_output.replace("\n", ""))
-        results[idx] = (rb, src_tokens, tgt_tokens, decoded, model_output)
+        results[example_id] = (data_val_batch, src_tokens, tgt_tokens, decoded, model_output)
 
         hypothesis = []
         mo = model_output.split(" ")
         for h in mo:
             hypothesis.append(h)
-        top_hypothesis = [hyps[0] for hyps in hypothesis]
+
         bleu_score = compute_corpus_level_bleu_score(tgt_tokens, hypothesis)
         print(f"BLEU score : {bleu_score*100} ---")
 
@@ -87,13 +89,11 @@ def run_model_example(config, n_examples=5):
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(
+        vocab,
         torch.device("cpu"),
-        vocab.vocab_src,
-        vocab.vocab_tgt,
-        token_fr,
         application_path,
         batch_size=1,
-        is_distributed=False,
+        is_distributed=False
     )
 
     print("Loading Trained Model ...")
@@ -105,8 +105,11 @@ def run_model_example(config, n_examples=5):
 
     print("Checking Model Outputs:")
     example_data = check_outputs(
-        valid_dataloader, model, vocab.vocab_src, vocab.vocab_tgt, n_examples=n_examples
-    )
+        model,
+        vocab,
+        valid_dataloader,
+        n_examples=n_examples)
+
     return model, example_data
 
 

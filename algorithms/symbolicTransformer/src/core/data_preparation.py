@@ -70,23 +70,20 @@ class Vocab:
         learning_corpus = retrieve_phoenix_dataset(self.environment, application_path)
         special_tag = [Tag.START.value, Tag.STOP.value, Tag.BLANK.value, Tag.UNKNOWN.value]
 
-        def tokenize_fr(text):
-            return tokenize(text, self.french_tokens)
-
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:
                 yield tokenizer(from_to_tuple[index])
 
         print("Building text Vocabulary ...")
         vocab_src = build_vocab_from_iterator(
-            yield_tokens(learning_corpus, tokenize_fr, index=0),
+            yield_tokens(learning_corpus, self.tokenize_fr, index=0),
             min_freq=2,
             specials=special_tag,
         )
 
         print("Building glosses Vocabulary ...")
         vocab_tgt = build_vocab_from_iterator(
-            yield_tokens(learning_corpus, tokenize_fr, index=1),
+            yield_tokens(learning_corpus, self.tokenize_fr, index=1),
             min_freq=1,
             specials=special_tag,
         )
@@ -95,6 +92,9 @@ class Vocab:
         vocab_tgt.set_default_index(vocab_tgt[Tag.UNKNOWN.value])
 
         return vocab_src, vocab_tgt
+
+    def tokenize_fr(self, text):
+        return tokenize(text, self.french_tokens)
 
     def save_vocab(self, file_path):
         if file_path is not None and self.vocab_src is not None and self.vocab_tgt is not None:

@@ -15,15 +15,20 @@ def subsequent_mask(size):
     # https://pytorch.org/docs/stable/generated/torch.triu.html
 
     attn_shape = (1, size, size)
-    subsequent_mask = torch.triu(torch.ones(attn_shape), diagonal=1).type(
+    mask = torch.triu(torch.ones(attn_shape), diagonal=1).type(
         torch.uint8
     )
-    return subsequent_mask == 0
+    return mask == 0
 
 
-def greedy_decode(model, src, src_mask, max_len, start_symbol):
+def greedy_decode(model, data_val_batch, max_len, start_symbol):
+
+    src = data_val_batch.src
+    src_mask = data_val_batch.src_mask
+
     memory = model.encode(src, src_mask)
     ys = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
+
     for i in range(max_len - 1):
         out = model.decode(
             memory, src_mask, ys, subsequent_mask(ys.size(1)).type_as(src.data)

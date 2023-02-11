@@ -3,7 +3,7 @@
 
 """
 Usage:
-    decoding_phase.py --app-path=<file>
+    decoding_phase.py cpu --app-path=<file>
 """
 
 import torch
@@ -34,9 +34,12 @@ def check_outputs(
     for example_id in range(n_examples):
 
         print("\nExample %d ========\n" % example_id)
+
+        # load a batch element
         data_val = next(iter(dataloader_validation))
         data_val_batch = Batch(data_val[0], data_val[1], pad_idx)
 
+        # retrieve tokens with itos elements
         src_tokens = [
             vocab.vocab_src.get_itos()[x] for x in data_val_batch.src[0] if x != pad_idx
         ]
@@ -44,6 +47,7 @@ def check_outputs(
             vocab.vocab_tgt.get_itos()[x] for x in data_val_batch.tgt[0] if x != pad_idx
         ]
 
+        # pretty print source and target
         print(
             "Source Text (Input)        : "
             + " ".join(src_tokens).replace("\n", "")
@@ -53,15 +57,16 @@ def check_outputs(
             + " ".join(tgt_tokens).replace("\n", "")
         )
 
+        # choose decoder style from config
         if int(learning_configuration["beam_search"]) == 1:
             decoded = beam_search(model, data_val_batch.src,
                                      beam_size=int(learning_configuration["beam"]['beam-size']),
                                      max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
             # top_hypothesis = [hyps[0] for hyps in hypothesis]
-
         else:
-            decoded = greedy_decode(model, data_val_batch.src, data_val_batch.src_mask, 72, 0)[0]
+            decoded = greedy_decode(model, data_val_batch, 72, 0)[0]
 
+        # pretty print the model output
         model_output = (
                 " ".join(
                     [vocab.vocab_tgt.get_itos()[x] for x in decoded if x != pad_idx]
@@ -69,23 +74,23 @@ def check_outputs(
                 + eos_string
         )
         print("Model Output               : " + model_output.replace("\n", ""))
-        results[example_id] = (data_val_batch, src_tokens, tgt_tokens, decoded, model_output)
 
+        # run BLEU score
+        results[example_id] = (data_val_batch, src_tokens, tgt_tokens, decoded, model_output)
         hypothesis = []
         mo = model_output.split(" ")
         for h in mo:
             hypothesis.append(h)
 
-        bleu_score = compute_corpus_level_bleu_score(tgt_tokens, hypothesis)
-        print(f"BLEU score : {bleu_score*100} ---")
+        # bleu_score = compute_corpus_level_bleu_score(tgt_tokens, hypothesis)
+        # print(f"BLEU score : {bleu_score*100} ---")
 
     return results
 
 
 def run_model_example(config, n_examples=5):
 
-    token_fr = load_tokenizers()
-    vocab = Vocab(token_fr, config, EnvType.DEV)
+    vocab = Vocab(load_tokenizers(), config, EnvType.DEV)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(

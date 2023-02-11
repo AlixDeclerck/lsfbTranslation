@@ -7,16 +7,14 @@ from torch.utils.data import DataLoader
 
 from algorithms.symbolicTransformer.src.tools.helper import tokenize, split_list
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_phoenix_dataset
+from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
 from common.output_decoder import subsequent_mask
 from algorithms.data_loader.src.dal import EnvType
 
 
 def collate_batch(
         batch,
-        src_pipeline,
-        tgt_pipeline,
-        src_vocab,
-        tgt_vocab,
+        vocab: Vocab,
         device,
         max_padding=128,
         pad_id=2):
@@ -29,7 +27,7 @@ def collate_batch(
             [
                 bs_id,
                 torch.tensor(
-                    src_vocab(src_pipeline(_src)),
+                    vocab.vocab_src(vocab.tokenize_fr(_src)),
                     dtype=torch.int64,
                     device=device,
                 ),
@@ -41,7 +39,7 @@ def collate_batch(
             [
                 bs_id,
                 torch.tensor(
-                    tgt_vocab(tgt_pipeline(_tgt)),
+                    vocab.vocab_tgt(vocab.tokenize_fr(_tgt)),
                     dtype=torch.int64,
                     device=device,
                 ),
@@ -80,19 +78,15 @@ def create_dataloaders(
         application_path,
         batch_size=12000,
         max_padding=128,
-        is_distributed=True,
-):
+        is_distributed=True):
 
-    def tokenize_fr(text):
-        return tokenize(text, vocab.french_tokens)
+    # def tokenize_fr(text):
+    #     return tokenize(text, vocab.french_tokens)
 
     def collate_fn(batch):
         return collate_batch(
             batch,
-            tokenize_fr,
-            tokenize_fr,
-            vocab.vocab_src,
-            vocab.vocab_tgt,
+            vocab,
             device,
             max_padding=max_padding,
             pad_id=vocab.vocab_src.get_stoi()["<blank>"],

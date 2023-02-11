@@ -10,6 +10,7 @@ from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_ph
 from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
 from common.output_decoder import subsequent_mask
 from algorithms.data_loader.src.dal import EnvType
+from common.constant import pad_idx
 
 
 def collate_batch(
@@ -129,14 +130,14 @@ def create_dataloaders(
 class Batch:
     """Object for holding a batch of data with mask during training."""
 
-    def __init__(self, src, tgt=None, pad=2):  # 2 = <blank>
+    def __init__(self, src, tgt=None):
         self.src = src
-        self.src_mask = (src != pad).unsqueeze(-2)
+        self.src_mask = (src != int(pad_idx)).unsqueeze(-2)
         if tgt is not None:
             self.tgt = tgt[:, :-1]
             self.tgt_y = tgt[:, 1:]
-            self.tgt_mask = self.make_std_mask(self.tgt, pad)
-            self.n_tokens = (self.tgt_y != pad).data.sum()
+            self.tgt_mask = self.make_std_mask(self.tgt, int(pad_idx))
+            self.n_tokens = (self.tgt_y != int(pad_idx)).data.sum()
 
     @staticmethod
     def make_std_mask(tgt, pad):

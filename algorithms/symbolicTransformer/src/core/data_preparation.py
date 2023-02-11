@@ -4,7 +4,7 @@ from os.path import exists
 import spacy
 import torch
 from torchtext.vocab import build_vocab_from_iterator
-from common.constant import Tag
+from common.constant import Tag, pad_idx
 
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 from algorithms.symbolicTransformer.src.tools.helper import tokenize
@@ -68,7 +68,7 @@ class Vocab:
     def vocab_builder(self, application_path):
 
         learning_corpus = retrieve_phoenix_dataset(self.environment, application_path)
-        special_tag = [Tag.START.value, Tag.STOP.value, Tag.BLANK.value, Tag.UNKNOWN.value]
+        special_tag = [str(Tag.START.value), str(Tag.STOP.value), str(Tag.BLANK.value), str(Tag.UNKNOWN.value)]
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:
@@ -88,14 +88,27 @@ class Vocab:
             specials=special_tag,
         )
 
-        vocab_src.set_default_index(vocab_src[Tag.UNKNOWN.value])
-        vocab_tgt.set_default_index(vocab_tgt[Tag.UNKNOWN.value])
+        vocab_src.set_default_index(vocab_src[str(Tag.UNKNOWN.value)])
+        vocab_tgt.set_default_index(vocab_tgt[str(Tag.UNKNOWN.value)])
 
         return vocab_src, vocab_tgt
 
     def tokenize_fr(self, text):
         return tokenize(text, self.french_tokens)
 
+    def untokenize_src(self, text):
+        return [self.vocab_src.get_itos()[x] for x in text if x != pad_idx]
+
+    def untokenize_tgt(self, text):
+        return [self.vocab_tgt.get_itos()[x] for x in text if x != pad_idx]
+
     def save_vocab(self, file_path):
         if file_path is not None and self.vocab_src is not None and self.vocab_tgt is not None:
             torch.save((self.vocab_src, self.vocab_tgt), file_path)
+
+    @staticmethod
+    def pretty_print_token(txt, tokens):
+        print(
+            txt
+            + " ".join(tokens).replace("\n", "")
+        )

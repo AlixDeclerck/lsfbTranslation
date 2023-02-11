@@ -4,7 +4,7 @@
 import torch
 from typing import List
 import torch.nn.functional as F
-from common.constant import Hypothesis
+from common.constant import Hypothesis, start_symbol, Tag
 from tqdm import tqdm
 import sys
 
@@ -13,33 +13,54 @@ def subsequent_mask(size):
     """Mask out subsequent positions."""
     # Returns the upper triangular part of a matrix (2-D tensor) or batch of matrices input, the other elements of the result tensor out are set to 0
     # https://pytorch.org/docs/stable/generated/torch.triu.html
-
     attn_shape = (1, size, size)
-    mask = torch.triu(torch.ones(attn_shape), diagonal=1).type(
-        torch.uint8
-    )
+    mask = torch.triu(torch.ones(attn_shape), diagonal=1).type(torch.uint8)
     return mask == 0
 
 
-def greedy_decode(model, data_val_batch, max_len, start_symbol):
+def greedy_decode(model, vocab, data_val_batch, max_len):
 
+    # retrieve source sentence tokens from vocab
     src = data_val_batch.src
     src_mask = data_val_batch.src_mask
 
-    memory = model.encode(src, src_mask)
-    ys = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
+    # run the encoder
+    encoder_output = model.encode(src, src_mask)
 
+    # initialize
+    estimation = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
+    hypotheses = [Hypothesis(value=[str(Tag.START.value)], score=0)]
+
+    ok = True
     for i in range(max_len - 1):
-        out = model.decode(
-            memory, src_mask, ys, subsequent_mask(ys.size(1)).type_as(src.data)
+
+        # decoder
+        decoder_output = model.decode(
+            encoder_output,                                             # src (memory)
+            src_mask,                                                   # src_mask
+            estimation,                                                 # tgt
+            subsequent_mask(estimation.size(1)).type_as(src.data)       # tgt_mask
         )
-        prob = model.generator(out[:, -1])
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.data[0]
-        ys = torch.cat(
-            [ys, torch.zeros(1, 1).type_as(src.data).fill_(next_word)], dim=1
-        )
-    return ys
+
+        # output
+        probabilities = model.generator(decoder_output[:, -1])
+
+        # greedy selection of the most probable (next) word
+        loss, next_token = torch.max(probabilities, dim=1)
+        next_token = next_token.data[0]
+        next_word = vocab.untokenize_tgt([next_token])
+        if next_word[0] == str(Tag.STOP.value):
+            ok = False
+
+        if ok:
+            hypotheses.append(Hypothesis(value=next_word, score=loss.data.numpy()[0]))
+
+        # concatenate word to tensor
+        estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(src.data).fill_(next_token)], dim=1)
+
+    hypotheses.append(Hypothesis(value=[str(Tag.STOP.value)], score=0))
+
+    return hypotheses, estimation
 
 
 """

@@ -28,7 +28,7 @@ def compute_corpus_level_bleu_score(references: List[List[str]], hypotheses: Lis
     if delta > 0:
         for d in range(delta):
             hypotheses.append(Hypothesis(value=str(Tag.UNKNOWN), score=0))
-    elif delta > 0:
+    elif delta < 0:
         for d in range(abs(delta)):
             references.append([str(Tag.UNKNOWN)])
 

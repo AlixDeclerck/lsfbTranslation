@@ -5,36 +5,74 @@ import torch.nn as nn
 from torch.nn.functional import log_softmax
 
 
-def make_model(src_vocab_size, tgt_vocab_size, config):
+"""
+Original source :
+CS224N 2019-20: Homework 4
+run.py: Run Script for Simple NMT Model
+Pencheng Yin <pcyin@cs.cmu.edu>
+Sahil Chopra <schopra8@stanford.edu>
+Vera Lin <veralin@stanford.edu>
+"""
+
+
+class NMT(nn.Module):
+    """ An Encoder-Decoder transformer based Neural Machine Translation Model:
+        - Transformer model the_annotated_transformer (Huang, et al. 2022)
+        - NMT (Yin, et al. 2019)
+        - Global Attention Model (Luong, et al. 2015)
     """
-    Build a model from hyperparameters.
-    :return: built and initialized model
-    """
 
-    n = config["layers"]
-    d_model = config["dimension"]
-    d_ff = config["feed_forward_dimension"]
-    h = config["h_attention_layers"]
-    dropout = config["dropout"]
+    def __init__(self, vocab, config):
+        super(NMT, self).__init__()
+        """ Init NMT Model.
+        
+            @param vocab (Vocab): Vocabulary object containing src and tgt languages
+            @param config : NMT configuration
+        
+        """
 
-    c = copy.deepcopy
-    attn = MultiHeadedAttention(h, d_model)
-    ff = PositionwiseFeedForward(d_model, d_ff, dropout)
-    position = PositionalEncoding(d_model, dropout)
-    model = EncoderDecoder(
-        Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), n),
-        Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), n),
-        nn.Sequential(Embeddings(d_model, src_vocab_size), c(position)),
-        nn.Sequential(Embeddings(d_model, tgt_vocab_size), c(position)),
-        Generator(d_model, tgt_vocab_size),
-    )
+        self.vocab = vocab
 
-    # This was important from their code.
-    # Initialize parameters with Glorot / fan_avg.
-    for p in model.parameters():
-        if p.dim() > 1:
-            nn.init.xavier_uniform_(p)
-    return model
+        n = config["layers"]
+        d_model = config["dimension"]
+        d_ff = config["feed_forward_dimension"]
+        h = config["h_attention_layers"]
+        dropout = config["dropout"]
+
+        c = copy.deepcopy
+        attn = MultiHeadedAttention(h, d_model)
+        ff = PositionwiseFeedForward(d_model, d_ff, dropout)
+        position = PositionalEncoding(d_model, dropout)
+
+        self.encoder = Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), n)
+        self.decoder = Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), n)
+        self.src_embed = nn.Sequential(Embeddings(d_model, len(vocab.vocab_src)), c(position))
+        self.tgt_embed = nn.Sequential(Embeddings(d_model, len(vocab.vocab_tgt)), c(position))
+        self.generator = Generator(d_model, len(vocab.vocab_tgt))
+
+        # This was important from their (annotated transformer) code.
+        # Initialize parameters with Glorot / fan_avg.
+        for p in self.parameters():
+            if p.dim() > 1:
+                nn.init.xavier_uniform_(p)
+
+    def forward(self, src, tgt, src_mask, tgt_mask):
+        """Take in and process masked src and target sequences."""
+        return self.decode(self.encode(src, src_mask), src_mask, tgt, tgt_mask)
+
+    def encode(self, src, src_mask):
+        return self.encoder(self.src_embed(src), src_mask)
+
+    def decode(self, memory, src_mask, tgt, tgt_mask):
+        return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
+
+
+"""
+Original source :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
 
 
 def attention(query, key, value, mask=None, dropout=None):
@@ -58,31 +96,6 @@ def clones(module, N):
     """
 
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
-
-
-class EncoderDecoder(nn.Module):
-    """
-    A standard Encoder-Decoder architecture. Base for this and many other models.
-    """
-
-    def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
-        super(EncoderDecoder, self).__init__()
-        self.encoder = encoder
-        self.decoder = decoder
-        self.src_embed = src_embed
-        self.tgt_embed = tgt_embed
-        self.generator = generator
-
-    def forward(self, src, tgt, src_mask, tgt_mask):
-        """Take in and process masked src and target sequences."""
-        return self.decode(self.encode(src, src_mask), src_mask, tgt, tgt_mask)
-
-    def encode(self, src, src_mask):
-        return self.encoder(self.src_embed(src), src_mask)
-
-    def decode(self, memory, src_mask, tgt, tgt_mask):
-        return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
-
 
 class Generator(nn.Module):
     """Define standard linear + softmax generation step."""

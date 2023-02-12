@@ -11,14 +11,15 @@ from docopt import docopt
 import os
 
 from common.constant import pretty_print_hypothesis, Tag, pad_idx, dir_separator
+from common.output_decoder import greedy_decode, beam_search
+from common.metrics.bleu import compute_corpus_level_bleu_score
+
 from algorithms.data_loader.src.dal import EnvType
-from algorithms.symbolicTransformer.src.core.architecture import make_model
+from algorithms.symbolicTransformer.src.core.architecture import NMT
 from algorithms.symbolicTransformer.src.tools.attention_visualization import visualize_layer, get_decoder_self
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.tools.helper import load_config
-from common.output_decoder import greedy_decode, beam_search
-from common.metrics.bleu import compute_corpus_level_bleu_score
 
 
 def check_outputs(
@@ -92,7 +93,7 @@ def run_model_example(config, n_examples=5):
 
     print("Loading Trained Model ...")
 
-    model = make_model(len(vocab.vocab_src), len(vocab.vocab_tgt), config)
+    model = NMT(vocab, config)
     model.load_state_dict(
         torch.load(config["model_path"]+config["model_prefix"]+config["model_suffix"], map_location=torch.device("cpu"))
     )

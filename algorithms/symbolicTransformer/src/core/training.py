@@ -12,7 +12,7 @@ from common.constant import Tag
 from algorithms.symbolicTransformer.src.core.batching import Batch, create_dataloaders
 from algorithms.symbolicTransformer.src.tools.helper import DummyOptimizer, DummyScheduler
 from algorithms.symbolicTransformer.src.core.loss_functions import SimpleLossCompute
-from algorithms.symbolicTransformer.src.core.architecture import make_model, LabelSmoothing
+from algorithms.symbolicTransformer.src.core.architecture import NMT, LabelSmoothing
 
 
 def load_or_train_model(vocab, config):
@@ -20,7 +20,7 @@ def load_or_train_model(vocab, config):
     if not exists(model_path):
         train_model(vocab, config)
 
-    model = make_model(len(vocab.vocab_src), len(vocab.vocab_tgt), config)
+    model = NMT(vocab, config)
     model.load_state_dict(torch.load(model_path))
     return model
 
@@ -67,7 +67,7 @@ def train_worker(
 
     pad_idx = vocab.vocab_tgt[Tag.BLANK.value]
     d_model = 512
-    model = make_model(len(vocab.vocab_src), len(vocab.vocab_tgt), config)
+    model = NMT(vocab, config)
     model.cuda(gpu)
     module = model
     is_main_process = True

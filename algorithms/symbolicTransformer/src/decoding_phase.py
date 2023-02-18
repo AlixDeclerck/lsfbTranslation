@@ -47,19 +47,22 @@ def check_outputs(
 
         # choose decoder style from config
         if int(learning_configuration["beam_search"]) == 1:
-            decoded = beam_search(model, data_val_batch.src,
-                                     beam_size=int(learning_configuration["beam"]['beam-size']),
-                                     max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+            decoded = beam_search(model,
+                                  data_val_batch,
+                                  learning_configuration,
+                                  beam_size=int(learning_configuration["beam"]['beam-size']),
+                                  max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+
             # top_hypothesis = [hyps[0] for hyps in hypothesis]
         else:
-            decoded, estimation = greedy_decode(model, vocab, data_val_batch, learning_configuration["max_padding"])
+            decoded, estimation = greedy_decode(model, data_val_batch, learning_configuration["max_padding"])
 
         # pretty print the model output
         pretty_print_hypothesis(decoded)
 
         model_output = (
                 " ".join(
-                    [vocab.vocab_tgt.get_itos()[x] for x in estimation[0] if x != pad_idx]
+                    [vocab.tgt.get_itos()[x] for x in estimation[0] if x != pad_idx]
                 ).split(str(Tag.STOP.value), 1)[0]
                 + str(Tag.STOP.value)
         )
@@ -118,6 +121,11 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
 
     learning_configuration = load_config()
+
+    if not args['cpu']:
+        learning_configuration["model_device"] = "cuda"
+    else:
+        learning_configuration["model_device"] = "cpu"
 
     model_learned, data_learned = run_model_example(config=learning_configuration)
     data_graph = data_learned[len(data_learned) - 1]

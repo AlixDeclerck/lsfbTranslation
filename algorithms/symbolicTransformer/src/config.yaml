@@ -6,6 +6,7 @@ accum_step:                   10                                  # originally 4
 base_lr:                      1.0
 max_padding:                  72
 warmup:                       3000
+model_device:                 "cuda"                             # for training : cuda / cpu
 model_path:                   "model/"
 model_prefix:                 "symbolicTransformer_model_"
 model_suffix:                 "final.pt"
@@ -20,7 +21,7 @@ remove_punctuation:           False                             # todo : impleme
 target_label_smoothing:       0.1                               # velocity of label smoothing
 optimizer_weight_decay:       0                                 # L2 penalty
 log_in_database:              False                             # todo: create tables to receive losses, ... by hyper-parameters
-beam_search:                  1                                 # 0 = greedy search & 1 = beam search
+beam_search:                  0                                 # 0 = greedy search & 1 = beam search
 beam:
     beam-size:                5
     max-decoding-time-step:  70

@@ -27,28 +27,32 @@ class NMT(nn.Module):
         """ Init NMT Model.
         
             @param vocab (Vocab): Vocabulary object containing src and tgt languages
-            @param config : NMT configuration
-        
+            @param config : NMT configuration 
         """
 
         self.vocab = vocab
+        self.d_model = config["dimension"]
+
+        if config["model_device"] == "cuda":
+            self.device = torch.device('cuda', 0)
+        else:
+            self.device = torch.device('cpu', 0)
 
         n = config["layers"]
-        d_model = config["dimension"]
         d_ff = config["feed_forward_dimension"]
         h = config["h_attention_layers"]
         dropout = config["dropout"]
 
         c = copy.deepcopy
-        attn = MultiHeadedAttention(h, d_model)
-        ff = PositionwiseFeedForward(d_model, d_ff, dropout)
-        position = PositionalEncoding(d_model, dropout)
+        self.attn = MultiHeadedAttention(self.d_model, h)
+        ff = PositionwiseFeedForward(self.d_model, d_ff, dropout)
+        position = PositionalEncoding(self.d_model, dropout)
 
-        self.encoder = Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), n)
-        self.decoder = Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), n)
-        self.src_embed = nn.Sequential(Embeddings(d_model, len(vocab.vocab_src)), c(position))
-        self.tgt_embed = nn.Sequential(Embeddings(d_model, len(vocab.vocab_tgt)), c(position))
-        self.generator = Generator(d_model, len(vocab.vocab_tgt))
+        self.encoder = Encoder(EncoderLayer(self.d_model, c(self.attn), c(ff), dropout), n)
+        self.decoder = Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(ff), dropout), n)
+        self.src_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.src)), c(position))
+        self.tgt_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.tgt)), c(position))
+        self.generator = Generator(self.d_model, len(vocab.tgt))
 
         # This was important from their (annotated transformer) code.
         # Initialize parameters with Glorot / fan_avg.
@@ -206,7 +210,7 @@ class DecoderLayer(nn.Module):
 
 
 class MultiHeadedAttention(nn.Module):
-    def __init__(self, h, d_model, dropout=0.1):
+    def __init__(self, d_model, h, dropout=0.1):
         """Take in model size and number of heads."""
         super(MultiHeadedAttention, self).__init__()
         assert d_model % h == 0

@@ -28,7 +28,7 @@ def collate_batch(
             [
                 bs_id,
                 torch.tensor(
-                    vocab.vocab_src(vocab.tokenize_fr(_src)),
+                    vocab.src(vocab.tokenize_fr(_src)),
                     dtype=torch.int64,
                     device=device,
                 ),
@@ -40,7 +40,7 @@ def collate_batch(
             [
                 bs_id,
                 torch.tensor(
-                    vocab.vocab_tgt(vocab.tokenize_fr(_tgt)),
+                    vocab.tgt(vocab.tokenize_fr(_tgt)),
                     dtype=torch.int64,
                     device=device,
                 ),
@@ -90,7 +90,7 @@ def create_dataloaders(
             vocab,
             device,
             max_padding=max_padding,
-            pad_id=vocab.vocab_src.get_stoi()["<blank>"],
+            pad_id=vocab.src.get_stoi()["<blank>"],
         )
 
     # Dataset that will do the batches

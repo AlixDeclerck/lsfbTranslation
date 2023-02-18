@@ -65,7 +65,7 @@ def train_worker(
     print(f"Train worker process using GPU: {gpu} for training", flush=True)
     torch.cuda.set_device(gpu)
 
-    pad_idx = vocab.vocab_tgt[Tag.BLANK.value]
+    pad_idx = vocab.tgt[Tag.BLANK.value]
     d_model = 512
     model = NMT(vocab, config)
     model.cuda(gpu)
@@ -83,7 +83,7 @@ def train_worker(
 
     # label smoothing
     criterion = LabelSmoothing(
-        size=len(vocab.vocab_tgt), padding_idx=pad_idx, smoothing=config["target_label_smoothing"]
+        size=len(vocab.tgt), padding_idx=pad_idx, smoothing=config["target_label_smoothing"]
     )
     criterion.cuda(gpu)
 
@@ -128,7 +128,7 @@ def train_worker(
         model.train()
         print(f"[GPU{gpu}] Epoch {epoch} Training ====", flush=True)
         _, train_state = run_epoch(
-            (Batch(b[0], b[1], pad_idx) for b in train_dataloader),
+            (Batch(b[0], b[1]) for b in train_dataloader),
             model,
             SimpleLossCompute(module.generator, criterion),
             optimizer,
@@ -151,7 +151,7 @@ def train_worker(
         print(f"[GPU{gpu}] Epoch {epoch} Validation ====", flush=True)
         model.eval()
         simple_loss = run_epoch(
-            (Batch(b[0], b[1], pad_idx) for b in valid_dataloader),
+            (Batch(b[0], b[1]) for b in valid_dataloader),
             model,
             SimpleLossCompute(module.generator, criterion),
             DummyOptimizer(),

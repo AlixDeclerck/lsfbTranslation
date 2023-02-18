@@ -50,20 +50,20 @@ class Vocab:
     build_vocab_from_iterator (https://pytorch.org/text/stable/vocab.html)
     """
     def __init__(self, token_fr, config, env):
-        self.vocab_src = None
-        self.vocab_tgt = None
+        self.src = None
+        self.tgt = None
         self.environment = env
-        self.french_tokens = token_fr
+        self.tokens = token_fr
         self.vocab_handler(
             config["model_path"]+config["vocab_file_name"],
             config["application_path"])
 
     def vocab_handler(self, file_path, application_path):
         if not exists(file_path):
-            self.vocab_src, self.vocab_tgt = self.vocab_builder(application_path)
+            self.src, self.tgt = self.vocab_builder(application_path)
             self.save_vocab(file_path)
         else:
-            self.vocab_src, self.vocab_tgt = torch.load(file_path)
+            self.src, self.tgt = torch.load(file_path)
 
     def vocab_builder(self, application_path):
 
@@ -94,17 +94,17 @@ class Vocab:
         return vocab_src, vocab_tgt
 
     def tokenize_fr(self, text):
-        return tokenize(text, self.french_tokens)
+        return tokenize(text, self.tokens)
 
     def untokenize_src(self, text):
-        return [self.vocab_src.get_itos()[x] for x in text if x != pad_idx]
+        return [self.src.get_itos()[x] for x in text if x != pad_idx]
 
     def untokenize_tgt(self, text):
-        return [self.vocab_tgt.get_itos()[x] for x in text if x != pad_idx]
+        return [self.tgt.get_itos()[x] for x in text if x != pad_idx]
 
     def save_vocab(self, file_path):
-        if file_path is not None and self.vocab_src is not None and self.vocab_tgt is not None:
-            torch.save((self.vocab_src, self.vocab_tgt), file_path)
+        if file_path is not None and self.src is not None and self.tgt is not None:
+            torch.save((self.src, self.tgt), file_path)
 
     @staticmethod
     def pretty_print_token(txt, tokens):

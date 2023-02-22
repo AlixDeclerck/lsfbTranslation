@@ -131,13 +131,15 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
     # initializations
     estimation = torch.zeros(1, 1).fill_(start_symbol).type_as(data.src.data)
     hypotheses = [[Tag.START.value]]
-    hyp_scores = torch.zeros(len(hypotheses), dtype=torch.float, device=model.device)
+    hyp_scores = torch.ones(len(hypotheses), dtype=torch.float, device=model.device)
     completed_hypotheses = []
     last_decoder_layer = int(config["layers"]) - 1
 
     t = 0
     while len(completed_hypotheses) < beam_size and t < max_decoding_time_step:
 
+        # inverse counter counting and t
+        live_hyp_num = beam_size - len(completed_hypotheses)
         t += 1
 
         # compute the decoder output based on the attention time_t
@@ -150,13 +152,11 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
 
         mha_att = torch.squeeze(model.decoder.layers[last_decoder_layer].self_attn.attn)
 
+        # transform generator output to log probabilities of words
         log_p_t = F.log_softmax(model.generator(decoder_output[:, -1]))
 
-        # inverse counter
-        live_hyp_num = beam_size - len(completed_hypotheses)
-
         # construct tensor from log probabilities of words
-        continuing_hyp_scores = (hyp_scores.unsqueeze(1).expand_as(log_p_t) + log_p_t).view(-1)
+        continuing_hyp_scores = torch.matmul(torch.unsqueeze(hyp_scores, 1), log_p_t).view(-1)
 
         # apply top k return score and word position
         top_cand_hyp_scores, top_cand_hyp_pos = torch.topk(continuing_hyp_scores, k=live_hyp_num)
@@ -196,13 +196,13 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
         # tensor from the live "hypotheses id" (which gives the target potentiality size?)
         live_hyp_ids = torch.tensor(live_hyp_ids, dtype=torch.long, device=model.device)
 
-        # update the estimation todo
-        # for h in live_hyp_ids:
-        #     estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(data.src.data).fill_(h)], dim=1)
+        # update the estimation
+        for h in live_hyp_ids:
+            estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(data.src.data).fill_(h)], dim=1)
 
         # update the attention
-        mha_att_t = torch.unsqueeze(mha_att[live_hyp_ids], 1)
-        # model.decoder.layers[last_decoder_layer].self_attn.attn = mha_att_t
+        mha_att_t = torch.unsqueeze(torch.unsqueeze(torch.unsqueeze(mha_att[live_hyp_ids], -2), -1), -1)
+        model.decoder.layers[last_decoder_layer].self_attn.attn = mha_att_t
 
         # assign hypothesis with the new²
         hypotheses = new_hypotheses

@@ -39,26 +39,31 @@ def check_outputs(
 
         # retrieve tokens with itos elements
         src_tokens = vocab.untokenize_src(data_val_batch.src[0])
-        tgt_tokens = vocab.untokenize_tgt(data_val_batch.tgt[0])
+        reference = vocab.untokenize_tgt(data_val_batch.tgt[0])
 
         # pretty print source and target
         vocab.pretty_print_token("Source Text (Input)        : ", src_tokens)
-        vocab.pretty_print_token("Target Text (Ground Truth) : ", tgt_tokens)
+        vocab.pretty_print_token("Target Text (Ground Truth) : ", reference)
 
         # choose decoder style from config
         if int(learning_configuration["beam_search"]) == 1:
-            decoded = beam_search(model,
-                                  data_val_batch,
-                                  learning_configuration,
-                                  beam_size=int(learning_configuration["beam"]['beam-size']),
-                                  max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
 
-            # top_hypothesis = [hyps[0] for hyps in hypothesis]
+            hypothesis, estimation = beam_search(
+                model,
+                data_val_batch,
+                learning_configuration,
+                beam_size=int(learning_configuration["beam"]['beam-size']),
+                max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+
         else:
-            decoded, estimation = greedy_decode(model, data_val_batch, learning_configuration["max_padding"])
+
+            hypothesis, estimation = greedy_decode(
+                model,
+                data_val_batch,
+                learning_configuration["max_padding"])
 
         # pretty print the model output
-        pretty_print_hypothesis(decoded)
+        pretty_print_hypothesis(hypothesis)
 
         model_output = (
                 " ".join(
@@ -69,13 +74,12 @@ def check_outputs(
         print("Model Output               : " + model_output.replace("\n", ""))
 
         # run BLEU score
-        results[int(example_id)] = (data_val_batch, src_tokens, tgt_tokens, estimation, model_output)
-        # hypothesis = []
-        # mo = model_output.split(" ")
-        # for h in mo:
-        #     hypothesis.append(h)
+        results[int(example_id)] = (data_val_batch, src_tokens, reference, estimation, model_output)
 
-        bleu_score = compute_corpus_level_bleu_score(tgt_tokens, decoded)
+        reference = model.output_format_reference(reference)
+        hypothesis = model.output_format_hypothesis(hypothesis)
+
+        bleu_score = compute_corpus_level_bleu_score(reference, hypothesis)
         print(f"BLEU score : {bleu_score*100} ---")
 
     return results

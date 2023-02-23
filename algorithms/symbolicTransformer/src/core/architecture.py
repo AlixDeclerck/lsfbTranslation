@@ -3,6 +3,7 @@ import copy
 import torch
 import torch.nn as nn
 from torch.nn.functional import log_softmax
+from common.constant import Hypothesis, Tag
 
 
 """
@@ -32,6 +33,7 @@ class NMT(nn.Module):
 
         self.vocab = vocab
         self.d_model = config["dimension"]
+        self.output_max = config["output_max_words"]
 
         if config["model_device"] == "cuda":
             self.device = torch.device('cuda', 0)
@@ -69,6 +71,17 @@ class NMT(nn.Module):
 
     def decode(self, memory, src_mask, tgt, tgt_mask):
         return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
+
+    def output_format_reference(self, vec):
+        delta = self.output_max - len(vec)
+        res = vec + [str(Tag.BLANK.value)] * delta
+        return [res]
+
+    def output_format_hypothesis(self, vec):
+        delta = self.output_max - len(vec.value)
+        res_val = vec.value + [str(Tag.BLANK.value)] * delta
+        res = Hypothesis(value=res_val, score=vec.score)
+        return [res]
 
 
 """

@@ -28,7 +28,7 @@ def greedy_decode(model, data, max_len):
 
     # initialize
     estimation = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
-    hypotheses = [Hypothesis(value=[str(Tag.START.value)], score=0)]
+    hypotheses = [Hypothesis(value=[str(Tag.START.value)], score=None)]
 
     ok = True
     for i in range(max_len - 1):
@@ -47,19 +47,19 @@ def greedy_decode(model, data, max_len):
         # greedy selection of the most probable (next) word
         loss, next_token = torch.max(probabilities, dim=1)
         next_token = next_token.data[0]
-        next_word = model.vocab.untokenize_tgt([next_token])
+        next_word = model.vocab.tgt.get_itos()[next_token]
         if next_word[0] == str(Tag.STOP.value):
             ok = False
 
         if ok:
-            hypotheses.append(Hypothesis(value=next_word, score=loss.data.numpy()[0]))
+            hypotheses[0].value.append(next_word)
 
         # concatenate word to tensor
         estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(src.data).fill_(next_token)], dim=1)
 
-    hypotheses.append(Hypothesis(value=[str(Tag.STOP.value)], score=0))
+    hypotheses[0].value.append(str(Tag.STOP.value))
 
-    return hypotheses, estimation
+    return hypotheses[0], estimation
 
 
 """
@@ -82,7 +82,7 @@ def beam_search(model, data, config, beam_size, max_decoding_time_step):
     """
     was_training = model.training   # boolean that says if the model was trained
     model.eval()                    # evaluation mode
-    hypotheses = []                 # initialization
+    # hypotheses = []                 # initialization
 
     # adapt batch list to one sentence case
     # sentences = tqdm(test_data_src, desc='Decoding', file=sys.stdout)  # multiple
@@ -94,7 +94,7 @@ def beam_search(model, data, config, beam_size, max_decoding_time_step):
         for src_sent in sentences:
 
             # for each sentences
-            example_hypothesis = model_beam_search(
+            h, e = model_beam_search(
                 model,
                 src_sent,
                 config,
@@ -102,14 +102,14 @@ def beam_search(model, data, config, beam_size, max_decoding_time_step):
                 max_decoding_time_step=max_decoding_time_step)
 
             # update hypothesis
-            hypotheses.append(example_hypothesis)
+            # hypotheses.append(h)
 
     # update model status
     if was_training:
         model.train(was_training)
 
     # return Hypothesis object
-    return hypotheses
+    return h, e
 
 
 def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time_step: int = 70):
@@ -183,7 +183,7 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
 
             # append or complete hypotheses
             if hyp_word == Tag.STOP.value:
-                completed_hypotheses.append(Hypothesis(value=new_hyp_sent[1:-1], score=cand_new_hyp_score))
+                completed_hypotheses.append(Hypothesis(value=new_hyp_sent, score=cand_new_hyp_score))
             else:
                 new_hypotheses.append(new_hyp_sent)
                 live_hyp_ids.append(prev_hyp_id)
@@ -204,7 +204,7 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
         mha_att_t = torch.unsqueeze(torch.unsqueeze(torch.unsqueeze(mha_att[live_hyp_ids], -2), -1), -1)
         model.decoder.layers[last_decoder_layer].self_attn.attn = mha_att_t
 
-        # assign hypothesis with the new²
+        # assign hypothesis with the new
         hypotheses = new_hypotheses
 
         # create tensor from new hypothesis scores
@@ -212,13 +212,16 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
 
     # add hypothesis / score in Hypothesis format
     if len(completed_hypotheses) == 0:
-        completed_hypotheses.append(Hypothesis(value=hypotheses[0][1:], score=hyp_scores[0].item()))
+        completed_hypotheses.append(Hypothesis(value=hypotheses[0], score=hyp_scores[0].item()))
 
     # sort result
     completed_hypotheses.sort(key=lambda hyp: hyp.score, reverse=True)
+    top_hypothesis = completed_hypotheses[0]
+    top_estimation = []
+    for h in top_hypothesis.value:
+        top_estimation.append(model.vocab.tgt.get_itos().index(h))
 
-    # return Hypothesis object
-    return completed_hypotheses
+    return top_hypothesis, torch.unsqueeze(torch.tensor(top_estimation), 0)
 
 
 def beam_search_word2vec_id(model, test_data_src: List[List[str]], beam_size: int, max_decoding_time_step: int): # -> List[List[Hypothesis]]:
@@ -304,13 +307,13 @@ def model_beam_search_word2vec_id(model, src_sent: List[str], beam_size: int = 5
                                                                        src_encodings_att_linear.size(1),
                                                                        src_encodings_att_linear.size(2))
 
-        # retrieve a tensor made with target vocab
+        # predict the (beam sized) vector made with target vocab
         y_tm1 = torch.tensor([model.vocab.tgt[hyp[-1]] for hyp in hypotheses], dtype=torch.long, device=model.device)
 
-        # do an embedding from the tensor words (1x256)
+        # embed the prediction to a (beam size x 256) matrix
         y_t_embed = model.model_embeddings.target(y_tm1)
 
-        # concat on dim 2 the decoder inputs
+        # concat embedded prediction and attention to a (beam size x 512) matrix
         x = torch.cat([y_t_embed, att_tm1], dim=-1)
 
         # Compute one forward step of the LSTM decoder, including the attention computation.
@@ -326,7 +329,7 @@ def model_beam_search_word2vec_id(model, src_sent: List[str], beam_size: int = 5
         # inverse counter
         live_hyp_num = beam_size - len(completed_hypotheses)
 
-        # construct tensor from log probabilities of words
+        # construct (1, 5) x (5, 43280) matrix (beam size, target size)
         continuing_hyp_scores = (hyp_scores.unsqueeze(1).expand_as(log_p_t) + log_p_t).view(-1)
 
         # apply top k return score and word position

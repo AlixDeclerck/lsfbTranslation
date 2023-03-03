@@ -1,6 +1,17 @@
 import pandas
 import altair
+import scikitplot as skplt
+import torch
+# from sklearn.metrics import rfr
+import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+import numpy
+import math
 
 def mtx2df(m, max_row, max_col, row_tokens, col_tokens):
     """
@@ -88,3 +99,49 @@ def visualize_layer(model, layer, getter_fn, ntokens, row_tokens, col_tokens):
         # | charts[7]
         # layer + 1 due to 0-indexing
     ).properties(title="Layer %d" % (layer + 1))
+
+
+def plot_attention_maps(model, input_data, getter_fn, idx=0):
+
+    col = 4
+
+    # selected attention
+    attn_maps = getter_fn(model, 1)
+
+    if input_data is None:
+        attentions = numpy.arange(attn_maps[0][idx].shape[-1])
+    else:
+        attentions = torch.split(torch.squeeze(attn_maps, 0), 1, dim=1)
+        #  attentions = torch.squeeze(torch.split(torch.squeeze(attn_maps, 0), 1, dim=1)[1], 1)
+
+    att_size = len(attentions)
+    ln = int(math.ceil(att_size / col))
+
+    fig, ax = plt.subplots(ln, col)
+
+    for row in range(ln):
+        for column in range(col):
+            if (row+column) < att_size:
+                att = torch.squeeze(attentions[row+column], 1)
+                ax[row][column].imshow(att, origin='lower', vmin=0)
+                ax[row][column].set_xticks(list(range(att_size)))
+                # ax[row][column].set_xticklabels(input_data.tolist())
+                ax[row][column].set_yticks(list(range(att_size)))
+                # ax[row][column].set_yticklabels(input_data.tolist())
+                ax[row][column].set_title(f"Layer {row+1}, Head {column+1}")
+
+    fig.subplots_adjust(hspace=0.5)
+    plt.show()
+
+    # for attention in attentions:
+    #
+    #
+    # plot_size = (19, 9)
+    # plt.figure(figsize=plot_size)
+    #
+    # plt.title("title")
+    # plt.gca().set_xlabel("x")
+    # plt.gca().set_ylabel("y")
+    # plt.imshow(attentions, origin='lower', vmin=0)
+    # plt.gca().legend()
+    # plt.show()

@@ -1,6 +1,9 @@
 from enum import Enum
 from collections import namedtuple
 
+color1 = '#FF99EE'
+color2 = '#7799EE'
+
 dir_separator = "/"
 Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 

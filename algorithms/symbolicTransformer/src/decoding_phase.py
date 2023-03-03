@@ -16,7 +16,7 @@ from common.metrics.bleu import compute_corpus_level_bleu_score
 
 from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import NMT
-from algorithms.symbolicTransformer.src.tools.attention_visualization import visualize_layer, get_decoder_self
+from algorithms.symbolicTransformer.src.tools.attention_visualization import plot_attention_maps, visualize_layer, get_decoder_self
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.tools.helper import load_config
@@ -28,7 +28,7 @@ def check_outputs(
         dataloader_validation,
         n_examples=15):
 
-    results = [()] * n_examples
+    results = [()] * int(n_examples)
     for example_id in range(n_examples):
 
         print("\nExample %d ========\n" % example_id)
@@ -53,14 +53,16 @@ def check_outputs(
                 data_val_batch,
                 learning_configuration,
                 beam_size=int(learning_configuration["beam"]['beam-size']),
-                max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step']))
+                max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step'])
+            )
 
         else:
 
             hypothesis, estimation = greedy_decode(
                 model,
                 data_val_batch,
-                learning_configuration["max_padding"])
+                learning_configuration["max_padding"]
+            )
 
         # pretty print the model output
         pretty_print_hypothesis(hypothesis)
@@ -74,13 +76,13 @@ def check_outputs(
         print("Model Output               : " + model_output.replace("\n", ""))
 
         # run BLEU score
-        results[int(example_id)] = (data_val_batch, src_tokens, reference, estimation, model_output)
+        results[example_id] = (data_val_batch, src_tokens, reference, estimation, model_output)
 
         reference = model.output_format_reference(reference)
         hypothesis = model.output_format_hypothesis(hypothesis)
 
         bleu_score = compute_corpus_level_bleu_score(reference, hypothesis)
-        print(f"BLEU score : {bleu_score*100} ---")
+        print(f"BLEU score * 100 : {bleu_score*100} ---")
 
     return results
 
@@ -134,8 +136,10 @@ if __name__ == '__main__':
     model_learned, data_learned = run_model_example(config=learning_configuration)
     data_graph = data_learned[len(data_learned) - 1]
 
-    chart = visualize_layer(
-        model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
-    )
+    plot_attention_maps(model_learned, data_learned, get_decoder_self, idx=0)
 
-    chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})
+    # chart = visualize_layer(
+    #     model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
+    # )
+    #
+    # chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})

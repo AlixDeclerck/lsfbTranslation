@@ -34,6 +34,7 @@ Local or general scripts quoted here only for libraries compatibility purpose
 conda install -c conda-forge matplotlib
 conda install -c conda-forge pycryptodome
 conda install -c anaconda cryptography
+conda install -c conda-forge scikit-plot
 ```
 
 ### Symbolic transformer

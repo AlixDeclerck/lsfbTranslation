@@ -18,6 +18,7 @@ attributes.json
 objects.json
 relationships.json
 spacy_subtree.py
+with_camenbert.py
 other_phoenix
 
 # Configuration

@@ -1,5 +1,12 @@
 from enum import Enum
 
+class Display(Enum):
+    """
+    Asked functionality
+    """
+    SHOW_LIST = "list"
+    GLOSSES = "glosses"
+
 
 class Config(Enum):
     """
@@ -13,9 +20,10 @@ class WordType(Enum):
     """
     Configuration that is used to infer the glosses
     """
-    PUNCTUATION = "punct"
-    VERB = "VERB"
-    PERSON = "PROPN"
+    PUNCTUATION = "punct"   # deprel
+    VERB = "VERB"           # ?
+    PERSON = "PROPN"        # ?
+    DETERMINANT = "DET"     # upos
 
 
 class SceneItem(Enum):
@@ -30,70 +38,83 @@ class SceneItem(Enum):
 
 class WordTree:
     """
-    Provide some functionalities to walk the Tree
+    Provide some functionalities to walk annotated glosses list
     """
     def __init__(self):
-        self.nodes = []
+        self.items = []
 
     @property
     def size(self):
         return self.__len__
 
+    """
+    remove punctuation sentenza type and 
+    extract the head of a word to vocabulary
+    """
     def preprocessing(self, words):
+        updated_words = []
         for k, word in enumerate(words):
-            if word.deprel == WordType.PUNCTUATION.value:
-                words.pop(k)
+            if word.deprel == WordType.PUNCTUATION.value or word.upos == WordType.DETERMINANT.value or word.upos == "ADP": #https://universaldependencies.org/u/pos/ADP.html ADP should perhaps be filtered?
+                continue
             elif word.head == 0:
-                new_node = WordNode(words.pop(k))
-                new_node.initialize()
-                self.nodes.append(new_node)
+                new_item = WordItem(word)
+                new_item.initialize()
+                self.items.append(new_item)
+            else:
+                updated_words.append(word)
 
-        return words
+        return updated_words
 
-    def search_node(self, node_id):
-        for node in self.nodes:
-            if node.word.id == node_id:
-                return node
-        return None
-
-    def add_node(self, word):
-        parent_node = self.search_node(word.head)
-        if not (parent_node is None):
-            new_child = parent_node.add_child(word)
-            new_child.initialize()
-            self.nodes.append(new_child)
+    """
+    search if this word have a parent
+    if yes add the item to the parent return true
+    otherwise return false
+    """
+    def add_item(self, word):
+        parent_item = self.search_item(word.head)
+        if not (parent_item is None):
+            new_child = parent_item.add_child(word)
+            # new_child.initialize()
+            self.items.append(new_child)
             return True
         return False
 
-    def show(self, node, space):
-        if node.relevant:
-            print(space+node.word.text+" " +
-                  (str(node.event) if len(node.event) > 0 else "") +
-                  (str(node.classificator) if len(node.classificator) > 0 else "") +
-                  (str(node.subject) if len(node.subject) > 0 else "") +
-                  (str(node.action) if len(node.action) > 0 else ""))
+    """
+    show the indented list of linked glosses using head to
+    display as a tree (BFS walk)
+    """
+    def show(self, item, space):
+        if item.relevant:
+            print(space + item.word.text + " " +
+                  (str(item.event) if len(item.event) > 0 else "") +
+                  (str(item.classificator) if len(item.classificator) > 0 else "") +
+                  (str(item.subject) if len(item.subject) > 0 else "") +
+                  (str(item.action) if len(item.action) > 0 else ""))
 
         space = space+Config.DISPLAY.value
-        for child in node.children:
+        for child in item.children:
             self.show(child, space)
 
-    def gloss(self, node):
+    """
+    show the glosses
+    """
+    def gloss(self, item):
         res = ["", "", "", ""]
 
         for i in range(3):
             txt = ""
-            if node.relevant:
-                if i == 0 and len(node.event) > 0:
-                    txt = str(res[i] + node.word.text + " ")
+            if item.relevant:
+                if i == 0 and len(item.event) > 0:
+                    txt = str(res[i] + item.word.text + " ")
 
-                if i == 1 and len(node.classificator) > 0:
-                    txt = str(res[i] + node.word.text + " ")
+                if i == 1 and len(item.classificator) > 0:
+                    txt = str(res[i] + item.word.text + " ")
 
-                if i == 2 and len(node.subject) > 0:
-                    txt = str(res[i] + node.word.text + " ")
+                if i == 2 and len(item.subject) > 0:
+                    txt = str(res[i] + item.word.text + " ")
 
-                if i == 3 and len(node.action) > 0:
-                    txt = str(res[i] + node.word.text + " ")
+                if i == 3 and len(item.action) > 0:
+                    txt = str(res[i] + item.word.text + " ")
 
                 res[i] = txt
 
@@ -101,19 +122,28 @@ class WordTree:
             if res[i] != "" and res[i] != " ":
                 print(res[i])
 
-        for child in node.children:
+        for child in item.children:
             self.gloss(child)
 
+    """
+    search an item
+    """
+    def search_item(self, item_id):
+        for item in self.items:
+            if item.word.id == item_id:
+                return item
+        return None
+
     def __len__(self):
-        return len(self.nodes)
+        return len(self.items)
 
     def __contains__(self, item_id):
-        return [node.id for node in self.nodes if node.identifier is item_id]
+        return [item.id for item in self.items if item.identifier is item_id]
 
 
-class WordNode:
+class WordItem:
     """
-    A structure for each node received from a sentence
+    An object for each item received from a sentence
     Use Stanza's doc file
     Provide inner navigation
     """
@@ -130,7 +160,7 @@ class WordNode:
         self.unclassified = False
 
     def initialize(self):
-        if "DET" == self.word.upos or "PRON" == self.word.upos or self.word.lemma == "de" or self.word.lemma == "que" or "ADP" == self.word.upos:
+        if "PRON" == self.word.upos or "ADP" == self.word.upos:
             self.relevant = False
         elif "INTJ" == self.word.upos:
             self.action.append(" with "+str(self.parent.word.text))
@@ -148,18 +178,20 @@ class WordNode:
             self.unclassified = True
 
     def add_child(self, word):
-        node = WordNode(word)
-        node.parent = self
-        self.children.append(node)
-        # print(f"added node {node.word.text} to {self.word.text} .. ")
-        return node
+        item = WordItem(word)
+        item.parent = self
+        self.children.append(item)
+        print(f"added item {item.word.text} to {self.word.text} .. ")
+        return item
 
     def child_number(self):
         return len(self.children)
 
 
-# Hypothesis : only one phrase
 def load_sentenza(doc):
+    """
+    Load a (one phrase) sentence
+    """
     if len(doc.sentences) == 0:
         return Config.EMPTY_PHRASE
     else:
@@ -173,7 +205,7 @@ def load_sentenza(doc):
     while True:
         updated_words = words.copy()
         for k, word in enumerate(words):
-            if vocabulary.add_node(word):
+            if vocabulary.add_item(word):
                 updated_words.remove(word)
 
         words = updated_words

@@ -17,10 +17,6 @@ from docopt import docopt
 from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_phoenix_dataset
 
-
-# source : https://realpython.com/natural-language-processing-spacy-python/
-
-
 def introduction(txt):
     print("file from type "+str(type(txt)))
     print([token.text for token in nlp(txt)])

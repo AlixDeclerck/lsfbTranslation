@@ -12,7 +12,6 @@ from common.constant import dir_separator
 from docopt import docopt
 import os
 
-
 def populate_db_from_phoenix(subset_type):
     """
     add in database a new population based on a translated version of the phoenix
@@ -26,7 +25,7 @@ def populate_db_from_phoenix(subset_type):
     cpt = 0
     for i, ln in enumerate(fawkes.iterrows()):
         print(f"--- {mirrored_env} insertions --------------")
-        gloss = ln[1].gloss
+        gloss = ln[1].display_gloss_from_inner_tree
         text = ln[1].text
         print(f"[{i}] inserted in {mirrored_env} : {gloss} / {text}")
         sql = "INSERT INTO PARALLEL_ITEM (text, gloss, env_type) VALUES (%s, %s, %s)"
@@ -41,7 +40,6 @@ def populate_db_from_phoenix(subset_type):
     print(f"{cpt} row inserted")
     conn.close()
 
-
 # ----------------------------------------------------------
 
 
@@ -55,4 +53,3 @@ if __name__ == "__main__":
 
         # !! following line will insert the texts + glosses from provided files to selected database
         # populate_db_from_phoenix(env.value[0])
-

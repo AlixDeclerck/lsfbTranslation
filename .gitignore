@@ -20,6 +20,8 @@ relationships.json
 spacy_subtree.py
 with_camenbert.py
 other_phoenix
+comptes_url.txt
+Lafontaine-fables-1.pdf
 
 # Configuration
 .github

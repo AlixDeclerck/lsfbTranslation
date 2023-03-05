@@ -42,6 +42,8 @@ class WordTree:
     """
     def __init__(self):
         self.items = []
+        self.glosses = {"event": [], "classificator": [], "subject": [], "action": [], "unclassified": []}
+        self.display = []
 
     @property
     def size(self):
@@ -54,11 +56,11 @@ class WordTree:
     def preprocessing(self, words):
         updated_words = []
         for k, word in enumerate(words):
-            if word.deprel == WordType.PUNCTUATION.value or word.upos == WordType.DETERMINANT.value or word.upos == "ADP": #https://universaldependencies.org/u/pos/ADP.html ADP should perhaps be filtered?
+            if WordType.PUNCTUATION.value == word.deprel or word.upos in [WordType.DETERMINANT.value, "PRON", "ADP"]: #https://universaldependencies.org/u/pos/ADP.html ADP should perhaps be filtered?
                 continue
             elif word.head == 0:
                 new_item = WordItem(word)
-                new_item.initialize()
+                new_item.pre_init()
                 self.items.append(new_item)
             else:
                 updated_words.append(word)
@@ -74,56 +76,76 @@ class WordTree:
         parent_item = self.search_item(word.head)
         if not (parent_item is None):
             new_child = parent_item.add_child(word)
-            # new_child.initialize()
+            new_child.pre_init()
             self.items.append(new_child)
             return True
         return False
 
     """
     show the indented list of linked glosses using head to
-    display as a tree (BFS walk)
+    display as a BFS walk
     """
     def show(self, item, space):
-        if item.relevant:
-            print(space + item.word.text + " " +
-                  (str(item.event) if len(item.event) > 0 else "") +
-                  (str(item.classificator) if len(item.classificator) > 0 else "") +
-                  (str(item.subject) if len(item.subject) > 0 else "") +
-                  (str(item.action) if len(item.action) > 0 else ""))
+        print(space + item.word.text + " " +
+              (str(item.event) if len(item.event) > 0 else "") +
+              (str(item.classificator) if len(item.classificator) > 0 else "") +
+              (str(item.subject) if len(item.subject) > 0 else "") +
+              (str(item.action) if len(item.action) > 0 else ""))
 
         space = space+Config.DISPLAY.value
         for child in item.children:
             self.show(child, space)
 
+    def add_orphans(self):
+        for item in self.items:
+            if item.word.text not in self.display:
+                self.display.append(item.word.text)
+
+    def write(self):
+
+        # if item.tense is not None:
+        #     item.tense += self.display[0]
+
+        res = ""
+        for d in self.display:
+            res += d+" "
+
+        print(res.upper())
+
     """
     show the glosses
     """
-    def gloss(self, item):
+    def display_gloss_from_inner_tree(self, item):
         res = ["", "", "", ""]
 
         for i in range(3):
             txt = ""
-            if item.relevant:
-                if i == 0 and len(item.event) > 0:
-                    txt = str(res[i] + item.word.text + " ")
 
-                if i == 1 and len(item.classificator) > 0:
-                    txt = str(res[i] + item.word.text + " ")
+            if i == 0 and len(item.event) > 0:
+                txt = str(res[i] + item.word.text)
 
-                if i == 2 and len(item.subject) > 0:
-                    txt = str(res[i] + item.word.text + " ")
+            if i == 1 and len(item.classificator) > 0:
+                txt = str(res[i] + item.word.text)
+                # if "Neg" in item.classificator:
+                #     txt = str(res[i] + "[NEG]")
+                # else:
+                #     txt = str(res[i] + item.word.text)
 
-                if i == 3 and len(item.action) > 0:
-                    txt = str(res[i] + item.word.text + " ")
+            if i == 2 and len(item.subject) > 0:
+                txt = str(res[i] + item.word.text)
 
-                res[i] = txt
+            if i == 3 and len(item.action) > 0:
+                txt = str(res[i] + item.word.text)
+
+            res[i] = txt
 
         for i in range(3):
             if res[i] != "" and res[i] != " ":
-                print(res[i])
+                self.display.append(str(res[i]))
 
+        # recursive call
         for child in item.children:
-            self.gloss(child)
+            self.display_gloss_from_inner_tree(child)
 
     """
     search an item
@@ -146,6 +168,9 @@ class WordItem:
     An object for each item received from a sentence
     Use Stanza's doc file
     Provide inner navigation
+
+    Initialize provide a kind of prior knowledge based on step [1..4] to construct a visual scene
+
     """
 
     def __init__(self, word):
@@ -156,24 +181,42 @@ class WordItem:
         self.classificator = []
         self.subject = []
         self.action = []
-        self.relevant = True
         self.unclassified = False
+        self.tense = ""
 
-    def initialize(self):
-        if "PRON" == self.word.upos or "ADP" == self.word.upos:
-            self.relevant = False
-        elif "INTJ" == self.word.upos:
+    def pre_init(self):
+        # ACTION (4)
+        if self.word.upos in ["INTJ"]:
             self.action.append(" with "+str(self.parent.word.text))
-        elif WordType.VERB.value == self.word.upos or "AUX" == self.word.upos:
+
+        # ACTION (4)
+        elif self.word.upos in [WordType.VERB.value, "AUX"]:
             self.action.append(SceneItem.ACTION.value+" ")
-            if self.word.feats.split("|")[0].split("=")[1] == "Inf":
-                self.event.append("Inf")
-            else:
-                self.event.append(self.word.feats.split("|")[3].split("=")[1])
+
+            # EVENT (1)
+            details = self.word.feats.split("|")
+            for detail in details:
+                if detail.split("=")[0] == "Tense":
+                    t = detail.split("=")[1]
+                    self.tense += "["+str(t)+"]"
+
+        # SUBJECT (3)
         elif WordType.PERSON.value == self.word.upos:
             self.subject.append(WordType.PERSON.value+" ")
-        elif "NOUN" == self.word.upos or "NUM" == self.word.upos:
-            self.subject.append("NOUN")
+
+        elif self.word.upos in ["NOUN", "NUM", "ADJ"]:
+            self.subject.append(self.word.upos+" ")
+
+        # CLASSIFICATOR (2)
+        elif self.word.upos in ["CCONJ", "ADV"]:
+            self.classificator.append(self.word.upos+" ")
+            if self.word.feats is not None:
+                details = self.word.feats.split("|")
+                for detail in details:
+                    if detail.split("=")[0] == "Polarity":
+                        self.classificator.append(detail.split("=")[1])
+
+        # NO MATCHING
         else:
             self.unclassified = True
 
@@ -181,7 +224,7 @@ class WordItem:
         item = WordItem(word)
         item.parent = self
         self.children.append(item)
-        print(f"added item {item.word.text} to {self.word.text} .. ")
+        # print(f"added item {item.word.text} to {self.word.text} .. ")
         return item
 
     def child_number(self):

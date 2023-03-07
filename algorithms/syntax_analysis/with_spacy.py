@@ -7,11 +7,9 @@ Usage:
 """
 
 import os
-
 import spacy
 import textacy
 from collections import Counter
-
 from docopt import docopt
 
 from algorithms.data_loader.src.dal import EnvType

@@ -12,23 +12,6 @@ def load_sentenza(doc):
 
     vocabulary = WordTree()
 
-    # BY DEPENDENCIES
-    # words = vocabulary.preprocessing(phrase)
-    # original_word_size = len(words)
-    # i = 0
-    # while True:
-    #     updated_words = words.copy()
-    #     for k, word in enumerate(words):
-    #         if vocabulary.add_item(word):
-    #             updated_words.remove(word)
-    #
-    #     words = updated_words
-    #     if len(words) == 0 or i == original_word_size:
-    #         break
-    #
-    #     i += 1
-
-    # BY LIST
     words = vocabulary.list_preprocessing(phrase)
     for word in words:
         vocabulary.add_gloss_to_list(word)

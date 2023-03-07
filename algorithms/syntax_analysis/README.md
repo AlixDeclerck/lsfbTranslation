@@ -10,8 +10,8 @@ url = {https://nlp.stanford.edu/pubs/qi2020stanza.pdf},
 year = {2020}
 }
 
-- launcher.py
-- sentenza.py
+- with_stanza/launcher.py
+- with_stanza/*.py
 
 ## A second one using `spacy`
 
@@ -24,4 +24,6 @@ source : https://realpython.com/natural-language-processing-spacy-python/
 source : http://visualgenome.org/
 
 - visual_genome
+
+## datas
 

@@ -275,8 +275,8 @@ def model_beam_search_word2vec_id(model, src_sent: List[str], beam_size: int = 5
     src_encodings, dec_init_vec = model.encode(src_sentences_var, [len(src_sent)])
 
     # [attention adaptation : multi head / projection]
-    # src_encodings_att_linear = self.att_projection(src_encodings)
-    src_encodings_att_linear = model.att_multiHeaded(src_encodings)
+    src_encodings_att_linear = model.att_projection(src_encodings)
+    # src_encodings_att_linear = model.att_multiHeaded(src_encodings)
 
     # tuple of decoding vectors 1 x embedding
     h_tm1 = dec_init_vec

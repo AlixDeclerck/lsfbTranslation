@@ -49,11 +49,12 @@ class WordTree:
             self.glosses["action"].append(word)
 
             # tense
-            details = word.feats.split("|")
-            for detail in details:
-                if detail.split("=")[0] == "Tense":
-                    t = detail.split("=")[1]
-                    self.glosses["tense"].append("["+str(t)+"]")
+            if word.feats is not None:
+                details = word.feats.split("|")
+                for detail in details:
+                    if detail.split("=")[0] == "Tense":
+                        t = detail.split("=")[1]
+                        self.glosses["tense"].append("["+str(t)+"]")
 
         # EVENT (1)
         elif word.upos in ["INTJ"]:
@@ -74,11 +75,11 @@ class WordTree:
                         continue
 
                     # try to find parent (perhaps go to ancestor) in unclassified
-                    founded = False  # remove condition to ancestor it
-                    for u in self.glosses["unclassified"]:
-                        if u.head == t.id and "DET" != t.upos and not founded:
-                            res += str(u.text)+" "
-                            founded = True
+                    # founded = False  # remove condition to ancestor it
+                    # for u in self.glosses["unclassified"]:
+                    #     if u.head == t.id and "DET" != t.upos and not founded:
+                    #         res += str(u.text)+" "
+                    #         founded = True
 
                     # add the gloss to output string
                     res += str(t.text)+" "

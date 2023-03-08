@@ -27,5 +27,8 @@ source : http://visualgenome.org/
 
 ## datas
 
-source : https://touslescontes.com/biblio/auteur.php?iDauteur=5
+sources : 
 
+- https://touslescontes.com/biblio/auteur.php?iDauteur=5
+
+- https://fr.wikisource.org/wiki/Contes_de_Perrault_(%C3%A9d._1902)

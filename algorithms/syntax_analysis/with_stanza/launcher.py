@@ -2,7 +2,8 @@
 # http://stanza.run/
 
 import stanza
-from algorithms.syntax_analysis.with_stanza import sentenza, conte
+from algorithms.syntax_analysis.with_stanza import sentenza
+from data import conte
 
 # CONFIGURATION
 phrases = [
@@ -16,7 +17,7 @@ language = "Fr"
 stanza.download(language)
 nlp = stanza.Pipeline(language)
 
-for phrase in conte.cendrillon:
+for phrase in conte.the_prince_frog:
     print(phrase+" : \n")
 
     # create a WordTree

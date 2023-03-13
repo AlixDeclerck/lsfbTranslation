@@ -82,7 +82,8 @@ class WordTree:
                     #         founded = True
 
                     # add the gloss to output string
-                    res += str(t.text)+" "
+                    # res += str(t.text)+" "
+                    res += str(t.lemma)+" "
 
             if name == "action":
                 for t in text:

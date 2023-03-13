@@ -1,5 +1,5 @@
 from constant import Config
-from word_tree import WordTree
+from phrases import WordTree
 
 def load_sentenza(doc):
     """

@@ -3,7 +3,7 @@
 
 """
 Usage:
-    with_spacy.py train --app-path=<file>
+    introduction.py train --app-path=<file>
 """
 
 import os

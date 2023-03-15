@@ -17,7 +17,7 @@ language = "Fr"
 stanza.download(language)
 nlp = stanza.Pipeline(language)
 
-for phrase in conte.the_prince_frog:
+for phrase in conte.cinderella:
     print(phrase+" : \n")
 
     # create a WordTree

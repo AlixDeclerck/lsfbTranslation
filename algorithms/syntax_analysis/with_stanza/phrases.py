@@ -1,6 +1,6 @@
 from constant import WordType
 
-class WordTree:
+class Phrase:
     """
     Provide some functionalities to walk annotated glosses list
     """

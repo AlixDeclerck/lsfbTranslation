@@ -1,5 +1,5 @@
 from constant import Config
-from phrases import WordTree
+from phrases import Phrase
 
 def load_sentenza(doc):
     """
@@ -10,7 +10,7 @@ def load_sentenza(doc):
     else:
         phrase = doc.sentences[0].words
 
-    vocabulary = WordTree()
+    vocabulary = Phrase()
 
     words = vocabulary.list_preprocessing(phrase)
     for word in words:

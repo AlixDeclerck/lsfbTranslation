@@ -107,6 +107,10 @@ def part_of_speech(txt):
     EXPLANATION: {spacy.explain(token.tag_)}"""
         )
 
+def part_of_speech_all(txt):
+    for token in txt:
+        print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
+              token.shape_, token.is_alpha, token.is_stop)
 
 def pos_categories(txt):
     nouns = []

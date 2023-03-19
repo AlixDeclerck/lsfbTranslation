@@ -6,12 +6,11 @@ Usage:
     launcher.py parsing --app-path=<file>
 """
 
-# todo: remove accents : https://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-normalize-in-a-python-unicode-string
-
 import os
 import spacy
 import textacy
 from docopt import docopt
+import unicodedata
 from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_mysql_datas_from
 
@@ -138,11 +137,13 @@ class SpacyPhrase:
     create a sentence from tokens and print it
     """
     def write(self):
-        res = ""
+        res = "->"
         for t in self.tokens:
             res += " "+t.text
 
-        print(res)
+        print(self.raw_txt)
+        print(f"".join([x for x in unicodedata.normalize("NFKD", res).upper() if not unicodedata.combining(x)]))
+        print("-----")
 
 
 # --------------------------------------------------------------------------

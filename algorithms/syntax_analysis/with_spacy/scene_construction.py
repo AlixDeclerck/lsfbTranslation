@@ -1,3 +1,8 @@
+tense_morph = "Tense"
+negation_morph = "Neg"
+polarity_morph = "Polarity"
+negation_c1 = "PAS"
+negation_c2 = "PLUS"
 
 class SubPhrase:
     def __init__(self):
@@ -11,11 +16,11 @@ class SubPhrase:
 
     def add_word(self, token):
         if token.pos_ in ["AUX"]:
-            self.tense.append(token.morph.get("Tense")[0])
+            self.tense.append(token.morph.get(tense_morph))
 
         if token.pos_ in ["ADV", "NUM"]:  # EVENT ("ADP", ?)
-            if "Neg" in token.morph.get("Polarity"):
-                self.event.append("PAS")
+            if negation_morph in token.morph.get(polarity_morph):
+                self.event.append(negation_c1)
             else:
                 self.event.append(token)
 
@@ -27,7 +32,7 @@ class SubPhrase:
 
         if token.pos_ in ["VERB"]:  # ACTION
             self.action.append(token.lemma_)
-            self.tense.append(token.morph.get("Tense")[0])
+            self.tense.append(token.morph.get(tense_morph))
 
         else:  # UNCLASSIFIED
             self.unclassified.append(token)

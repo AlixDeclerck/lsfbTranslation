@@ -4,7 +4,7 @@
 *.iml
 *.pem
 __init__.py
-other_algorithms
+other_*
 config_local.txt
 outputs
 output
@@ -17,9 +17,6 @@ bdd_sqlite.db
 attributes.json
 objects.json
 relationships.json
-other_phoenix
-comptes_url.txt
-Lafontaine-fables-1.pdf
 chkpt_*
 tmp.py
 

@@ -11,6 +11,7 @@ import spacy
 import textacy
 from docopt import docopt
 from phrases import SpacyPhrase
+from data import conte
 
 from algorithms.data_loader.src.dal import EnvType
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_mysql_datas_from
@@ -34,7 +35,7 @@ application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separ
 def main():
     # learning_corpus = retrieve_mysql_datas_from(EnvType.DEV, application_path)
 
-    for txt in txt_samples:
+    for txt in conte.cinderella:
         phrases = SpacyPhrase(nlp(txt))
         phrases.preprocessing()
         phrases.handle_scenes()

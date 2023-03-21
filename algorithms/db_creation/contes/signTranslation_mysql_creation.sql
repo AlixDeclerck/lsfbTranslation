@@ -40,22 +40,22 @@ INSERT INTO STORY (file_name, title, id_author) VALUES (
                                                 1
                                             );
 
-INSERT INTO STORY (file_name) VALUES ("003_marie");
-INSERT INTO STORY (file_name) VALUES ("004_fear");
-INSERT INTO STORY (file_name) VALUES ("005_wolf_and_lambs");
-INSERT INTO STORY (file_name) VALUES ("006_thrusty_john");
-INSERT INTO STORY (file_name) VALUES ("008_wonderfull_musicien");
-INSERT INTO STORY (file_name) VALUES ("009_12_brothers");
-INSERT INTO STORY (file_name) VALUES ("010_ragamuffins");
-INSERT INTO STORY (file_name) VALUES ("011_brother_and_sister");
-INSERT INTO STORY (file_name) VALUES ("012_rapunzel");
-INSERT INTO STORY (file_name) VALUES ("013_three_little_men");
-INSERT INTO STORY (file_name) VALUES ("014_tree_spinners");
-INSERT INTO STORY (file_name) VALUES ("015_hansel_and_gretel");
-INSERT INTO STORY (file_name) VALUES ("016_three_snakes_leaves");
-INSERT INTO STORY (file_name) VALUES ("017_white_snakes");
-INSERT INTO STORY (file_name) VALUES ("021_cinderella");
-INSERT INTO STORY (file_name) VALUES ("026_red_hood");
+INSERT INTO STORY (file_name, id_author) VALUES ("003_marie",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("004_fear",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("005_wolf_and_lambs",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("006_thrusty_john",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("008_wonderfull_musicien",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("009_12_brothers",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("010_ragamuffins",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("011_brother_and_sister",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("012_rapunzel",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("013_three_little_men",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("014_tree_spinners",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("015_hansel_and_gretel",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("016_three_snakes_leaves",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("017_white_snakes",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("021_cinderella",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("026_red_hood",1);
 
 CREATE TABLE PARALLEL_ITEM (
    itemId int NOT NULL AUTO_INCREMENT,

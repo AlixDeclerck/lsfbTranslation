@@ -24,6 +24,16 @@ def get_phoenix(path):
     phoenix.columns = ["gloss", "text"]
     return phoenix.filter(["text", "gloss"])
 
+def get_conte(path):
+    """
+    get a conte csv content filtering by column name
+    :param path: csv file path
+    :return: conte dataframe
+    """
+    conte = pandas.read_csv(path, sep=',', delimiter=None, header='infer', names=None, index_col=None, na_values=str, keep_default_na=False)
+    conte.columns = ["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN"]
+    # return conte.filter(["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN"])
+    return conte
 
 def retrieve_mysql_datas_from(subset_type, application_path):
     res = []

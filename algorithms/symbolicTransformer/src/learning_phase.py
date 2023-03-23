@@ -10,7 +10,7 @@ import os
 
 from common.constant import dir_separator
 from docopt import docopt
-from algorithms.data_loader.src.dal import EnvType
+from algorithms.data_loader.src.phoenix_loader import EnvType
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.tools.helper import load_config
 from algorithms.symbolicTransformer.src.core.training import load_or_train_model
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     config["application_path"] = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator
 
     # PREPROCESSING
-    vocab = Vocab(load_tokenizers(), config, EnvType.TRAIN)
+    vocab = Vocab(load_tokenizers(), config, EnvType.TRAINING)
 
     # TRAINING
     trained_model = load_or_train_model(vocab, config)

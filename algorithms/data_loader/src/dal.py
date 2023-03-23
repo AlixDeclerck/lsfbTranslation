@@ -1,25 +1,16 @@
-from enum import Enum
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Usage:
+    dal.py testing --app-path=<file>
+"""
+
 import mysql.connector
 import pandas
-
-
-class EnvType(Enum):
-    """
-    Types of environments
-    """
-    TRAIN = 1, "train"
-    DEV = 2, "dev"
-    TEST = 3, "test"
-
-
-def env_provider(subset_type):
-    for env in EnvType:
-        if env.value[0] == subset_type:
-            return env.value[1]
-        elif env.value[1] == subset_type:
-            return env.value[0]
-
-    return None
+from docopt import docopt
+import os
+from common.constant import dir_separator
 
 
 def data_provider(db, application_path):
@@ -27,6 +18,7 @@ def data_provider(db, application_path):
     A persisted data provider
     @param db: db_dev or db_test
     @return: mysql connector
+    :param application_path:
     """
     local = True
     address = "localhost"
@@ -65,57 +57,29 @@ def select_mysql_datas_from(subset_type, conn):
     return query_result
 
 
-# --------------------------------------------- tests purposes ------------
-
-
-def query_strange(conn):  # todo
+def display_envs(conn):
     query_result = []
-    query = "select p.text, p.gloss, e.type from PARALLEL_ITEM as p inner join ENVIRONMENT as e on p.env_type = e.envId where p.text LIKE '%august%' ;"
-
+    p_sources = "*"
+    query = "select "+p_sources+" from ENVIRONMENT;"
     cur = conn.cursor()
     cur.execute(query)
 
     for x in cur.fetchall():
-        query_result.append({"text": x[0], "gloss": x[1]})
+        query_result.append({"envs": x[0]})
 
     conn.close()
-
-    return query_result
-
-
-def insert_row(subset_type, conn, text, gloss):
-    env = env_provider(subset_type)
-
-    sql = "INSERT INTO PARALLEL_ITEM (text, gloss, env_type) VALUES (%s, %s, %s)"
-    val = (text, gloss, env)
-
-    cur = conn.cursor()
-    cur.execute(sql, val)
-
-    conn.commit()
-
-
-def delete_row(conn, text):
-    val = [text]
-    sql = "DELETE FROM PARALLEL_ITEM WHERE text = %s"
-    # sql = "DELETE FROM PARALLEL_ITEM WHERE %s LIKE text;"
-    cur = conn.cursor()
-    cur.execute(sql, val)
-
-    conn.commit()
+    print(query_result)
 
 
 # --------------------------------------------- Execution ----- -----------
-
 
 CONFIG = "algorithms/data_loader/config.csv"                # generic information included in the project
 CONFIG_LOCAL = "algorithms/data_loader/config_local.txt"    # connection information specific to your local configuration
 
 
 if __name__ == "__main__":
-    txt_insert = "text_content"
-    gloss_insert = "glosses_content"
 
-    print(select_mysql_datas_from("train", data_provider("db_dev")))
-    # insert_row("train", data_provider("db_dev"), txt_insert, gloss_insert)
-    # delete_row(data_provider(), txt_insert)
+    args = docopt(__doc__)
+    application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
+
+    display_envs(data_provider("db_dev", application_path))

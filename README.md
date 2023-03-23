@@ -24,6 +24,7 @@ The `database creation folder` is destined to database sql creation scripts
 
 ```
 python -m pip install mysql-connector-python
+conda install -c anaconda openpyxl
 ```
 
 ### Other algorith

@@ -3,15 +3,19 @@ DROP DATABASE signTranslation;
 CREATE DATABASE signTranslation;
 use signTranslation;
 
+-- SEVERAL ELEMENTS (FOLDER, ENUM) ARE USING THE TEST, TRAINING AND VALIDATION NAMES
+-- ID SHOULD NOT BE CHANGED
 CREATE TABLE ENVIRONMENT (
     type varchar(8) NOT NULL,
     PRIMARY KEY (type)
 );
 
 INSERT INTO ENVIRONMENT (type) VALUES ("train");
-INSERT INTO ENVIRONMENT (type) VALUES ("dev");
 INSERT INTO ENVIRONMENT (type) VALUES ("test");
+INSERT INTO ENVIRONMENT (type) VALUES ("val");
 
+-- AUTHOR GIVE A (SIGNING) STYLE
+-- AUTHOR NAME CAN BE CHANGED
 CREATE TABLE AUTHOR (
     authorId int NOT NULL AUTO_INCREMENT,
     name varchar(32) UNIQUE NOT NULL,
@@ -20,6 +24,8 @@ CREATE TABLE AUTHOR (
 
 INSERT INTO AUTHOR (name) VALUES ("Les Frères Grimm");
 
+-- STORIES
+-- FILE NAME (ID) SHOULD NOT BE CHANGED (because of the files themselves)
 CREATE TABLE STORY (
     file_name varchar(48) NOT NULL,
     title varchar(128),
@@ -57,13 +63,14 @@ INSERT INTO STORY (file_name, id_author) VALUES ("017_white_snakes",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("021_cinderella",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("026_red_hood",1);
 
+-- PARALLELS
 CREATE TABLE PARALLEL_ITEM (
    itemId int NOT NULL AUTO_INCREMENT,
    story_name varchar(48),
    FR MEDIUMTEXT NOT NULL,
    GLOSS_LSF varchar(512),
    GENERATED_LSF varchar(512),
-   TENSE varchar(32),
+   TENSE varchar(128),
    GLOSS_LSFB varchar(512),
    EN MEDIUMTEXT,
    env_type varchar(8) NOT NULL,
@@ -72,3 +79,8 @@ CREATE TABLE PARALLEL_ITEM (
    FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
 );
 
+-- OTHER REQUESTS
+-- DROP TABLE PARALLEL_ITEM
+-- DELETE FROM PARALLEL_ITEM WHERE story_name = "001_prince_frog"
+-- SELECT * FROM PARALLEL_ITEM
+-- ALTER TABLE PARALLEL_ITEM MODIFY COLUMN TENSE VARCHAR(128);

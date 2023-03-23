@@ -3,7 +3,7 @@
 
 import stanza
 from algorithms.syntax_analysis.with_stanza import sentenza
-from data import conte
+from data.conte import samples
 
 # CONFIGURATION
 phrases = [
@@ -17,7 +17,7 @@ language = "Fr"
 stanza.download(language)
 nlp = stanza.Pipeline(language)
 
-for phrase in conte.cinderella:
+for phrase in samples.cinderella:
     print(phrase+" : \n")
 
     # create a WordTree

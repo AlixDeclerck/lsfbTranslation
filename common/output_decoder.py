@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-from common.constant import Hypothesis, start_symbol, Tag
+from common.constant import Hypothesis, Tag
 
 
 def subsequent_mask(size):
@@ -27,8 +27,8 @@ def greedy_decode(model, data, max_len):
     encoder_output = model.encode(src, src_mask)
 
     # initialize
-    estimation = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
-    hypotheses = [Hypothesis(value=[str(Tag.START.value)], score=None)]
+    estimation = torch.zeros(1, 1).fill_(Tag.START.value[1]).type_as(src.data)
+    hypotheses = [Hypothesis(value=[str(Tag.START.value[0])], score=None)]
 
     ok = True
     for i in range(max_len - 1):
@@ -48,7 +48,7 @@ def greedy_decode(model, data, max_len):
         loss, next_token = torch.max(probabilities, dim=1)
         next_token = next_token.data[0]
         next_word = model.vocab.tgt.get_itos()[next_token]
-        if next_word[0] == str(Tag.STOP.value):
+        if next_word[0] == str(Tag.STOP.value[1]):
             ok = False
 
         if ok:
@@ -57,7 +57,7 @@ def greedy_decode(model, data, max_len):
         # concatenate word to tensor
         estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(src.data).fill_(next_token)], dim=1)
 
-    hypotheses[0].value.append(str(Tag.STOP.value))
+    hypotheses[0].value.append(str(Tag.STOP.value[1]))
 
     return hypotheses[0], estimation
 
@@ -129,8 +129,8 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
     """
 
     # initializations
-    estimation = torch.zeros(1, 1).fill_(start_symbol).type_as(data.src.data)
-    hypotheses = [[Tag.START.value]]
+    estimation = torch.zeros(1, 1).fill_(Tag.START.value[0]).type_as(data.src.data)
+    hypotheses = [[Tag.START.value[1]]]
     hyp_scores = torch.ones(len(hypotheses), dtype=torch.float, device=model.device)
     completed_hypotheses = []
     last_decoder_layer = int(config["layers"]) - 1
@@ -182,7 +182,7 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
             new_hyp_sent = hypotheses[int(prev_hyp_id)] + [hyp_word]
 
             # append or complete hypotheses
-            if hyp_word == Tag.STOP.value:
+            if hyp_word == Tag.STOP.value[1]:
                 completed_hypotheses.append(Hypothesis(value=new_hyp_sent, score=cand_new_hyp_score))
             else:
                 new_hypotheses.append(new_hyp_sent)

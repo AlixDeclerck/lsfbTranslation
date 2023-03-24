@@ -65,7 +65,7 @@ def train_worker(
     print(f"Train worker process using GPU: {gpu} for training", flush=True)
     torch.cuda.set_device(gpu)
 
-    pad_idx = vocab.tgt[Tag.BLANK.value]
+    pad_idx = vocab.tgt[Tag.BLANK.value[0]]
     d_model = 512
     model = NMT(vocab, config)
     model.cuda(gpu)
@@ -91,6 +91,7 @@ def train_worker(
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
         gpu,
+        target_mode=config["target_mode"],
         application_path=config["application_path"],
         batch_size=config["batch_size"] // ngpus_per_node,
         max_padding=config["max_padding"],

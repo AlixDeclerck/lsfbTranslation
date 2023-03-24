@@ -84,3 +84,4 @@ CREATE TABLE PARALLEL_ITEM (
 -- DELETE FROM PARALLEL_ITEM WHERE story_name = "001_prince_frog"
 -- SELECT * FROM PARALLEL_ITEM
 -- ALTER TABLE PARALLEL_ITEM MODIFY COLUMN TENSE VARCHAR(128);
+-- select * from PARALLEL_ITEM s where s.FR like "%Raiponce,%" and story_name = "012_rapunzel";

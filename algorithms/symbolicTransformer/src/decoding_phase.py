@@ -10,11 +10,11 @@ import torch
 from docopt import docopt
 import os
 
-from common.constant import pretty_print_hypothesis, Tag, pad_idx, dir_separator
+from common.constant import pretty_print_hypothesis, Tag, dir_separator
 from common.output_decoder import greedy_decode, beam_search
 from common.metrics.bleu import compute_corpus_level_bleu_score
 
-from algorithms.data_loader.src.dal import EnvType
+from common.constant import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import NMT
 from algorithms.symbolicTransformer.src.tools.attention_visualization import plot_attention_maps, visualize_layer, get_decoder_self
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
@@ -69,7 +69,7 @@ def check_outputs(
 
         model_output = (
                 " ".join(
-                    [vocab.tgt.get_itos()[x] for x in estimation[0] if x != pad_idx]
+                    [vocab.tgt.get_itos()[x] for x in estimation[0] if x != Tag.BLANK.value[1]]
                 ).split(str(Tag.STOP.value), 1)[0]
                 + str(Tag.STOP.value)
         )
@@ -95,7 +95,8 @@ def run_model_example(config, n_examples=5):
     _, valid_dataloader = create_dataloaders(
         vocab,
         torch.device("cpu"),
-        application_path,
+        target_mode=config["target_mode"],
+        application_path=application_path,
         batch_size=1,
         is_distributed=False
     )

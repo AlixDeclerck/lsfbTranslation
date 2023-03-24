@@ -1,3 +1,4 @@
+target_mode:                  "EN"                                  # "EN" or "GLOSS"
 batch_size:                   16                                  # originally 32
 distributed:                  False
 num_epochs:                   40                                  # originally 8

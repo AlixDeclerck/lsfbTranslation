@@ -10,7 +10,7 @@ import os
 
 from common.constant import dir_separator
 from docopt import docopt
-from algorithms.data_loader.src.phoenix_loader import EnvType
+from common.constant import EnvType
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.tools.helper import load_config
 from algorithms.symbolicTransformer.src.core.training import load_or_train_model

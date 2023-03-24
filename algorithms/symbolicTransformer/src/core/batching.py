@@ -1,16 +1,16 @@
 import torch
+import pandas
 
 from torch.nn.functional import pad
 from torchtext.data.functional import to_map_style_dataset
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
-from algorithms.symbolicTransformer.src.tools.helper import tokenize, split_list
-from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_phoenix_dataset
+from algorithms.symbolicTransformer.src.tools.helper import split_list
+from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_conte_dataset
 from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
 from common.output_decoder import subsequent_mask
-from algorithms.data_loader.src.dal import EnvType
-from common.constant import pad_idx
+from common.constant import EnvType, Tag, TargetMode
 
 
 def collate_batch(
@@ -40,7 +40,7 @@ def collate_batch(
             [
                 bs_id,
                 torch.tensor(
-                    vocab.tgt(vocab.tokenize_fr(_tgt)),
+                    vocab.tgt(vocab.tokenize_en(_tgt)),
                     dtype=torch.int64,
                     device=device,
                 ),
@@ -76,13 +76,12 @@ def collate_batch(
 def create_dataloaders(
         vocab,
         device,
+        target_mode,
         application_path,
         batch_size=12000,
         max_padding=128,
-        is_distributed=True):
-
-    # def tokenize_fr(text):
-    #     return tokenize(text, vocab.french_tokens)
+        is_distributed=True
+        ):
 
     def collate_fn(batch):
         return collate_batch(
@@ -90,11 +89,18 @@ def create_dataloaders(
             vocab,
             device,
             max_padding=max_padding,
-            pad_id=vocab.src.get_stoi()["<blank>"],
+            pad_id=vocab.src.get_stoi()[Tag.BLANK.value[0]],
         )
 
     # Dataset that will do the batches
-    full = retrieve_phoenix_dataset(EnvType.TEST, application_path)
+    complete = retrieve_conte_dataset(EnvType.VALIDATION.value[0], application_path)
+
+    # sub-select from target mode
+    if TargetMode.EN.value == target_mode:
+        full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "EN"]].to_numpy()
+    else:
+        full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "gloss"]].to_numpy()
+
     train_iter, tmp_iter = split_list(full)
 
     test_iter, valid_iter = split_list(tmp_iter)
@@ -132,12 +138,12 @@ class Batch:
 
     def __init__(self, src, tgt=None):
         self.src = src
-        self.src_mask = (src != int(pad_idx)).unsqueeze(-2)
+        self.src_mask = (src != int(Tag.BLANK.value[1])).unsqueeze(-2)
         if tgt is not None:
             self.tgt = tgt[:, :-1]
             self.tgt_y = tgt[:, 1:]
-            self.tgt_mask = self.make_std_mask(self.tgt, int(pad_idx))
-            self.n_tokens = (self.tgt_y != int(pad_idx)).data.sum()
+            self.tgt_mask = self.make_std_mask(self.tgt, int(Tag.BLANK.value[1]))
+            self.n_tokens = (self.tgt_y != int(Tag.BLANK.value[1])).data.sum()
 
     @staticmethod
     def make_std_mask(tgt, pad):

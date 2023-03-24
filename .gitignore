@@ -25,6 +25,7 @@ tmp.py
 
 #tmp -> phoenix.train.corpus.csv
 phoenix.train.corpus_tmp.csv
+attention_is_all_you_need
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

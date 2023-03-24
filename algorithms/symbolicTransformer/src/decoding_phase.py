@@ -16,7 +16,7 @@ from common.metrics.bleu import compute_corpus_level_bleu_score
 
 from common.constant import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import NMT
-from algorithms.symbolicTransformer.src.tools.attention_visualization import plot_attention_maps, visualize_layer, get_decoder_self
+from algorithms.symbolicTransformer.src.tools.attention_visualization import plot_attention_maps, get_decoder_self
 from algorithms.symbolicTransformer.src.core.data_preparation import load_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.tools.helper import load_config
@@ -89,7 +89,7 @@ def check_outputs(
 
 def run_model_example(config, n_examples=5):
 
-    vocab = Vocab(load_tokenizers(), config, EnvType.DEV)
+    vocab = Vocab(load_tokenizers(), config, EnvType.VALIDATION)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(

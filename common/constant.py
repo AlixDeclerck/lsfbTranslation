@@ -12,11 +12,6 @@ Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 XLSX_PATH = "data/other_conte/xlsx/"
 CSV_PATH = "data/other_conte/csv/"
 
-# todo: remove that :
-# start_symbol = 0
-# stop_symbol = 1
-# pad_idx = 2
-
 def pretty_print_hypothesis(hypothesis):
     res = str(hypothesis.value[0])+" "
     for i in range(1, len(hypothesis.value)):

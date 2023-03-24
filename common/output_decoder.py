@@ -129,8 +129,8 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
     """
 
     # initializations
-    estimation = torch.zeros(1, 1).fill_(Tag.START.value[0]).type_as(data.src.data)
-    hypotheses = [[Tag.START.value[1]]]
+    estimation = torch.zeros(1, 1).fill_(Tag.START.value[1]).type_as(data.src.data)
+    hypotheses = [[Tag.START.value[0]]]
     hyp_scores = torch.ones(len(hypotheses), dtype=torch.float, device=model.device)
     completed_hypotheses = []
     last_decoder_layer = int(config["layers"]) - 1
@@ -241,7 +241,7 @@ def beam_search_word2vec_id(model, test_data_src: List[List[str]], beam_size: in
         for src_sent in tqdm(test_data_src, desc='Decoding', file=sys.stdout):
 
             # for each sentences
-            example_hypothesis = model_beam_search_word2vec_id(
+            example_hypothesis = model_beam_search_seq2seq(
                 model,
                 src_sent,
                 beam_size=beam_size,
@@ -258,7 +258,7 @@ def beam_search_word2vec_id(model, test_data_src: List[List[str]], beam_size: in
     return hypotheses
 
 
-def model_beam_search_word2vec_id(model, src_sent: List[str], beam_size: int = 5, max_decoding_time_step: int = 70):  # -> List[Hypothesis]:
+def model_beam_search_seq2seq(model, src_sent: List[str], beam_size: int = 5, max_decoding_time_step: int = 70):  # -> List[Hypothesis]:
     """ Given a single source sentence, perform beam search, yielding translations in the target language.
     @param model : learned model
     @param src_sent : a single source sentence (words)

@@ -3,7 +3,7 @@
 
 """
 Usage:
-    conte_loader.py train --app-path=<file>
+    conte_loader.py --app-path=<file>
 """
 
 import pandas
@@ -26,21 +26,20 @@ class ConteHandler:
         """
         files_source = self.retrieve_xlsx_url()
         files_destination = [x.replace(".xlsx", ".csv") for x in files_source]
-
         for i in range(len(files_source)):
             source_path = self.stakeholders_dir+files_source[i]
             destination_path = self.learning_dir+files_destination[i]
             df = pandas.DataFrame(pandas.read_excel(source_path))
             df.to_csv(destination_path, index=False, header=True)
 
-    def populate_db(self, stories):
+    def populate_db(self):
         """
         add in database (db_creation/contes)
         a new population of conte from csv files
         """
         conn = db.data_provider(SELECTED_DB, self.application_path)
         cpt = 0
-        for s in stories:
+        for s in self.retrieve_csv_contes():
 
             story_name = s.removesuffix(".csv")
             conte = ff.get_conte(self.learning_dir + s)
@@ -72,12 +71,24 @@ class ConteHandler:
         print(f"{cpt} row inserted")
         conn.close()
 
+    def retrieve_csv_contes(self):
+        """
+        :return: list of csv conte
+        """
+        actual_path = os.getcwd()
+        content = []
+        if os.path.exists(self.learning_dir):
+            os.chdir(self.learning_dir)
+            content = os.listdir()
+            os.chdir(actual_path)
+
+        return content
+
     def print_xlsx_data(self):
         """
         To check files in the xlsx source folder
         """
         actual_path = os.getcwd()
-
         if os.path.exists(self.stakeholders_dir) and os.path.exists(self.learning_dir):
             os.chdir(self.stakeholders_dir)
             content = os.listdir()
@@ -90,24 +101,9 @@ class ConteHandler:
         :return: list with xlsx files url
         """
         actual_path = os.getcwd()
-
         content = []
         if os.path.exists(self.stakeholders_dir) and os.path.exists(self.learning_dir):
             os.chdir(self.stakeholders_dir)
-            content = os.listdir()
-            os.chdir(actual_path)
-
-        return content
-
-    def retrieve_csv_contes(self):
-        """
-        :return: list of csv conte
-        """
-        actual_path = os.getcwd()
-
-        content = []
-        if os.path.exists(self.learning_dir):
-            os.chdir(self.learning_dir)
             content = os.listdir()
             os.chdir(actual_path)
 
@@ -121,9 +117,11 @@ if __name__ == "__main__":
     args = docopt(__doc__)
     contes = ConteHandler(os.environ['HOME']+dir_separator+args['--app-path']+dir_separator)
 
+    # list the cvs in conte directory
+    print(contes.retrieve_csv_contes())
+
     # uncomment to create csv files from the xlsx source folder
     # contes.convert()
 
     # uncomment to add csv population to database (3346 row inserted)
-    contes.populate_db(contes.retrieve_csv_contes())
-
+    # contes.populate_db()

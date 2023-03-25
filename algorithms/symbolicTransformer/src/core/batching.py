@@ -93,7 +93,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    complete = retrieve_conte_dataset(EnvType.VALIDATION.value[0], application_path)
+    complete = retrieve_conte_dataset(EnvType.TRAINING.value, application_path)
 
     # sub-select from target mode
     if architecture_dev_mode:

@@ -19,15 +19,14 @@ def get_conte(path):
     :return: conte dataframe
     """
     conte = pandas.read_csv(path, sep=',', delimiter=None, header='infer', names=None, index_col=None, na_values=str, keep_default_na=False)
-    conte.columns = ["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN"]
-    # return conte.filter(["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN"])
-    return conte
+    conte.columns = ["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM", "SECOND_FR", "SECOND_EN"]
+    return conte.filter(["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM"])
 
 def retrieve_mysql_datas_from(subset_type, application_path):
     """
     get a dictionary from dataset : text_fr, text_en, gloss_lsf
     :param subset_type: selected environment
-    :param application_path: the application path to retrieve database informations
+    :param application_path: the application path to retrieve database information
     :return: dictionary
     """
     res = []

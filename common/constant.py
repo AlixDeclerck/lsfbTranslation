@@ -5,12 +5,13 @@ color1 = '#FF99EE'
 color2 = '#7799EE'
 
 SELECTED_DB = "db_dev"
+SPLIT_FACTOR = 4
 
 dir_separator = "/"
 Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
 XLSX_PATH = "data/other_conte/xlsx/"
-CSV_PATH = "data/other_conte/csv/"
+CSV_PATH = "data/conte/csv/"
 
 def pretty_print_hypothesis(hypothesis):
     res = str(hypothesis.value[0])+" "
@@ -36,9 +37,9 @@ class EnvType(Enum):
     The enum values are used both
     in dataset directories and database tables
     """
-    TEST = "test", "data/conte/test/"           # model comparing
-    TRAINING = "train", "data/conte/train/"     # training the model
-    VALIDATION = "val", "data/conte/val/"       # validation (hyper-parameters optimization)
+    TEST = "test"         # model comparing in decoding_phase.py
+    TRAINING = "train"    # training in learning_phase.py
+    VALIDATION = "val"    # not used like that but in batch val is split from train
 
 class Corpus(Enum):
     """
@@ -49,10 +50,3 @@ class Corpus(Enum):
     TEXT_FR = "text_fr", 0
     TEXT_EN = "text_en", 1
     GLOSS_LSF = "gloss_lsf", 2
-
-class TargetMode(Enum):
-    """
-    Match the config to choose targets
-    """
-    EN = "EN"
-    GLOSS = "GLOSS"

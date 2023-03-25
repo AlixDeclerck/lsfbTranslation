@@ -10,7 +10,7 @@ from algorithms.symbolicTransformer.src.tools.helper import split_list
 from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_conte_dataset
 from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
 from common.output_decoder import subsequent_mask
-from common.constant import EnvType, Tag, TargetMode
+from common.constant import EnvType, Tag
 
 
 def collate_batch(
@@ -76,7 +76,7 @@ def collate_batch(
 def create_dataloaders(
         vocab,
         device,
-        target_mode,
+        architecture_dev_mode,
         application_path,
         batch_size=12000,
         max_padding=128,
@@ -96,7 +96,7 @@ def create_dataloaders(
     complete = retrieve_conte_dataset(EnvType.VALIDATION.value[0], application_path)
 
     # sub-select from target mode
-    if TargetMode.EN.value == target_mode:
+    if architecture_dev_mode:
         full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "EN"]].to_numpy()
     else:
         full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "gloss"]].to_numpy()

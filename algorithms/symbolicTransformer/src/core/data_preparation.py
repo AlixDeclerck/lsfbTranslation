@@ -4,7 +4,7 @@ from os.path import exists
 import spacy
 import torch
 from torchtext.vocab import build_vocab_from_iterator
-from common.constant import Tag, Corpus, TargetMode
+from common.constant import Tag, Corpus
 
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 from algorithms.symbolicTransformer.src.tools.helper import tokenize
@@ -60,7 +60,7 @@ class Vocab:
         self.environment = env.value[0]
         self.token_fr = tokens[0]
         self.token_en = tokens[1]
-        self.target_mode = config["target_mode"]
+        self.archi_dev_mode = config["architecture_dev_mode"]
         self.vocab_handler(
             config["model_path"]+config["vocab_file_name"],
             config["application_path"])
@@ -81,21 +81,21 @@ class Vocab:
             for from_to_tuple in data_iter:
                 yield tokenizer(from_to_tuple[index])
 
-        print("Building french Vocabulary ...")
+        print("Building FRENCH Vocabulary ...")
         vocab_src = build_vocab_from_iterator(
             yield_tokens(learning_corpus, self.tokenize_fr, index=Corpus.TEXT_FR.value[1]),
             min_freq=1,
             specials=special_tag,
         )
 
-        if TargetMode.EN.value == self.target_mode:
-            print("Building english Vocabulary ...")
+        if self.archi_dev_mode:
+            print("Building ENGLISH Vocabulary ...")
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_en, index=Corpus.TEXT_EN.value[1]),
                 min_freq=1,
                 specials=special_tag)
         else:
-            print("Building gloss Vocabulary ...")
+            print("Building GLOSS Vocabulary ...")
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),
                 min_freq=1,

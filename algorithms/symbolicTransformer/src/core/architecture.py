@@ -7,7 +7,7 @@ from common.constant import Hypothesis, Tag
 
 
 """
-Original source :
+NMT Inspired from :
 CS224N 2019-20: Homework 4
 run.py: Run Script for Simple NMT Model
 Pencheng Yin <pcyin@cs.cmu.edu>
@@ -35,7 +35,7 @@ class NMT(nn.Module):
         self.d_model = config["dimension"]
         self.output_max = config["output_max_words"]
 
-        if config["model_device"] == "cuda":
+        if config["using_gpu"]:
             self.device = torch.device('cuda', 0)
         else:
             self.device = torch.device('cpu', 0)

@@ -89,13 +89,13 @@ def check_outputs(
 
 def run_model_example(config, n_examples=5):
 
-    vocab = Vocab(load_tokenizers(), config, EnvType.VALIDATION)
+    vocab = Vocab(load_tokenizers(), config, EnvType.TEST)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(
         vocab,
         torch.device("cpu"),
-        target_mode=config["target_mode"],
+        architecture_dev_mode=config["architecture_dev_mode"],
         application_path=application_path,
         batch_size=1,
         is_distributed=False
@@ -130,17 +130,11 @@ if __name__ == '__main__':
     learning_configuration = load_config()
 
     if not args['cpu']:
-        learning_configuration["model_device"] = "cuda"
+        learning_configuration["using_gpu"] = True
     else:
-        learning_configuration["model_device"] = "cpu"
+        learning_configuration["using_gpu"] = False
 
     model_learned, data_learned = run_model_example(config=learning_configuration)
     data_graph = data_learned[len(data_learned) - 1]
 
     plot_attention_maps(model_learned, data_learned, get_decoder_self, idx=0)
-
-    # chart = visualize_layer(
-    #     model_learned, 1, get_decoder_self, len(data_graph[1]), data_graph[1], data_graph[1]
-    # )
-    #
-    # chart.save('output/translation_attention.html', embed_options={'renderer': 'svg'})

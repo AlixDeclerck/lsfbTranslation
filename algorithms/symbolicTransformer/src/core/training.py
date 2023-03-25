@@ -91,7 +91,7 @@ def train_worker(
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
         gpu,
-        target_mode=config["target_mode"],
+        architecture_dev_mode=config["architecture_dev_mode"],
         application_path=config["application_path"],
         batch_size=config["batch_size"] // ngpus_per_node,
         max_padding=config["max_padding"],

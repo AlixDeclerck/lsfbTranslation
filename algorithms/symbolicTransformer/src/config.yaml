@@ -1,17 +1,11 @@
-target_mode:                  "EN"                                  # "EN" or "GLOSS"
-batch_size:                   16                                  # originally 32
-distributed:                  False
-num_epochs:                   40                                  # originally 8
+batch_size:                   16                                # Annotated transformer choose 32
+num_epochs:                   40                                # Annotated transformer choose 8
+distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
 accum_iter:                   10
-accum_step:                   10                                  # originally 40 but shrank due to small training corpus
+accum_step:                   10                                # originally 40 but shrank due to small training corpus
 base_lr:                      1.0
 max_padding:                  72
 warmup:                       3000
-model_device:                 "cuda"                             # for training : cuda / cpu
-model_path:                   "model/"
-model_prefix:                 "symbolicTransformer_model_"
-model_suffix:                 "final.pt"
-vocab_file_name:              "vocab.pt"
 layers:                       2                                 # originally 6
 dimension:                    512
 feed_forward_dimension:       2048
@@ -20,9 +14,16 @@ dropout:                      0.1
 application_path:             "/"
 remove_punctuation:           False                             # todo : implement, check with quotes signs for instance
 target_label_smoothing:       0.1                               # velocity of label smoothing
-optimizer_weight_decay:       0                                 # L2 penalty                         # todo: create tables to receive losses, ... by hyper-parameters
+optimizer_weight_decay:       0                                 # L2 penalty # todo: create tables to receive losses, ... by hyper-parameters
 output_max_words:             80
-beam_search:                  1                                 # 0 = greedy search & 1 = beam search
+model_path:                   "model/"
+model_prefix:                 "symbolicTransformer_model_"
+model_suffix:                 "final.pt"
+vocab_file_name:              "vocab.pt"
+using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
+architecture_dev_mode:        True                              # True for "EN", False for "GLOSS"
+persist_learning_measure:     False                             # Write measures in database
+beam_search:                  True                              # False for greedy search
 beam:
     beam-size:                5
     max-decoding-time-step:   70

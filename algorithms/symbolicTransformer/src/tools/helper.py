@@ -19,10 +19,6 @@ def execute_example(fn, args=[]):
         fn(*args)
 
 
-def tokenize(text, tokenizer):
-    return [tok.text for tok in tokenizer.tokenizer(text)]
-
-
 class DummyOptimizer(torch.optim.Optimizer):
     def __init__(self):
         self.param_groups = [{"lr": 0}]

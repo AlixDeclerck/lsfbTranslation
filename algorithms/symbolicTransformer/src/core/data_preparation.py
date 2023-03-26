@@ -7,7 +7,6 @@ from torchtext.vocab import build_vocab_from_iterator
 from common.constant import Tag, Corpus, EnvType
 
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
-from algorithms.symbolicTransformer.src.tools.helper import tokenize
 
 
 def retrieve_conte_dataset(selected_environment, application_path):
@@ -107,13 +106,13 @@ class Vocab:
         return vocab_src, vocab_tgt
 
     def tokenize_fr(self, text):
-        return tokenize(text, self.token_fr)
+        return self.tokenize(text, self.token_fr)
 
     def tokenize_gloss(self, text):
-        return tokenize(text, self.token_fr)
+        return self.tokenize(text, self.token_fr)
 
     def tokenize_en(self, text):
-        return tokenize(text, self.token_en)
+        return self.tokenize(text, self.token_en)
 
     def untokenize_src(self, text):
         return [self.src.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
@@ -131,3 +130,7 @@ class Vocab:
             txt
             + " ".join(tokens).replace("\n", "")
         )
+
+    @staticmethod
+    def tokenize(text, tokenizer):
+        return [tok.text for tok in tokenizer.tokenizer(text)]

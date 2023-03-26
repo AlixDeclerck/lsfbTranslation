@@ -6,11 +6,11 @@ from torchtext.data.functional import to_map_style_dataset
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
-from algorithms.symbolicTransformer.src.tools.helper import split_list
-from algorithms.symbolicTransformer.src.core.data_preparation import retrieve_conte_dataset
-from algorithms.symbolicTransformer.src.core.data_preparation import Vocab
+from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from common.output_decoder import subsequent_mask
-from common.constant import EnvType, Tag
+from common.constant import Tag
 
 
 def collate_batch(
@@ -24,47 +24,28 @@ def collate_batch(
     eos_id = torch.tensor([1], device=device)  # </s> token id
     src_list, tgt_list = [], []
     for (_src, _tgt) in batch:
+
         processed_src = torch.cat(
-            [
-                bs_id,
-                torch.tensor(
-                    vocab.src(vocab.tokenize_fr(_src)),
-                    dtype=torch.int64,
-                    device=device,
-                ),
-                eos_id,
-            ],
-            0,
-        )
+            [bs_id, torch.tensor(
+                vocab.src(vocab.tokenize_fr(_src)),
+                dtype=torch.int64, device=device), eos_id], 0)
+
         processed_tgt = torch.cat(
-            [
-                bs_id,
-                torch.tensor(
+            [bs_id, torch.tensor(
                     vocab.tgt(vocab.tokenize_en(_tgt)),
-                    dtype=torch.int64,
-                    device=device,
-                ),
-                eos_id,
-            ],
-            0,
-        )
+                    dtype=torch.int64, device=device), eos_id], 0)
+
         src_list.append(
             # warning - overwrites values for negative values of padding - len
-            pad(
-                processed_src,
-                (
-                    0,
-                    max_padding - len(processed_src),
-                ),
-                value=pad_id,
-            )
+            pad(processed_src,
+                (0, max_padding - len(processed_src)),
+                value=pad_id)
         )
+
         tgt_list.append(
-            pad(
-                processed_tgt,
+            pad(processed_tgt,
                 (0, max_padding - len(processed_tgt)),
-                value=pad_id,
-            )
+                value=pad_id)
         )
 
     src = torch.stack(src_list)
@@ -103,16 +84,17 @@ def create_dataloaders(
         full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "gloss"]].to_numpy()
 
     train_iter, tmp_iter = split_list(full)
-
     test_iter, valid_iter = split_list(tmp_iter)
 
-    train_iter_map = to_map_style_dataset(
-        train_iter
-    )  # DistributedSampler needs a dataset len()
+    # DistributedSampler needs a dataset len()
+    train_iter_map = to_map_style_dataset(train_iter)
+
     train_sampler = (
         DistributedSampler(train_iter_map) if is_distributed else None
     )
+
     valid_iter_map = to_map_style_dataset(valid_iter)
+
     valid_sampler = (
         DistributedSampler(valid_iter_map) if is_distributed else None
     )
@@ -124,6 +106,7 @@ def create_dataloaders(
         sampler=train_sampler,
         collate_fn=collate_fn,
     )
+
     valid_dataloader = DataLoader(
         valid_iter_map,
         batch_size=batch_size,
@@ -131,6 +114,7 @@ def create_dataloaders(
         sampler=valid_sampler,
         collate_fn=collate_fn,
     )
+
     return train_dataloader, valid_dataloader
 
 

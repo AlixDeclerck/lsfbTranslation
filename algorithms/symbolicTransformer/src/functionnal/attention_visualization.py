@@ -14,7 +14,7 @@ def get_decoder_src(model, layer):
     return model.decoder.layers[layer].src_attn.attn
 
 
-def plot_attention_maps(model, input_data, getter_fn, idx=0):
+def plot_attention_maps(model, input_data, getter_fn):
 
     # selected attention
     attn_maps = getter_fn(model, 1)

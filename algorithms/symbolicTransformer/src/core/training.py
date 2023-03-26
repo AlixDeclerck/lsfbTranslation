@@ -10,9 +10,9 @@ import os
 from common.constant import Tag
 
 from algorithms.symbolicTransformer.src.core.batching import Batch, create_dataloaders
-from algorithms.symbolicTransformer.src.tools.helper import DummyOptimizer, DummyScheduler
-from algorithms.symbolicTransformer.src.core.loss_functions import SimpleLossCompute
-from algorithms.symbolicTransformer.src.core.architecture import NMT, LabelSmoothing
+from algorithms.symbolicTransformer.src.functionnal.tuning import DummyOptimizer, DummyScheduler, LabelSmoothing
+from algorithms.symbolicTransformer.src.functionnal.loss_functions import SimpleLossCompute
+from algorithms.symbolicTransformer.src.core.architecture import NMT
 
 
 def load_or_train_model(vocab, environment, config):

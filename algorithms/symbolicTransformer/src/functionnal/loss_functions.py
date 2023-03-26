@@ -1,12 +1,5 @@
 import torch
 
-
-def loss(x, crit):
-    d = x + 3 * 1
-    predict = torch.FloatTensor([[0, x / d, 1 / d, 1 / d, 1 / d]])
-    return crit(predict.log(), torch.LongTensor([1])).data
-
-
 class SimpleLossCompute:
     """A simple loss compute and train function."""
 

@@ -13,7 +13,7 @@ h_attention_layers:           8                                 # h=8 parallel a
 dropout:                      0.1
 application_path:             "/"
 remove_punctuation:           False                             # todo : implement, check with quotes signs for instance
-target_label_smoothing:       0.1                               # velocity of label smoothing
+target_label_smoothing:       0.2                               # velocity of label smoothing
 optimizer_weight_decay:       0                                 # L2 penalty # todo: create tables to receive losses, ... by hyper-parameters
 output_max_words:             80
 model_path:                   "model/"

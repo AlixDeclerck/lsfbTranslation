@@ -21,7 +21,11 @@ def load_config(path="config.yaml") -> dict:
 
 
 class LabelSmoothing(nn.Module):
-    """Implement label smoothing."""
+    """
+    Implement label smoothing with
+    Kullback-Leibler divergence loss criterion
+    :return: a criterion (detached tensor)
+    """
 
     def __init__(self, size, padding_idx, smoothing=0.0):
         super(LabelSmoothing, self).__init__()

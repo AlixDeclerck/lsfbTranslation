@@ -1,29 +1,30 @@
 batch_size:                   16                                # Annotated transformer choose 32
-num_epochs:                   40                                # Annotated transformer choose 8
+num_epochs:                   20                                # Annotated transformer choose 8
 distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
-accum_iter:                   10
-accum_step:                   10                                # originally 40 but shrank due to small training corpus
+accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
+accum_step:                   10                                # Write loss only each n steps! Originally 40 but shrank due to small training corpus
 base_lr:                      1.0
 max_padding:                  72
 warmup:                       3000
-layers:                       2                                 # originally 6
+layers:                       4                                 # originally 6
 dimension:                    512
 feed_forward_dimension:       2048
 h_attention_layers:           8                                 # h=8 parallel attention layers
 dropout:                      0.1
 application_path:             "/"
 remove_punctuation:           False                             # todo : implement, check with quotes signs for instance
-target_label_smoothing:       0.2                               # velocity of label smoothing
+target_label_smoothing:       0.8                               # velocity of label smoothing
 optimizer_weight_decay:       0                                 # L2 penalty # todo: create tables to receive losses, ... by hyper-parameters
-output_max_words:             80
+output_max_words:             80                                # originally 80
 model_path:                   "model/"
 model_prefix:                 "symbolicTransformer_model_"
 model_suffix:                 "final.pt"
 vocab_file_name:              "vocab.pt"
+KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
 using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
 architecture_dev_mode:        True                              # True for "EN", False for "GLOSS"
 persist_learning_measure:     False                             # Write measures in database
-beam_search:                  False                              # False for greedy search
+beam_search:                  False                             # False for greedy search
 beam:
     beam-size:                5
     max-decoding-time-step:   70

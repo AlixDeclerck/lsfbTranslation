@@ -7,8 +7,7 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
 from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
-from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
-from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
 from common.output_decoder import subsequent_mask
 from common.constant import Tag
 

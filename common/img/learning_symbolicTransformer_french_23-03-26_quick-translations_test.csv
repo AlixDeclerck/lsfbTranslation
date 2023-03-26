@@ -1,0 +1,48 @@
+Preparing Data ...
+Loading Trained Model ...
+Checking Model Outputs:
+Example 0 ========
+"Source Text (Input)        : <s> Ces provisions épuisées , </s>"
+"Target Text (Ground Truth) : <s> and when this provision came to an end , </s>"
+Model Output               : <s> I will go out of for for for for for </s> 
+"Model Output               : <s> I will go out of for for for for for </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s>('</s>', 1)"
+BLEU score * 100 : 7.411994825316195e-230 ---
+Example 1 ========
+The hypothesis contains 0 counts of 2-gram overlaps.
+"Therefore the BLEU score evaluates to 0, independently of"
+how many N-gram overlaps of lower order it contains.
+Consider using lower n-gram order or use SmoothingFunction()
+  warnings.warn(_msg)
+The hypothesis contains 0 counts of 3-gram overlaps.
+"Therefore the BLEU score evaluates to 0, independently of"
+how many N-gram overlaps of lower order it contains.
+Consider using lower n-gram order or use SmoothingFunction()
+  warnings.warn(_msg)
+The hypothesis contains 0 counts of 4-gram overlaps.
+"Therefore the BLEU score evaluates to 0, independently of"
+how many N-gram overlaps of lower order it contains.
+Consider using lower n-gram order or use SmoothingFunction()
+  warnings.warn(_msg)
+"Source Text (Input)        : <s> ramena la fausse fiancée chez elle , </s>"
+"Target Text (Ground Truth) : <s> and took the false bride home again , </s>"
+"Model Output               : <s> and he took her up , </s> "
+"Model Output               : <s> and he took her up , </s> , </s> </s> </s> </s> , </s> </s> </s> </s> </s> </s> </s> . </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> . </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s>('</s>', 1)"
+BLEU score * 100 : 3.1153609837288e-153 ---
+Example 2 ========
+"Source Text (Input)        : <s> Or , la fille du roi était très orgueilleuse et , dès qu' elle eut appris que son prétendant n' était pas de son rang , </s>"
+"Target Text (Ground Truth) : <s> But when the proud princess perceived that he was not her equal in birth , </s>"
+"Model Output               : <s> and when she had been the Queen had been so that he had been the wood , </s> "
+"Model Output               : <s> and when she had been the Queen had been so that he had been the wood , </s> his master , </s> he had been he had to be his master . </s> and </s> his master . </s> </s> and </s> </s> </s> and said , </s> </s> </s> </s> and said to be the Virgin Mary , </s> and said , </s> and said he , </s> and said('</s>', 1)"
+BLEU score * 100 : 3.3887566706830826e-153 ---
+Example 3 ========
+Source Text (Input)        : <s> Petit Chaperon Rouge ? </s>
+Target Text (Ground Truth) : <s> Little Red Riding Hood ? </s>
+Model Output               : <s> you will not go ? </s> 
+"Model Output               : <s> you will not go ? </s> </s> </s> ? </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> ? </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> ? </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s>('</s>', 1)"
+BLEU score * 100 : 2.305625093843957e-153 ---
+Example 4 ========
+Source Text (Input)        : <s> et lui donnèrent des sabots de bois . </s>
+Target Text (Ground Truth) : <s> and gave her wooden shoes to wear . </s>
+"Model Output               : <s> and had been to be a great and was to be , </s> "
+"Model Output               : <s> and had been to be a great and was to be , </s> and </s> . </s> and </s> </s> . </s> </s> . </s> </s> </s> </s> </s> </s> </s> </s> </s> . </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> . </s> </s> </s> </s> </s> </s> </s> </s> and </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> </s> and </s> </s> </s>('</s>', 1)"
+BLEU score * 100 : 3.1153609837288e-153 ---

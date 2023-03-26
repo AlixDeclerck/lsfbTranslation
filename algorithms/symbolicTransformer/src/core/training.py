@@ -133,7 +133,7 @@ def train_worker(
         _, train_state = run_epoch(
             (Batch(b[0], b[1]) for b in train_dataloader),
             model,
-            SimpleLossCompute(module.generator, criterion),
+            SimpleLossCompute(module.generator, criterion, config),
             optimizer,
             lr_scheduler,
             accum_step=config["accum_step"],
@@ -156,7 +156,7 @@ def train_worker(
         simple_loss = run_epoch(
             (Batch(b[0], b[1]) for b in valid_dataloader),
             model,
-            SimpleLossCompute(module.generator, criterion),
+            SimpleLossCompute(module.generator, criterion, config),
             DummyOptimizer(),
             DummyScheduler(),
             accum_step=config["accum_step"],
@@ -167,7 +167,6 @@ def train_worker(
         print(simple_loss)
         torch.cuda.empty_cache()
 
-    # todo: save trained result and be able to improve ?
     if model_saving_strategy:
         file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
         torch.save(module.state_dict(), file_path)
@@ -182,8 +181,8 @@ def run_epoch(
         accum_step,
         mode="train",
         accum_iter=1,
-        train_state=TrainState(),
-):
+        train_state=TrainState()):
+
     """Train a single epoch"""
     start = time.time()
     total_tokens = 0
@@ -191,10 +190,14 @@ def run_epoch(
     tokens = 0
     n_accum = 0
     for i, batch in enumerate(data_iter):
-        out = model.forward(
+
+        training_result = model.forward(
             batch.src, batch.tgt, batch.src_mask, batch.tgt_mask
         )
-        loss, loss_node = loss_compute(out, batch.tgt_y, batch.n_tokens)
+
+        # loss_node is used during backprop (training)
+        loss, loss_node = loss_compute(training_result, batch.tgt_y, batch.n_tokens)
+
         # loss_node = loss_node / accum_iter
         if mode == "train" or mode == "train+log":
             loss_node.backward()
@@ -208,23 +211,23 @@ def run_epoch(
                 train_state.accum_step += 1
             scheduler.step()
 
+        # update loss & tokens value
         total_loss += loss
         total_tokens += batch.n_tokens
         tokens += batch.n_tokens
+
+        # Display i, n_accum, loss / batch.n_tokens, tokens / elapsed, lr
         if i % accum_step == 1 and (mode == "train" or mode == "train+log"):
             lr = optimizer.param_groups[0]["lr"]
             elapsed = time.time() - start
-            print(
-                (
-                        "Epoch Step: %6d | Accumulation Step: %3d | Loss: %6.2f "
-                        + "| Tokens / Sec: %7.1f | Learning Rate: %6.1e"
-                )
-                % (i, n_accum, loss / batch.n_tokens, tokens / elapsed, lr)
-            )
+            print("Epoch Step: %6d | Accumulation Step: %3d | Loss: %6.2f | Tokens / Sec: %7.1f | Learning Rate: %6.1e" % (i, n_accum, loss / batch.n_tokens, tokens / elapsed, lr))
             start = time.time()
             tokens = 0
+
+        # delete this (batch iteration) loss objects
         del loss
         del loss_node
+
     return total_loss / total_tokens, train_state
 
 

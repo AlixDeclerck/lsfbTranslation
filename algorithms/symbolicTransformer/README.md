@@ -33,10 +33,3 @@ The optimizer implements `Adam algorithm`
 ### scheduler and learning rate
 
 - https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LambdaLR.html
-
-
-
-
-
-
-

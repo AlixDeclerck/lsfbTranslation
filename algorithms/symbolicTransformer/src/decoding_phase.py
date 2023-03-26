@@ -89,11 +89,12 @@ def check_outputs(
 
 def run_model_example(config, n_examples=5):
 
-    vocab = Vocab(load_tokenizers(), config, EnvType.TEST)
+    vocab = Vocab(load_tokenizers(), config)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(
         vocab,
+        EnvType.TEST.value,
         torch.device("cpu"),
         architecture_dev_mode=config["architecture_dev_mode"],
         application_path=application_path,

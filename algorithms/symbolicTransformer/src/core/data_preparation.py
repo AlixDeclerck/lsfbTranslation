@@ -4,7 +4,7 @@ from os.path import exists
 import spacy
 import torch
 from torchtext.vocab import build_vocab_from_iterator
-from common.constant import Tag, Corpus
+from common.constant import Tag, Corpus, EnvType
 
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 from algorithms.symbolicTransformer.src.tools.helper import tokenize
@@ -54,10 +54,9 @@ class Vocab:
     yield into tokens filled (by dataset text or glosses) into itos units by
     build_vocab_from_iterator (https://pytorch.org/text/stable/vocab.html)
     """
-    def __init__(self, tokens, config, env):
+    def __init__(self, tokens, config):
         self.src = None
         self.tgt = None
-        self.environment = env.value[0]
         self.token_fr = tokens[0]
         self.token_en = tokens[1]
         self.archi_dev_mode = config["architecture_dev_mode"]
@@ -73,9 +72,10 @@ class Vocab:
             self.src, self.tgt = torch.load(file_path)
 
     def vocab_builder(self, application_path):
-
-        learning_corpus = retrieve_conte_dataset(self.environment, application_path)
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
+        learning_corpus = []
+        for env in EnvType:
+            learning_corpus += retrieve_conte_dataset(env.value, application_path)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

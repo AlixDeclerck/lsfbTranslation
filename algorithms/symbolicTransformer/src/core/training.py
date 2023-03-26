@@ -15,21 +15,21 @@ from algorithms.symbolicTransformer.src.core.loss_functions import SimpleLossCom
 from algorithms.symbolicTransformer.src.core.architecture import NMT, LabelSmoothing
 
 
-def load_or_train_model(vocab, config):
+def load_or_train_model(vocab, environment, config):
     model_path = str(config["model_path"])+str(config["model_prefix"])+str(config["model_suffix"])
     if not exists(model_path):
-        train_model(vocab, config)
+        train_model(vocab, environment, config)
 
     model = NMT(vocab, config)
     model.load_state_dict(torch.load(model_path))
     return model
 
 
-def train_model(vocab, config):
+def train_model(vocab, environment, config):
     if config["distributed"]:
         train_distributed_model(vocab, config)
     else:
-        train_worker(0, 1, vocab, config, True, False)
+        train_worker(0, 1, vocab, environment, config, True, False)
 
 
 def train_distributed_model(vocab, config):
@@ -58,6 +58,7 @@ def train_worker(
         gpu,
         ngpus_per_node,
         vocab,
+        environment,
         config,
         model_saving_strategy=False,
         is_distributed=False):
@@ -90,6 +91,7 @@ def train_worker(
     # dataloaders
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
+        environment,
         gpu,
         architecture_dev_mode=config["architecture_dev_mode"],
         application_path=config["application_path"],

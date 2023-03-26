@@ -26,10 +26,10 @@ if __name__ == '__main__':
     config["application_path"] = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator
 
     # PREPROCESSING
-    vocab = Vocab(load_tokenizers(), config, EnvType.TRAINING)
+    vocab = Vocab(load_tokenizers(), config)
 
     # TRAINING
-    trained_model = load_or_train_model(vocab, config)
+    trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)
 
     # OUTPUT
     print(trained_model)

@@ -75,6 +75,7 @@ def collate_batch(
 
 def create_dataloaders(
         vocab,
+        environment,
         device,
         architecture_dev_mode,
         application_path,
@@ -93,7 +94,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    complete = retrieve_conte_dataset(EnvType.TRAINING.value, application_path)
+    complete = retrieve_conte_dataset(environment, application_path)
 
     # sub-select from target mode
     if architecture_dev_mode:

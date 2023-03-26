@@ -39,7 +39,7 @@ class EnvType(Enum):
     """
     TEST = "test"         # model comparing in decoding_phase.py
     TRAINING = "train"    # training in learning_phase.py
-    VALIDATION = "val"    # not used like that but in batch val is split from train
+    # VALIDATION = "val"  # model metrics not define here : batch split val from train
 
 class Corpus(Enum):
     """

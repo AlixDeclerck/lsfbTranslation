@@ -88,7 +88,7 @@ def train_worker(
     )
     criterion.cuda(gpu)
 
-    # dataloaders
+    # dataloaders with batch_sampler
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
         environment,

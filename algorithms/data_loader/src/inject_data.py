@@ -3,7 +3,7 @@
 
 """
 Usage:
-    conte_loader.py --app-path=<file>
+    inject_data.py --app-path=<file>
 """
 
 import pandas

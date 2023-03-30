@@ -14,14 +14,15 @@ dir_separator = "/"  # dir separator already there
 
 Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
-def pretty_print_hypothesis(hypothesis):
+def pretty_print_hypothesis(hypothesis, method):
     res = str(hypothesis.value[0])+" "
     for i in range(1, len(hypothesis.value)):
         res += str(hypothesis.value[i])+" "
         if hypothesis.value[i] == str(Tag.STOP.value[0]):
             break
 
-    print("Model Output               : " + res)
+    print("\nModel Output ( " + method + " )     : " + str(res))
+    return res
 
 class Tag(Enum):
     """

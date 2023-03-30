@@ -26,5 +26,5 @@ architecture_dev_mode:        True                              # True for "EN",
 persist_learning_measure:     False                             # Write measures in database
 beam_search:                  True                              # False for greedy search
 beam:
-    beam-size:                5
+    beam-size:                10
     max-decoding-time-step:   70

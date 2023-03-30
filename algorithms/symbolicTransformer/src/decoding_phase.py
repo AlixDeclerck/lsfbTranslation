@@ -9,6 +9,7 @@ Usage:
 import torch
 from docopt import docopt
 import os
+from nltk.translate.bleu_score import corpus_bleu
 
 from common.constant import pretty_print_hypothesis, Tag, dir_separator
 from common.output_decoder import greedy_decode, beam_search
@@ -28,7 +29,7 @@ def check_outputs(
         dataloader_validation,
         n_examples=15):
 
-    results = [()] * int(n_examples)
+    results = []
     for example_id in range(n_examples):
 
         print("\nExample %d ========\n" % example_id)
@@ -45,43 +46,51 @@ def check_outputs(
         vocab.pretty_print_token("Source Text (Input)        : ", src_tokens)
         vocab.pretty_print_token("Target Text (Ground Truth) : ", reference)
 
-        # choose decoder style from config
-        if int(learning_configuration["beam_search"]) == 1:
+        # DECODING
+        if learning_configuration["beam_search"]:
 
-            hypothesis, estimation = beam_search(
+            hypothesis_beam, estimation_beam = beam_search(
                 model,
                 data_val_batch,
                 beam_size=int(learning_configuration["beam"]['beam-size']),
                 max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step'])
             )
 
-        else:
+            # pretty print the model output
+            model_output_beam = pretty_print_hypothesis(hypothesis_beam, "beam")
 
-            hypothesis, estimation = greedy_decode(
-                model,
-                data_val_batch,
-                learning_configuration["max_padding"]
-            )
+            bleu_score = corpus_bleu([
+                [ref] for ref in model.output_format_reference(reference)],
+                [hyp.value for hyp in model.output_format_hypothesis(hypothesis_beam)])
+
+            print(f"BLEU score * 100 : {bleu_score*100} ---")
+
+        else:
+            model_output_beam = None
+
+        hypothesis_greedy, estimation_greedy = greedy_decode(
+            model,
+            data_val_batch,
+            learning_configuration["max_padding"]
+        )
 
         # pretty print the model output
-        pretty_print_hypothesis(hypothesis)
+        model_output_greedy = pretty_print_hypothesis(hypothesis_greedy, "greedy")
 
-        model_output = (
-                " ".join(
-                    [vocab.tgt.get_itos()[x] for x in estimation[0] if x != Tag.BLANK.value[1]]
-                ).split(str(Tag.STOP.value), 1)[0]
-                + str(Tag.STOP.value)
-        )
-        print("Model Output               : " + model_output.replace("\n", ""))
+        bleu_score = corpus_bleu([
+            [ref] for ref in model.output_format_reference(reference)],
+            [hyp.value for hyp in model.output_format_hypothesis(hypothesis_greedy)])
 
-        # run BLEU score
-        results[example_id] = (data_val_batch, src_tokens, reference, estimation, model_output)
-
-        reference = model.output_format_reference(reference)
-        hypothesis = model.output_format_hypothesis(hypothesis)
-
-        bleu_score = compute_corpus_level_bleu_score(reference, hypothesis)
         print(f"BLEU score * 100 : {bleu_score*100} ---")
+
+        # CONSTRUCT RESULT VALUE LIST
+        results.append([
+            data_val_batch,
+            src_tokens,
+            reference,
+            estimation_greedy,
+            model_output_beam,
+            model_output_greedy])
 
     return results
 
@@ -109,24 +118,23 @@ def run_model_example(config, n_examples=5):
     )
 
     print("Checking Model Outputs:")
-    example_data = check_outputs(
+    inferred_outputs = check_outputs(
         model,
         vocab,
         valid_dataloader,
         n_examples=n_examples)
 
-    return model, example_data
+    return model, inferred_outputs
 
 
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
 
+    # CONFIGURATION
     args = docopt(__doc__)
     application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
-
     torch.cuda.empty_cache()
-
     learning_configuration = load_config()
 
     if not args['cpu']:
@@ -134,7 +142,8 @@ if __name__ == '__main__':
     else:
         learning_configuration["using_gpu"] = False
 
-    model_learned, data_learned = run_model_example(config=learning_configuration)
-    data_graph = data_learned[len(data_learned) - 1]
+    # INFERENCE
+    used_model, inferred_data = run_model_example(config=learning_configuration)
 
-    plot_attention_maps(model_learned, data_learned, get_decoder_self)
+    # DISPLAY RESULT
+    plot_attention_maps(used_model, inferred_data, get_decoder_self)

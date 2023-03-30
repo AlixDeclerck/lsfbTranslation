@@ -173,7 +173,7 @@ def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_
 
             # complete sentence are classified, else the new word completed the decoder input for next iteration
             if hyp_word == Tag.STOP.value[0]:
-                completed_hypotheses.append(Hypothesis(value=new_hyp_sent[1:-1], score=cand_new_hyp_score))
+                completed_hypotheses.append(Hypothesis(value=new_hyp_sent, score=cand_new_hyp_score))
             else:
                 new_hypotheses.append(new_hyp_sent)
                 live_hyp_ids.append(prev_hyp_id)

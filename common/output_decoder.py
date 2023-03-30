@@ -171,7 +171,7 @@ def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_
             # add new hypotheses to previous state in a new variable
             new_hyp_sent = hypotheses[int(prev_hyp_id)] + [hyp_word]
 
-            # append or complete hypotheses
+            # complete sentence are classified, else the new word completed the decoder input for next iteration
             if hyp_word == Tag.STOP.value[0]:
                 completed_hypotheses.append(Hypothesis(value=new_hyp_sent[1:-1], score=cand_new_hyp_score))
             else:
@@ -179,7 +179,7 @@ def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_
                 live_hyp_ids.append(prev_hyp_id)
                 new_hyp_scores.append(cand_new_hyp_score)
 
-        # end loop condition
+        # end loop condition when all hypothesis are inferred
         if len(completed_hypotheses) == beam_size:
             break
 
@@ -198,6 +198,7 @@ def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_
     top_hypothesis = completed_hypotheses[0]
     top_estimation = []
 
+    # format the result
     for h in top_hypothesis.value:
         top_estimation.append(model.vocab.tgt.get_itos().index(h))
 

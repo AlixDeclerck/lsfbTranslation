@@ -38,8 +38,8 @@ def check_outputs(
         data_val_batch = Batch(data_val[0], data_val[1])
 
         # retrieve tokens with itos elements
-        src_tokens = vocab.untokenize_src(data_val_batch.src[0])
-        reference = vocab.untokenize_tgt(data_val_batch.tgt[0])
+        src_tokens = vocab.unembed_src(data_val_batch.src[0])
+        reference = vocab.unembed_tgt(data_val_batch.tgt[0])
 
         # pretty print source and target
         vocab.pretty_print_token("Source Text (Input)        : ", src_tokens)
@@ -51,7 +51,6 @@ def check_outputs(
             hypothesis, estimation = beam_search(
                 model,
                 data_val_batch,
-                learning_configuration,
                 beam_size=int(learning_configuration["beam"]['beam-size']),
                 max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step'])
             )

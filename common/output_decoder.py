@@ -71,23 +71,19 @@ Sahil Chopra <schopra8@stanford.edu>
 Vera Lin <veralin@stanford.edu>
 """
 
-def beam_search(model, data, config, beam_size, max_decoding_time_step):
+def beam_search(model, data, beam_size, max_decoding_time_step):
     """ Run beam search to construct hypotheses for a list of src-language sentences.
     @param model : NMT Model
     @param data : List of sentences (words) in source language, from test set.
-    @param config : from configuration file
     @param beam_size : beam_size (# of hypotheses to hold for a translation at every step)
     @param max_decoding_time_step : maximum sentence length that Beam search can produce
     @returns hypotheses : List of Hypothesis translations for every source sentence.
     """
-    was_training = model.training   # boolean that says if the model was trained
-    model.eval()                    # evaluation mode
-    # hypotheses = []                 # initialization
+    was_training = model.training
+    model.eval()
 
     # adapt batch list to one sentence case
-    # sentences = tqdm(test_data_src, desc='Decoding', file=sys.stdout)  # multiple
     sentences = [data]
-    # optimization (not include following in gradient)
     with torch.no_grad():
 
         # decode a test set
@@ -97,29 +93,23 @@ def beam_search(model, data, config, beam_size, max_decoding_time_step):
             h, e = model_beam_search(
                 model,
                 src_sent,
-                config,
                 beam_size=beam_size,
                 max_decoding_time_step=max_decoding_time_step)
-
-            # update hypothesis
-            # hypotheses.append(h)
 
     # update model status
     if was_training:
         model.train(was_training)
 
-    # return Hypothesis object
     return h, e
 
 
-def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time_step: int = 70):
+def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_step: int = 70):
     """ Given a single source sentence,
     perform beam search,
     yielding translations in the target language.
 
     @param model                    : learned model
-    @param data                     : a single source sentence (words)
-    @param config                   : learning configuration
+    @param batch_entry              : a single source sentence (words : src, tgt)
     @param beam_size                : beam size
     @param max_decoding_time_step   : maximum number of time steps to unroll the decoding RNN
 
@@ -128,35 +118,35 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
             score: float: the log-likelihood of the target sentence
     """
 
-    # initializations
-    estimation = torch.zeros(1, 1).fill_(Tag.START.value[1]).type_as(data.src.data)
+    # the memory, encoder output token tensor : (k_t x token_number) and her mask
+    src = model.encode(batch_entry.src, batch_entry.src_mask)
+    src_mask = batch_entry.src_mask
+
+    # Initialize the hypothesis containers
     hypotheses = [[Tag.START.value[0]]]
     hyp_scores = torch.ones(len(hypotheses), dtype=torch.float, device=model.device)
     completed_hypotheses = []
-    last_decoder_layer = int(config["layers"]) - 1
 
     t = 0
     while len(completed_hypotheses) < beam_size and t < max_decoding_time_step:
-
-        # inverse counter counting and t
-        live_hyp_num = beam_size - len(completed_hypotheses)
         t += 1
 
+        # retrieve tokens from hypothesis
+        tgt = torch.tensor([model.vocab.embed_tgt(hyp) for hyp in hypotheses], dtype=torch.long, device=model.device)
+
         # compute the decoder output based on the attention time_t
-        decoder_output = model.decode(
-            model.encode(data.src, data.src_mask),                           # src (memory)
-            data.src_mask,                                                   # src_mask
-            estimation,                                                      # tgt
-            subsequent_mask(estimation.size(1)).type_as(data.src.data)       # tgt_mask
+        log_p_t = model.step(
+            memory=src.expand(tgt.size(0), src.size(1), src.size(2)),
+            memory_mask=src_mask.expand(tgt.size(0), src_mask.size(1), src_mask.size(2)),
+            x=tgt,
+            tgt_mask=None
         )
 
-        mha_att = torch.squeeze(model.decoder.layers[last_decoder_layer].self_attn.attn)
+        # Number of hypothesis that not have been constructed yet
+        live_hyp_num = beam_size - len(completed_hypotheses)
 
-        # transform generator output to log probabilities of words
-        log_p_t = F.log_softmax(model.generator(decoder_output[:, -1]))
-
-        # construct tensor from log probabilities of words
-        continuing_hyp_scores = torch.matmul(torch.unsqueeze(hyp_scores, 1), log_p_t).view(-1)
+        # reconstruct an (k_t X target size) matrix from log_p_t
+        continuing_hyp_scores = (hyp_scores.unsqueeze(1).expand_as(log_p_t) + log_p_t).view(-1)
 
         # apply top k return score and word position
         top_cand_hyp_scores, top_cand_hyp_pos = torch.topk(continuing_hyp_scores, k=live_hyp_num)
@@ -182,8 +172,8 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
             new_hyp_sent = hypotheses[int(prev_hyp_id)] + [hyp_word]
 
             # append or complete hypotheses
-            if hyp_word == Tag.STOP.value[1]:
-                completed_hypotheses.append(Hypothesis(value=new_hyp_sent, score=cand_new_hyp_score))
+            if hyp_word == Tag.STOP.value[0]:
+                completed_hypotheses.append(Hypothesis(value=new_hyp_sent[1:-1], score=cand_new_hyp_score))
             else:
                 new_hypotheses.append(new_hyp_sent)
                 live_hyp_ids.append(prev_hyp_id)
@@ -192,17 +182,6 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
         # end loop condition
         if len(completed_hypotheses) == beam_size:
             break
-
-        # tensor from the live "hypotheses id" (which gives the target potentiality size?)
-        live_hyp_ids = torch.tensor(live_hyp_ids, dtype=torch.long, device=model.device)
-
-        # update the estimation
-        for h in live_hyp_ids:
-            estimation = torch.cat([estimation, torch.zeros(1, 1).type_as(data.src.data).fill_(h)], dim=1)
-
-        # update the attention
-        mha_att_t = torch.unsqueeze(torch.unsqueeze(torch.unsqueeze(mha_att[live_hyp_ids], -2), -1), -1)
-        model.decoder.layers[last_decoder_layer].self_attn.attn = mha_att_t
 
         # assign hypothesis with the new
         hypotheses = new_hypotheses
@@ -214,10 +193,11 @@ def model_beam_search(model, data, config, beam_size: int = 5, max_decoding_time
     if len(completed_hypotheses) == 0:
         completed_hypotheses.append(Hypothesis(value=hypotheses[0], score=hyp_scores[0].item()))
 
-    # sort result
+    # sort result (reversed 'cause of the log)
     completed_hypotheses.sort(key=lambda hyp: hyp.score, reverse=True)
     top_hypothesis = completed_hypotheses[0]
     top_estimation = []
+
     for h in top_hypothesis.value:
         top_estimation.append(model.vocab.tgt.get_itos().index(h))
 
@@ -268,15 +248,15 @@ def model_beam_search_seq2seq(model, src_sent: List[str], beam_size: int = 5, ma
             value: List[str]: the decoded target sentence, represented as a list of words
             score: float: the log-likelihood of the target sentence
     """
-    # an input token words_size x 1 tensor
+    # an input token tensor : (words_size x 1)
     src_sentences_var = model.vocab.src.to_input_tensor([src_sent], model.device)
 
     # encoder returns (1 x words_size x 2*embedding) size tensor and tuple of decoding vectors 1 x embedding
     src_encodings, dec_init_vec = model.encode(src_sentences_var, [len(src_sent)])
 
     # [attention adaptation : multi head / projection]
-    src_encodings_att_linear = model.att_projection(src_encodings)
-    # src_encodings_att_linear = model.att_multiHeaded(src_encodings)
+    # src_encodings_att_linear = model.att_projection(src_encodings)
+    src_encodings_att_linear = model.att_multiHeaded(src_encodings)
 
     # tuple of decoding vectors 1 x embedding
     h_tm1 = dec_init_vec
@@ -299,7 +279,7 @@ def model_beam_search_seq2seq(model, src_sent: List[str], beam_size: int = 5, ma
         t += 1
         hyp_num = len(hypotheses)
 
-        # expand le src encoding à (hyp_num x word x 2*embedding)
+        # expand (create new view) src encoding à (hyp_num x word x 2*embedding)
         exp_src_encodings = src_encodings.expand(hyp_num, src_encodings.size(1), src_encodings.size(2))
 
         # expand attention to (hyp_num x word x embedding)
@@ -307,13 +287,13 @@ def model_beam_search_seq2seq(model, src_sent: List[str], beam_size: int = 5, ma
                                                                        src_encodings_att_linear.size(1),
                                                                        src_encodings_att_linear.size(2))
 
-        # predict the (beam sized) vector made with target vocab
+        # retrieve tokens from hypothesis
         y_tm1 = torch.tensor([model.vocab.tgt[hyp[-1]] for hyp in hypotheses], dtype=torch.long, device=model.device)
 
-        # embed the prediction to a (beam size x 256) matrix
+        # embed the prediction to a (hyp_num x embeddings) matrix
         y_t_embed = model.model_embeddings.target(y_tm1)
 
-        # concat embedded prediction and attention to a (beam size x 512) matrix
+        # concat (hyp num X 256) embedded prediction and (hyp num X 256) attention to a (hyp num x 512) matrix
         x = torch.cat([y_t_embed, att_tm1], dim=-1)
 
         # Compute one forward step of the LSTM decoder, including the attention computation.
@@ -323,13 +303,13 @@ def model_beam_search_seq2seq(model, src_sent: List[str], beam_size: int = 5, ma
                                              exp_src_encodings_att_linear,
                                              enc_masks=None)
 
-        # log probabilities over target words
+        # log probabilities over target words with projection (1, hyp_num) + (hyp_num, 43280)
         log_p_t = F.log_softmax(model.target_vocab_projection(att_t), dim=-1)
 
-        # inverse counter
+        # Number of hypothesis that need to be constructed
         live_hyp_num = beam_size - len(completed_hypotheses)
 
-        # construct (1, 5) x (5, 43280) matrix (beam size, target size)
+        # reconstruct an (hyp_num X target size) matrix from log_p_t
         continuing_hyp_scores = (hyp_scores.unsqueeze(1).expand_as(log_p_t) + log_p_t).view(-1)
 
         # apply top k return score and word position

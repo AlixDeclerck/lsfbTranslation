@@ -72,6 +72,21 @@ class NMT(nn.Module):
     def decode(self, memory, src_mask, tgt, tgt_mask):
         return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
 
+    def step(self, memory, memory_mask, x, tgt_mask=None):
+        """Infer one forward step through the transformer,
+        @param memory : embedding, encoder output
+        @param memory_mask : memory's mask
+        @param x : target at time t
+        @param tgt_mask : The mask for target can be None
+        @returns predictions: a list of inferred probabilities for the word at time t+1
+        """
+
+        # We decode tgt_t
+        decoding_output = self.decode(memory, memory_mask, x, tgt_mask)
+
+        # We normalize the tgt_t+1 to probabilities
+        return log_softmax(self.generator(decoding_output[:, -1]), dim=1)
+
     def output_format_reference(self, vec):
         delta = self.output_max - len(vec)
         res = vec + [str(Tag.BLANK.value)] * delta

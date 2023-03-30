@@ -24,7 +24,7 @@ KL_divergence_loss:           True                              # True Kullback-
 using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
 architecture_dev_mode:        True                              # True for "EN", False for "GLOSS"
 persist_learning_measure:     False                             # Write measures in database
-beam_search:                  False                             # False for greedy search
+beam_search:                  True                              # False for greedy search
 beam:
     beam-size:                5
     max-decoding-time-step:   70

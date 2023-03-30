@@ -114,11 +114,14 @@ class Vocab:
     def tokenize_en(self, text):
         return self.tokenize(text, self.token_en)
 
-    def untokenize_src(self, text):
+    def unembed_src(self, text):
         return [self.src.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
 
-    def untokenize_tgt(self, text):
+    def unembed_tgt(self, text):
         return [self.tgt.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
+
+    def embed_tgt(self, text):
+        return [self.tgt[x] for x in text]
 
     def save_vocab(self, file_path):
         if file_path is not None and self.src is not None and self.tgt is not None:

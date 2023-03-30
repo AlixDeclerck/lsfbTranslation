@@ -1,17 +1,18 @@
 from enum import Enum
 from collections import namedtuple
 
+
+# todo in config file :
 color1 = '#FF99EE'
 color2 = '#7799EE'
-
 SELECTED_DB = "db_dev"
-SPLIT_FACTOR = 4
-
-dir_separator = "/"
-Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
-
+SPLIT_FACTOR = 7
 XLSX_PATH = "data/other_conte/xlsx/"
 CSV_PATH = "data/conte/csv/"
+dir_separator = "/"  # dir separator already there
+# ---
+
+Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
 def pretty_print_hypothesis(hypothesis):
     res = str(hypothesis.value[0])+" "

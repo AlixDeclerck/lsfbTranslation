@@ -26,7 +26,7 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-03-26_high-regularization.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-03-31.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
 
@@ -50,9 +50,9 @@ if __name__ == '__main__':
     plt.plot(range(len(res_eval)), res_eval, c=curves_color2, label="symbolic transformer loss in validation")
     plt.legend()
     plt.ylabel("Learning")
-    plt.xlabel("overtraining around 16 epochs")
+    plt.xlabel("overtraining around 12.5 epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-03-26.png')
+    plt.savefig('img/learning_curves_ST_2023-03-31.png')
     plt.show()
 

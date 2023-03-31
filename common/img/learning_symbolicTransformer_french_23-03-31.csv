@@ -1,0 +1,281 @@
+Train worker process using GPU: 0 for training,,,,
+[GPU0] Epoch 0 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   1.24 , Tokens / Sec:   429.7 , Learning Rate: 5.4e-07
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   1.25 , Tokens / Sec:  4032.8 , Learning Rate: 3.2e-06
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   1.22 , Tokens / Sec:  4352.1 , Learning Rate: 5.9e-06
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   1.20 , Tokens / Sec:  4134.4 , Learning Rate: 8.6e-06
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   1.17 , Tokens / Sec:  3987.7 , Learning Rate: 1.1e-05
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   1.14 , Tokens / Sec:  4058.0 , Learning Rate: 1.4e-05
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   1.13 , Tokens / Sec:  4616.3 , Learning Rate: 1.7e-05
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   1.10 , Tokens / Sec:  4273.2 , Learning Rate: 1.9e-05
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"65,00 %","45,00 %",
+[GPU0] Epoch 0 Validation ====,,,,
+"(tensor(1.0897, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 1 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   1.06 , Tokens / Sec:  3699.1 , Learning Rate: 2.2e-05
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   1.03 , Tokens / Sec:  4060.3 , Learning Rate: 2.4e-05
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   1.06 , Tokens / Sec:  4329.8 , Learning Rate: 2.7e-05
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   1.04 , Tokens / Sec:  4243.6 , Learning Rate: 3.0e-05
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   1.02 , Tokens / Sec:  4161.3 , Learning Rate: 3.3e-05
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   1.02 , Tokens / Sec:  4085.0 , Learning Rate: 3.5e-05
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   1.00 , Tokens / Sec:  4455.7 , Learning Rate: 3.8e-05
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.99 , Tokens / Sec:  4279.6 , Learning Rate: 4.1e-05
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"66,00 %","45,00 %",
+[GPU0] Epoch 1 Validation ====,,,,
+"(tensor(0.9984, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 2 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   1.02 , Tokens / Sec:  3750.7 , Learning Rate: 4.3e-05
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.96 , Tokens / Sec:  4220.7 , Learning Rate: 4.6e-05
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.98 , Tokens / Sec:  3984.3 , Learning Rate: 4.8e-05
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.95 , Tokens / Sec:  4163.4 , Learning Rate: 5.1e-05
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.98 , Tokens / Sec:  4266.1 , Learning Rate: 5.4e-05
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.92 , Tokens / Sec:  4167.8 , Learning Rate: 5.6e-05
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.93 , Tokens / Sec:  4318.8 , Learning Rate: 5.9e-05
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.93 , Tokens / Sec:  4395.5 , Learning Rate: 6.2e-05
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"93,00 %","45,00 %",
+[GPU0] Epoch 2 Validation ====,,,,
+"(tensor(0.9388, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 3 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.93 , Tokens / Sec:  4038.5 , Learning Rate: 6.4e-05
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.93 , Tokens / Sec:  4201.7 , Learning Rate: 6.7e-05
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.92 , Tokens / Sec:  4051.4 , Learning Rate: 7.0e-05
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.92 , Tokens / Sec:  4356.2 , Learning Rate: 7.2e-05
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.90 , Tokens / Sec:  4077.4 , Learning Rate: 7.5e-05
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.92 , Tokens / Sec:  4212.5 , Learning Rate: 7.8e-05
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.91 , Tokens / Sec:  4314.5 , Learning Rate: 8.0e-05
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.88 , Tokens / Sec:  4134.9 , Learning Rate: 8.3e-05
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"93,00 %","45,00 %",
+[GPU0] Epoch 3 Validation ====,,,,
+"(tensor(0.8951, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 4 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.88 , Tokens / Sec:  4177.7 , Learning Rate: 8.6e-05
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.88 , Tokens / Sec:  4269.7 , Learning Rate: 8.8e-05
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.89 , Tokens / Sec:  4028.1 , Learning Rate: 9.1e-05
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.89 , Tokens / Sec:  4273.3 , Learning Rate: 9.4e-05
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.86 , Tokens / Sec:  4165.9 , Learning Rate: 9.6e-05
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.87 , Tokens / Sec:  4364.8 , Learning Rate: 9.9e-05
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.88 , Tokens / Sec:  4245.1 , Learning Rate: 1.0e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.87 , Tokens / Sec:  4111.0 , Learning Rate: 1.0e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 4 Validation ====,,,,
+"(tensor(0.8680, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 5 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.82 , Tokens / Sec:  3967.3 , Learning Rate: 1.1e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.87 , Tokens / Sec:  4092.8 , Learning Rate: 1.1e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.84 , Tokens / Sec:  4361.6 , Learning Rate: 1.1e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.86 , Tokens / Sec:  4381.6 , Learning Rate: 1.1e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.84 , Tokens / Sec:  4308.7 , Learning Rate: 1.2e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.79 , Tokens / Sec:  3755.6 , Learning Rate: 1.2e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.84 , Tokens / Sec:  4021.9 , Learning Rate: 1.2e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.83 , Tokens / Sec:  4423.0 , Learning Rate: 1.3e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 5 Validation ====,,,,
+"(tensor(0.8532, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 6 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.85 , Tokens / Sec:  5133.3 , Learning Rate: 1.3e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.81 , Tokens / Sec:  4003.3 , Learning Rate: 1.3e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.84 , Tokens / Sec:  4182.7 , Learning Rate: 1.3e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.81 , Tokens / Sec:  3995.3 , Learning Rate: 1.4e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.83 , Tokens / Sec:  4238.3 , Learning Rate: 1.4e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.85 , Tokens / Sec:  4030.6 , Learning Rate: 1.4e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.85 , Tokens / Sec:  4118.9 , Learning Rate: 1.4e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.83 , Tokens / Sec:  4251.0 , Learning Rate: 1.5e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 6 Validation ====,,,,
+"(tensor(0.8446, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 7 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.83 , Tokens / Sec:  4464.3 , Learning Rate: 1.5e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.82 , Tokens / Sec:  4292.5 , Learning Rate: 1.5e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.82 , Tokens / Sec:  3973.6 , Learning Rate: 1.5e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.79 , Tokens / Sec:  4139.4 , Learning Rate: 1.6e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.81 , Tokens / Sec:  4348.0 , Learning Rate: 1.6e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.82 , Tokens / Sec:  4134.2 , Learning Rate: 1.6e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.80 , Tokens / Sec:  3957.2 , Learning Rate: 1.7e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.79 , Tokens / Sec:  4128.5 , Learning Rate: 1.7e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 7 Validation ====,,,,
+"(tensor(0.8339, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 8 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.83 , Tokens / Sec:  4000.2 , Learning Rate: 1.7e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.82 , Tokens / Sec:  3941.5 , Learning Rate: 1.7e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.81 , Tokens / Sec:  4176.8 , Learning Rate: 1.8e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.84 , Tokens / Sec:  4223.7 , Learning Rate: 1.8e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.83 , Tokens / Sec:  4169.7 , Learning Rate: 1.8e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.85 , Tokens / Sec:  4426.3 , Learning Rate: 1.8e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.82 , Tokens / Sec:  4321.4 , Learning Rate: 1.9e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.83 , Tokens / Sec:  4268.1 , Learning Rate: 1.9e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 8 Validation ====,,,,
+"(tensor(0.8214, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 9 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.80 , Tokens / Sec:  5063.6 , Learning Rate: 1.9e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.79 , Tokens / Sec:  4198.7 , Learning Rate: 1.9e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.82 , Tokens / Sec:  4185.6 , Learning Rate: 2.0e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.81 , Tokens / Sec:  4221.1 , Learning Rate: 2.0e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.80 , Tokens / Sec:  4326.3 , Learning Rate: 2.0e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.77 , Tokens / Sec:  4269.1 , Learning Rate: 2.1e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.77 , Tokens / Sec:  4263.8 , Learning Rate: 2.1e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.79 , Tokens / Sec:  4064.1 , Learning Rate: 2.1e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"94,00 %","45,00 %",
+[GPU0] Epoch 9 Validation ====,,,,
+"(tensor(0.8313, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 10 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.78 , Tokens / Sec:  4746.1 , Learning Rate: 2.1e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.74 , Tokens / Sec:  4142.4 , Learning Rate: 2.2e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.77 , Tokens / Sec:  4303.2 , Learning Rate: 2.2e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.80 , Tokens / Sec:  4156.4 , Learning Rate: 2.2e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.76 , Tokens / Sec:  4310.5 , Learning Rate: 2.2e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.79 , Tokens / Sec:  4124.6 , Learning Rate: 2.3e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.78 , Tokens / Sec:  4203.4 , Learning Rate: 2.3e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.77 , Tokens / Sec:  4143.5 , Learning Rate: 2.3e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"94,00 %","45,00 %",
+[GPU0] Epoch 10 Validation ====,,,,
+"(tensor(0.8101, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 11 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.74 , Tokens / Sec:  3964.9 , Learning Rate: 2.3e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.74 , Tokens / Sec:  4267.1 , Learning Rate: 2.4e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.74 , Tokens / Sec:  4143.4 , Learning Rate: 2.4e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.75 , Tokens / Sec:  4425.9 , Learning Rate: 2.4e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.76 , Tokens / Sec:  4102.4 , Learning Rate: 2.5e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.72 , Tokens / Sec:  4032.7 , Learning Rate: 2.5e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.71 , Tokens / Sec:  4179.7 , Learning Rate: 2.5e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.72 , Tokens / Sec:  4344.6 , Learning Rate: 2.5e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"94,00 %","45,00 %",
+[GPU0] Epoch 11 Validation ====,,,,
+"(tensor(0.8032, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 12 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.71 , Tokens / Sec:  4834.2 , Learning Rate: 2.6e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.71 , Tokens / Sec:  4198.4 , Learning Rate: 2.6e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.73 , Tokens / Sec:  4211.6 , Learning Rate: 2.6e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.71 , Tokens / Sec:  4305.2 , Learning Rate: 2.6e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.69 , Tokens / Sec:  4036.9 , Learning Rate: 2.7e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.74 , Tokens / Sec:  4164.7 , Learning Rate: 2.7e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.70 , Tokens / Sec:  4180.8 , Learning Rate: 2.7e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.73 , Tokens / Sec:  4325.8 , Learning Rate: 2.7e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 12 Validation ====,,,,
+"(tensor(0.7938, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 13 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.70 , Tokens / Sec:  4660.2 , Learning Rate: 2.8e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.66 , Tokens / Sec:  3825.6 , Learning Rate: 2.8e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.69 , Tokens / Sec:  4182.1 , Learning Rate: 2.8e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.68 , Tokens / Sec:  4339.0 , Learning Rate: 2.8e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.68 , Tokens / Sec:  4133.6 , Learning Rate: 2.9e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.68 , Tokens / Sec:  4326.9 , Learning Rate: 2.9e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.64 , Tokens / Sec:  4330.7 , Learning Rate: 2.9e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.67 , Tokens / Sec:  4237.0 , Learning Rate: 3.0e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"94,00 %","45,00 %",
+[GPU0] Epoch 13 Validation ====,,,,
+"(tensor(0.7864, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 14 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.65 , Tokens / Sec:  5049.2 , Learning Rate: 3.0e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.66 , Tokens / Sec:  4155.8 , Learning Rate: 3.0e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.64 , Tokens / Sec:  4060.0 , Learning Rate: 3.0e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.62 , Tokens / Sec:  3947.2 , Learning Rate: 3.1e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.61 , Tokens / Sec:  4368.9 , Learning Rate: 3.1e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.66 , Tokens / Sec:  3869.4 , Learning Rate: 3.1e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.62 , Tokens / Sec:  4236.4 , Learning Rate: 3.1e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.65 , Tokens / Sec:  4589.0 , Learning Rate: 3.2e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"94,00 %","45,00 %",
+[GPU0] Epoch 14 Validation ====,,,,
+"(tensor(0.7898, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 15 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.62 , Tokens / Sec:  4402.1 , Learning Rate: 3.2e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.61 , Tokens / Sec:  3993.1 , Learning Rate: 3.2e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.60 , Tokens / Sec:  4122.8 , Learning Rate: 3.2e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.59 , Tokens / Sec:  4334.5 , Learning Rate: 3.3e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.64 , Tokens / Sec:  4073.5 , Learning Rate: 3.3e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.65 , Tokens / Sec:  4305.3 , Learning Rate: 3.3e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.61 , Tokens / Sec:  4115.7 , Learning Rate: 3.4e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.62 , Tokens / Sec:  3998.9 , Learning Rate: 3.4e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"92,00 %","45,00 %",
+[GPU0] Epoch 15 Validation ====,,,,
+"(tensor(0.7909, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 16 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.61 , Tokens / Sec:  4452.7 , Learning Rate: 3.4e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.56 , Tokens / Sec:  4215.8 , Learning Rate: 3.4e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.56 , Tokens / Sec:  4271.7 , Learning Rate: 3.5e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.57 , Tokens / Sec:  4354.0 , Learning Rate: 3.5e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.59 , Tokens / Sec:  3785.0 , Learning Rate: 3.5e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.56 , Tokens / Sec:  4130.1 , Learning Rate: 3.5e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.54 , Tokens / Sec:  4030.0 , Learning Rate: 3.6e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.60 , Tokens / Sec:  3994.9 , Learning Rate: 3.6e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"82,00 %","45,00 %",
+[GPU0] Epoch 16 Validation ====,,,,
+"(tensor(0.7896, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 17 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.55 , Tokens / Sec:  4234.3 , Learning Rate: 3.6e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.56 , Tokens / Sec:  3991.3 , Learning Rate: 3.6e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.49 , Tokens / Sec:  3878.2 , Learning Rate: 3.7e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.60 , Tokens / Sec:  3692.5 , Learning Rate: 3.7e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.58 , Tokens / Sec:  4015.1 , Learning Rate: 3.7e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.53 , Tokens / Sec:  3889.7 , Learning Rate: 3.8e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.53 , Tokens / Sec:  4333.4 , Learning Rate: 3.8e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.56 , Tokens / Sec:  4088.7 , Learning Rate: 3.8e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"82,00 %","51,00 %",
+[GPU0] Epoch 17 Validation ====,,,,
+"(tensor(0.7979, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 18 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.52 , Tokens / Sec:  3865.6 , Learning Rate: 3.8e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.55 , Tokens / Sec:  4153.5 , Learning Rate: 3.9e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.51 , Tokens / Sec:  4349.6 , Learning Rate: 3.9e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.54 , Tokens / Sec:  3965.0 , Learning Rate: 3.9e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.50 , Tokens / Sec:  4171.4 , Learning Rate: 3.9e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.52 , Tokens / Sec:  4242.7 , Learning Rate: 4.0e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.52 , Tokens / Sec:  3820.6 , Learning Rate: 4.0e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.52 , Tokens / Sec:  3478.7 , Learning Rate: 4.0e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"83,00 %","53,00 %",
+[GPU0] Epoch 18 Validation ====,,,,
+"(tensor(0.8033, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,
+[GPU0] Epoch 19 Training ====,,,,
+Epoch Step:      1 , Accumulation Step:   1 , Loss:   0.44 , Tokens / Sec:  4050.2 , Learning Rate: 4.0e-04
+Epoch Step:     11 , Accumulation Step:   2 , Loss:   0.48 , Tokens / Sec:  4119.1 , Learning Rate: 4.1e-04
+Epoch Step:     21 , Accumulation Step:   3 , Loss:   0.50 , Tokens / Sec:  4208.5 , Learning Rate: 4.1e-04
+Epoch Step:     31 , Accumulation Step:   4 , Loss:   0.49 , Tokens / Sec:  3679.8 , Learning Rate: 4.1e-04
+Epoch Step:     41 , Accumulation Step:   5 , Loss:   0.50 , Tokens / Sec:  3991.0 , Learning Rate: 4.2e-04
+Epoch Step:     51 , Accumulation Step:   6 , Loss:   0.44 , Tokens / Sec:  4162.9 , Learning Rate: 4.2e-04
+Epoch Step:     61 , Accumulation Step:   7 , Loss:   0.50 , Tokens / Sec:  4088.7 , Learning Rate: 4.2e-04
+Epoch Step:     71 , Accumulation Step:   8 , Loss:   0.48 , Tokens / Sec:  3977.3 , Learning Rate: 4.2e-04
+, ID , GPU , MEM ,
+------------------,,,,
+,0,"82,00 %","53,00 %",
+[GPU0] Epoch 19 Validation ====,,,,
+"(tensor(0.8072, device='cuda:0'), <algorithms.symbolicTransformer.src.core.training.TrainState object at 0x7efec0c02730>)",,,,

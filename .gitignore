@@ -19,6 +19,7 @@ objects.json
 relationships.json
 chkpt_*
 tmp.py
+source_csv*
 
 # Configuration
 .github

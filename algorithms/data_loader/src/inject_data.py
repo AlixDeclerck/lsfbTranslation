@@ -9,16 +9,19 @@ Usage:
 import pandas
 import dal as db
 import retrieve_data as ff
-from common.constant import dir_separator, EnvType, SPLIT_FACTOR, XLSX_PATH, CSV_PATH, SELECTED_DB
+from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
+from common.constant import EnvType
 from docopt import docopt
 import os
 
 class ConteHandler:
 
-    def __init__(self, application_path):
+    def __init__(self, application_path, xlsx_path, csv_path, sf, selected_db):
         self.application_path = application_path
-        self.stakeholders_dir = application_path + XLSX_PATH
-        self.learning_dir = application_path + CSV_PATH
+        self.stakeholders_dir = application_path + xlsx_path
+        self.learning_dir = application_path + csv_path
+        self.split_factor = sf
+        self.selected_db = selected_db
 
     def convert(self):
         """
@@ -37,7 +40,7 @@ class ConteHandler:
         add in database (db_creation/contes)
         a new population of conte from csv files
         """
-        conn = db.data_provider(SELECTED_DB, self.application_path)
+        conn = db.data_provider(self.selected_db, self.application_path)
         cpt = 0
         for s in self.retrieve_csv_contes():
 
@@ -45,7 +48,7 @@ class ConteHandler:
             conte = ff.get_conte(self.learning_dir + s)
             for i, ln in enumerate(conte.iterrows()):
 
-                if (i % SPLIT_FACTOR) == 0:
+                if (i % int(self.split_factor)) == 0:
                     env_name = EnvType.TEST.value
                 else:
                     env_name = EnvType.TRAINING.value
@@ -114,8 +117,14 @@ class ConteHandler:
 
 if __name__ == "__main__":
 
+    # CONFIGURATION
+    config = load_config("../../symbolicTransformer/src/config.yaml")
+
     args = docopt(__doc__)
-    contes = ConteHandler(os.environ['HOME']+dir_separator+args['--app-path']+dir_separator)
+    contes = ConteHandler(
+        os.environ['HOME']+config['application_path']+args['--app-path']+config['application_path'],
+        config['configuration_path']['xlsx_path'], config['configuration_path']['csv_path'],
+        config['learning']['split_factor'], config['configuration_path']['selected_db'])
 
     # list the cvs in conte directory
     print(contes.retrieve_csv_contes())

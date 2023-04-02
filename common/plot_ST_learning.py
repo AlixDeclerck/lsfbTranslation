@@ -50,9 +50,9 @@ if __name__ == '__main__':
     plt.plot(range(len(res_eval)), res_eval, c=curves_color2, label="symbolic transformer loss in validation")
     plt.legend()
     plt.ylabel("Learning")
-    plt.xlabel("overtraining around 12.5 epochs")
+    plt.xlabel("epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-03-31.png')
+    plt.savefig('img/learning_curves_ST_2023-04-02.png')
     plt.show()
 

@@ -29,7 +29,6 @@ nlp = spacy.load("fr_core_news_sm")     # nlp : the doc object
 application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
 
 def main():
-    # learning_corpus = retrieve_mysql_datas_from(EnvType.DEV, application_path)
 
     for txt in samples.cinderella:
         phrases = SpacyPhrase(nlp(txt))

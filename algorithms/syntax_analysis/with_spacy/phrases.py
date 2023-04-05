@@ -65,6 +65,7 @@ class SpacyPhrase:
             for s in sub_phrase.tense:
                 self.tenses.append(s)
 
+
     """
     create a sentence from tokens and print it
     """
@@ -74,13 +75,13 @@ class SpacyPhrase:
 
         # tenses ()
         if len(self.tenses) < 1:
-            tenses = str(Tag.UNKNOWN.value)
+            tenses = str(Tag.UNKNOWN.value[0])
         else:
             tenses = "".join([str(x) for x in self.tenses if len(x) > 0])
 
         # display tokens and tenses
         if len(self.tokens) < 1:
-            print(str(Tag.UNKNOWN.value)+"|"+tenses)
+            print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
         else:
             res = ""
 
@@ -98,4 +99,3 @@ class SpacyPhrase:
 
     def __len__(self):
         return len(self.scene)
-

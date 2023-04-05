@@ -22,6 +22,42 @@ def get_conte(path):
     conte.columns = ["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM", "SECOND_FR", "SECOND_EN"]
     return conte.filter(["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM"])
 
+def show_mysql_conte(application_path):
+    """
+    get a dictionary from dataset :
+    :param application_path: the application path to retrieve database information
+    :return: dictionary
+    """
+    request = "select distinct p.story_name from PARALLEL_ITEM p order by p.story_name asc;"
+    pt = dal.data_provider(SELECTED_DB, application_path)
+    cur = pt.cursor()
+    cur.execute(request)
+    for x in cur.fetchall():
+        print("- "+x[0])
+
+
+def retrieve_mysql_conte(conte_num, language, application_path):
+    """
+    get a dictionary from dataset :
+    :param conte_num: a conte designed by a num
+    :param language: text_fr, text_en, gloss_lsf
+    :param application_path: the application path to retrieve database information
+    :return: dictionary
+    """
+    res = []
+    request = "select p.num, p."+str(language)+" from PARALLEL_ITEM p where p.story_name like '"+str(conte_num)+"%';"
+    pt = dal.data_provider(SELECTED_DB, application_path)
+    cur = pt.cursor()
+    cur.execute(request)
+
+    for x in cur.fetchall():
+        res.append(x[1])
+
+    pt.close()
+
+    return res
+
+
 def retrieve_mysql_datas_from(subset_type, application_path):
     """
     get a dictionary from dataset : text_fr, text_en, gloss_lsf

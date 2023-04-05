@@ -3,6 +3,8 @@ negation_morph = "Neg"
 polarity_morph = "Polarity"
 negation_c1 = "PAS"
 negation_c2 = "PLUS"
+pp_morph = "VerbForm"
+pp_morph_value = "Part"
 
 class SubPhrase:
     def __init__(self):
@@ -18,20 +20,27 @@ class SubPhrase:
         if token.pos_ in ["AUX"]:
             self.tense.append(token.morph.get(tense_morph))
 
-        if token.pos_ in ["ADV", "NUM"]:  # EVENT ("ADP", ?)
+        if token.pos_ in ["NUM"]:  # EVENT ("ADP", ?)
             if negation_morph in token.morph.get(polarity_morph):
-                self.event.append(negation_c1)
+                # todo: PAS / PLUS / ...
+                # self.event.append(negation_c1) # "ADV" !!
+                self.event.append(token)
             else:
                 self.event.append(token)
 
         if token.pos_ in ["PART"]:  # CLASSIFICATOR
             self.classificator.append(token)
 
-        if token.pos_ in ["NOUN", "PROPN", "ADJ"]:  # SUBJECT (""PRON"
-            self.subject.append(token)
+        if token.pos_ in ["NOUN", "PROPN", "ADJ", "ADV"]:  # SUBJECT (""PRON"
+            if len(token.text) > 1 and (len(token.text) > 2 or "'" not in token.text):
+                self.subject.append(token)
 
         if token.pos_ in ["VERB"]:  # ACTION
-            self.action.append(token.lemma_)
+            if pp_morph_value in token.morph.get(pp_morph):
+                self.action.append(token.text)
+            else:
+                self.action.append(token.lemma_)
+
             self.tense.append(token.morph.get(tense_morph))
 
         else:  # UNCLASSIFIED

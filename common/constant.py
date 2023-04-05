@@ -49,6 +49,6 @@ class Corpus(Enum):
     The enum gives the dataframe index
     for each item coming from database
     """
-    TEXT_FR = "text_fr", 0
-    TEXT_EN = "text_en", 1
-    GLOSS_LSF = "gloss_lsf", 2
+    TEXT_FR = "text_fr", 0, "FR"
+    TEXT_EN = "text_en", 1, "EN"
+    GLOSS_LSF = "gloss_lsf", 2, "GLOSS_LSF"

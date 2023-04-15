@@ -44,7 +44,7 @@ Options:
 import math
 import sys
 import time
-from typing import Dict
+from typing import List, Dict
 
 import numpy as np
 import torch
@@ -52,12 +52,24 @@ import torch.nn.utils
 from docopt import docopt
 
 from NMT_utils import read_corpus, batch_iter
-from common.metrics.bleu import compute_corpus_level_bleu_score
 from common.metrics.perplexity import evaluate_ppl
 from common.output_decoder import beam_search_word2vec_id
 from nmt_model import NMT
+from nltk.translate.bleu_score import corpus_bleu
 from vocab import Vocab
+from common.constant import Hypothesis
 
+def compute_corpus_level_bleu_score(references: List[List[str]], hypotheses: List[Hypothesis]):  # -> float:
+    """ Given decoding results and reference sentences, compute corpus-level BLEU score.
+    @param references (List[List[str]]): a list of gold-standard reference target sentences
+    @param hypotheses (List[Hypothesis]): a list of hypotheses, one for each reference
+    @returns bleu_score: corpus-level BLEU score
+    """
+    if references[0][0] == '<s>':
+        references = [ref[1:-1] for ref in references]
+    bleu_score = corpus_bleu([[ref] for ref in references],
+                             [hyp.value for hyp in hypotheses])
+    return bleu_score
 
 def train(args: Dict):
     """ Train the NMT Model.

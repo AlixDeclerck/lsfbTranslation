@@ -59,6 +59,16 @@ def greedy_decode(model, data, max_len):
 
     hypotheses[0].value.append(str(Tag.STOP.value[1]))
 
+    clean_value = []
+    for val in hypotheses[0].value:
+        clean_value.append(val)
+        if val == Tag.STOP.value[0]:
+            break
+
+    hypotheses[0].value.clear()
+    for val in clean_value:
+        hypotheses[0].value.append(val)
+
     return hypotheses[0], estimation
 
 

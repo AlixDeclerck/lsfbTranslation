@@ -2,9 +2,9 @@ learning:
     split_factor:             7
 
 layers:                       5                                 # originally 6
-batch_size:                   16                                # Annotated transformer choose 32
+batch_size:                   16                                 # Annotated transformer choose 32
 num_epochs:                   20                                # Annotated transformer choose 8
-dimension:                    512
+dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
 feed_forward_dimension:       2048
 h_attention_layers:           8                                 # h=8 parallel attention layers
 dropout:                      0.1
@@ -35,6 +35,7 @@ architecture_dev_mode:        True                              # True for "EN",
 using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
 distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
 
+fast_text_corpus:             True                              # Spacy if false
 persist_learning_measure:     False                             # Write measures in database
 beam_search:                  True                              # False for greedy search
 beam:

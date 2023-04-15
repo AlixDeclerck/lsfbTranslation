@@ -12,10 +12,7 @@ import matplotlib.pyplot as plt
 import pandas
 from docopt import docopt
 
-from common.constant import dir_separator
-
-curves_color1 = '#5BCFFA'
-curves_color2 = '#F5ABB9'
+from common.constant import dir_separator, color1, color2
 
 NUMBER_OF_TRAINING_RESULTS = 8
 
@@ -26,7 +23,7 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-03-31.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-15_b.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
 
@@ -46,13 +43,12 @@ if __name__ == '__main__':
             res_eval.append(float(tmp))
 
     # display loss curve
-    plt.plot(range(len(res)), res, c=curves_color1, label="symbolic transformer loss in training")
-    plt.plot(range(len(res_eval)), res_eval, c=curves_color2, label="symbolic transformer loss in validation")
+    plt.plot(range(len(res)), res, c=color1, label="learning phase - training")
+    plt.plot(range(len(res_eval)), res_eval, c=color2, label="learning phase - validation")
     plt.legend()
-    plt.ylabel("Learning")
-    plt.xlabel("epochs")
+    plt.ylabel("Kullback-Leibler divergence loss")
+    plt.xlabel("epochs - overtraining around 16")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-04-02.png')
+    plt.savefig('img/learning_curves_ST_2023-04-15b.png')
     plt.show()
-

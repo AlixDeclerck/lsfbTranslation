@@ -4,7 +4,7 @@ from collections import namedtuple
 
 # todo in config file :
 color1 = '#FF99EE'
-color2 = '#7799EE'
+color2 = '#000033'
 SELECTED_DB = "db_dev"
 SPLIT_FACTOR = 7
 XLSX_PATH = "data/other_conte/xlsx/"

@@ -36,6 +36,7 @@ conda install -c conda-forge matplotlib
 conda install -c conda-forge pycryptodome
 conda install -c anaconda cryptography
 conda install -c conda-forge scikit-plot
+conda install -c conda-forge gensim
 ```
 
 ### Symbolic transformer

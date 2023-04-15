@@ -67,7 +67,7 @@ def train_worker(
     torch.cuda.set_device(gpu)
 
     pad_idx = vocab.tgt[Tag.BLANK.value[0]]
-    d_model = 512
+    d_model = config["dimension"]
     model = NMT(vocab, config)
     model.cuda(gpu)
     module = model

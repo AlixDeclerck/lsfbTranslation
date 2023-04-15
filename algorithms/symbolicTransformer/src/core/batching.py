@@ -17,7 +17,7 @@ def collate_batch(
         vocab: Vocab,
         device,
         max_padding=128,
-        pad_id=2):
+        pad_id=Tag.BLANK.value[1]):
 
     bs_id = torch.tensor([0], device=device)  # <s> token id
     eos_id = torch.tensor([1], device=device)  # </s> token id
@@ -70,7 +70,7 @@ def create_dataloaders(
             vocab,
             device,
             max_padding=max_padding,
-            pad_id=vocab.src.get_stoi()[Tag.BLANK.value[0]],
+            pad_id=Tag.BLANK.value[1],
         )
 
     # Dataset that will do the batches

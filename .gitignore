@@ -21,6 +21,7 @@ chkpt_*
 tmp.py
 source_csv*
 report
+.vector_cache
 
 # Configuration
 .github

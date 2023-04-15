@@ -52,7 +52,7 @@ class NMT(nn.Module):
 
         self.encoder = Encoder(EncoderLayer(self.d_model, c(self.attn), c(ff), dropout), n)
         self.decoder = Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(ff), dropout), n)
-        self.src_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.src)), c(position))
+        self.src_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.src), embed_weights=self.vocab.src_vector), c(position))
         self.tgt_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.tgt)), c(position))
         self.generator = Generator(self.d_model, len(vocab.tgt))
 
@@ -294,10 +294,13 @@ class PositionwiseFeedForward(nn.Module):
 
 
 class Embeddings(nn.Module):
-    def __init__(self, d_model, vocab):
+    def __init__(self, d_model, vocab, embed_weights=None):
         super(Embeddings, self).__init__()
         self.lut = nn.Embedding(vocab, d_model)
         self.d_model = d_model
+
+        if embed_weights is not None:
+            self.lut.from_pretrained(embed_weights)  # with a vocab_size X d_model embeddings
 
     def forward(self, x):
         return self.lut(x) * math.sqrt(self.d_model)

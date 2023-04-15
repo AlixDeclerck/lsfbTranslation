@@ -6,21 +6,20 @@ Usage:
     decoding_phase.py cpu --app-path=<file>
 """
 
+import os
+
 import torch
 from docopt import docopt
-import os
-from nltk.translate.bleu_score import corpus_bleu
 
-from common.constant import pretty_print_hypothesis, Tag, dir_separator
-from common.output_decoder import greedy_decode, beam_search
-from common.metrics.bleu import compute_corpus_level_bleu_score
-
-from common.constant import EnvType
 from algorithms.symbolicTransformer.src.core.architecture import NMT
+from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps, get_decoder_self
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import load_spacy_tokenizers, Vocab
-from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
+from common.constant import EnvType
+from common.constant import pretty_print_hypothesis, dir_separator
+from common.metrics.bleu import processing_bleu_score
+from common.output_decoder import greedy_decode, beam_search
 
 
 def check_outputs(
@@ -47,8 +46,10 @@ def check_outputs(
         vocab.pretty_print_token("Target Text (Ground Truth) : ", reference)
 
         # DECODING
-        if learning_configuration["beam_search"]:
+        if not learning_configuration["beam_search"]:
+            model_output_beam = None
 
+        else:
             hypothesis_beam, estimation_beam = beam_search(
                 model,
                 data_val_batch,
@@ -58,15 +59,7 @@ def check_outputs(
 
             # pretty print the model output
             model_output_beam = pretty_print_hypothesis(hypothesis_beam, "beam")
-
-            bleu_score = corpus_bleu([
-                [ref] for ref in model.output_format_reference(reference)],
-                [hyp.value for hyp in model.output_format_hypothesis(hypothesis_beam)])
-
-            print(f"BLEU score * 100 : {bleu_score*100} ---")
-
-        else:
-            model_output_beam = None
+            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["output_max_words"])
 
         hypothesis_greedy, estimation_greedy = greedy_decode(
             model,
@@ -76,12 +69,7 @@ def check_outputs(
 
         # pretty print the model output
         model_output_greedy = pretty_print_hypothesis(hypothesis_greedy, "greedy")
-
-        bleu_score = corpus_bleu([
-            [ref] for ref in model.output_format_reference(reference)],
-            [hyp.value for hyp in model.output_format_hypothesis(hypothesis_greedy)])
-
-        print(f"BLEU score * 100 : {bleu_score*100} ---")
+        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["output_max_words"])
 
         # CONSTRUCT RESULT VALUE LIST
         results.append([

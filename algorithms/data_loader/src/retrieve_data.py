@@ -19,8 +19,8 @@ def get_conte(path):
     :return: conte dataframe
     """
     conte = pandas.read_csv(path, sep=',', delimiter=None, header='infer', names=None, index_col=None, na_values=str, keep_default_na=False)
-    conte.columns = ["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM", "SECOND_FR", "SECOND_EN"]
-    return conte.filter(["FR", "GLOSS_LSF", "GENERATED", "TENSE", "GLOSS_LSFB", "EN", "NUM"])
+    conte.columns = ["FR", "GLOSS_LSF", "GENERATED_LSF", "TENSE", "GLOSS_LSFB", "EN", "NUM", "GENERATED_FR", "GENERATED_EN"]
+    return conte.filter(["FR", "GLOSS_LSF", "GENERATED_LSF", "TENSE", "GLOSS_LSFB", "EN", "NUM", "GENERATED_FR", "GENERATED_EN"])
 
 def show_mysql_conte(application_path):
     """
@@ -66,16 +66,31 @@ def retrieve_mysql_datas_from(subset_type, application_path):
     :return: dictionary
     """
     res = []
-    request = "select p.FR, p.EN, p.GLOSS_LSF from PARALLEL_ITEM as p where p.env_type = '"+str(subset_type)+"';"
+    request = "select p.FR, p.GENERATED_FR, p.EN, p.GENERATED_EN, p.GLOSS_LSF, p.GENERATED_LSF from PARALLEL_ITEM as p where p.env_type = '"+str(subset_type)+"';"
     pt = dal.data_provider(SELECTED_DB, application_path)
     cur = pt.cursor()
     cur.execute(request)
 
     for x in cur.fetchall():
+        if x[0] is not None:
+            corpus_fr = x[0]
+        else:
+            corpus_fr = x[1]
+
+        if x[3] is not None:
+            corpus_en = x[3]
+        else:
+            corpus_en = x[2]
+
+        if x[4] is not None:
+            corpus_glosses = x[4]
+        else:
+            corpus_glosses = x[5]
+
         res.append({
-            Corpus.TEXT_FR.value[0]: x[0],
-            Corpus.TEXT_EN.value[0]: x[1],
-            Corpus.GLOSS_LSF.value[0]: x[2]
+            Corpus.TEXT_FR.value[0]: corpus_fr,
+            Corpus.TEXT_EN.value[0]: corpus_en,
+            Corpus.GLOSS_LSF.value[0]: corpus_glosses
         })
 
     pt.close()

@@ -56,14 +56,16 @@ class ConteHandler:
                 print(f"--- {env_name} insertions --------------")
                 text_fr = ln[1].FR
                 gloss_lsf = ln[1].GLOSS_LSF
-                generated = ln[1].GENERATED
+                generated_lsf = ln[1].GENERATED_LSF
                 tense = ln[1].TENSE
                 gloss_lsfb = ln[1].GLOSS_LSFB
                 text_en = ln[1].EN
                 num_line = ln[1].NUM
-                print(f"[{i}] inserted {story_name} | {text_fr} | {gloss_lsf} | {generated} | {tense} | {gloss_lsfb} | {text_en} | {num_line} | {env_name} ")
-                sql = "INSERT INTO PARALLEL_ITEM (story_name, FR, GLOSS_LSF, GENERATED_LSF, TENSE, GLOSS_LSFB, EN, NUM, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (story_name, text_fr, gloss_lsf, generated, tense, gloss_lsfb, text_en, num_line, env_name)
+                generated_fr = ln[1].GENERATED_FR
+                generated_en = ln[1].GENERATED_EN
+                print(f"[{i}] inserted {story_name} | {text_fr} | {gloss_lsf} | {generated_lsf} | {tense} | {gloss_lsfb} | {text_en} | {num_line} | {generated_fr} | {generated_en} | {env_name} ")
+                sql = "INSERT INTO PARALLEL_ITEM (story_name, FR, GLOSS_LSF, GENERATED_LSF, TENSE, GLOSS_LSFB, EN, NUM, GENERATED_FR, GENERATED_EN, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (story_name, text_fr, gloss_lsf, generated_lsf, tense, gloss_lsfb, text_en, num_line, generated_fr, generated_en, env_name)
 
                 cur = conn.cursor()
                 cur.execute(sql, val)

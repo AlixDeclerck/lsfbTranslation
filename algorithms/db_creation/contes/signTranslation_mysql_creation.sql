@@ -29,6 +29,7 @@ INSERT INTO STORY (file_name, id_author) VALUES ("003_marie",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("004_fear",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("005_wolf_and_lambs",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("006_thrusty_john",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("007_good_bargain",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("008_wonderfull_musicien",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("009_12_brothers",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("010_ragamuffins",1);
@@ -41,6 +42,22 @@ INSERT INTO STORY (file_name, id_author) VALUES ("016_three_snakes_leaves",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("017_white_snakes",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("021_cinderella",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("026_red_hood",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("027_bremen_town_musicians",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("028_singing_bones",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("029_devil_with_golden_hairs",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("030_louse_and_flea",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("031_girl_whithout_hand",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("032_clever_hans",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("033_three_languages",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("034_clever_else",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("035_tailor_in_heaven",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("036_wishing_table",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("037_tom_thumb",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("038_wedding_ms_fox",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("039_the_elves",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("040_robber",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("050_sleeping_beauty",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("053_snow_white",1);
 
 -- SEVERAL ELEMENTS (FOLDER, ENUM) ARE USING THE TEST, TRAINING AND VALIDATION NAMES
 -- ID SHOULD NOT BE CHANGED
@@ -58,8 +75,8 @@ CREATE TABLE PARALLEL_ITEM (
     GLOSS_LSFB varchar(512),
     EN MEDIUMTEXT,
     NUM int NOT NULL,
-    SECOND_FR MEDIUMTEXT,
-    SECOND_EN MEDIUMTEXT,
+    GENERATED_FR MEDIUMTEXT,
+    GENERATED_EN MEDIUMTEXT,
     env_type varchar(8) NOT NULL,
     PRIMARY KEY (story_name, NUM),
     FOREIGN KEY (story_name) REFERENCES STORY(file_name),

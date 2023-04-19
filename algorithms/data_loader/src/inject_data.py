@@ -32,49 +32,62 @@ class ConteHandler:
         for i in range(len(files_source)):
             source_path = self.stakeholders_dir+files_source[i]
             destination_path = self.learning_dir+files_destination[i]
-            df = pandas.DataFrame(pandas.read_excel(source_path))
+            read_file = pandas.read_excel(source_path)
+            df = pandas.DataFrame(read_file)
             df.to_csv(destination_path, index=False, header=True)
 
-    def populate_db(self):
+    def populate_db_from_csv(self):
         """
         add in database (db_creation/contes)
         a new population of conte from csv files
         """
         conn = db.data_provider(self.selected_db, self.application_path)
+
+        sql = "delete from PARALLEL_ITEM "
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit()
+
         cpt = 0
         for s in self.retrieve_csv_contes():
 
             story_name = s.removesuffix(".csv")
+            print("insert : "+story_name)
             conte = ff.get_conte(self.learning_dir + s)
-            for i, ln in enumerate(conte.iterrows()):
-
-                if (i % int(self.split_factor)) == 0:
-                    env_name = EnvType.TEST.value
-                else:
-                    env_name = EnvType.TRAINING.value
-
-                print(f"--- {env_name} insertions --------------")
-                text_fr = ln[1].FR
-                gloss_lsf = ln[1].GLOSS_LSF
-                generated_lsf = ln[1].GENERATED_LSF
-                tense = ln[1].TENSE
-                gloss_lsfb = ln[1].GLOSS_LSFB
-                text_en = ln[1].EN
-                num_line = ln[1].NUM
-                generated_fr = ln[1].GENERATED_FR
-                generated_en = ln[1].GENERATED_EN
-                print(f"[{i}] inserted {story_name} | {text_fr} | {gloss_lsf} | {generated_lsf} | {tense} | {gloss_lsfb} | {text_en} | {num_line} | {generated_fr} | {generated_en} | {env_name} ")
-                sql = "INSERT INTO PARALLEL_ITEM (story_name, FR, GLOSS_LSF, GENERATED_LSF, TENSE, GLOSS_LSFB, EN, NUM, GENERATED_FR, GENERATED_EN, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (story_name, text_fr, gloss_lsf, generated_lsf, tense, gloss_lsfb, text_en, num_line, generated_fr, generated_en, env_name)
-
-                cur = conn.cursor()
-                cur.execute(sql, val)
-
-                conn.commit()
-                cpt += 1
+            cpt = self.populate_db(conn, cpt, story_name, conte)
 
         print(f"{cpt} row inserted")
         conn.close()
+
+    def populate_db(self, conn, cpt, story_name, conte):
+
+        for i, ln in enumerate(conte.iterrows()):
+
+            if (i % int(self.split_factor)) == 0:
+                env_name = EnvType.TEST.value
+            else:
+                env_name = EnvType.TRAINING.value
+
+            print(f"--- {env_name} insertions --------------")
+            text_fr = ln[1].FR
+            gloss_lsf = ln[1].GLOSS_LSF
+            generated_lsf = ln[1].GENERATED_LSF
+            tense = ln[1].TENSE
+            gloss_lsfb = ln[1].GLOSS_LSFB
+            text_en = ln[1].EN
+            num_line = ln[1].NUM
+            generated_fr = ln[1].GENERATED_FR
+            generated_en = ln[1].GENERATED_EN
+            print(f"[{i}] inserted {story_name} | {text_fr} | {gloss_lsf} | {generated_lsf} | {tense} | {gloss_lsfb} | {text_en} | {num_line} | {generated_fr} | {generated_en} | {env_name} ")
+            sql = "INSERT INTO PARALLEL_ITEM (story_name, FR, GLOSS_LSF, GENERATED_LSF, TENSE, GLOSS_LSFB, EN, NUM, GENERATED_FR, GENERATED_EN, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (story_name, text_fr, gloss_lsf, generated_lsf, tense, gloss_lsfb, text_en, num_line, generated_fr, generated_en, env_name)
+
+            cur = conn.cursor()
+            cur.execute(sql, val)
+
+            conn.commit()
+            cpt += 1
+        return cpt
 
     def retrieve_csv_contes(self):
         """
@@ -135,4 +148,4 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (3346 row inserted)
-    # contes.populate_db()
+    # contes.populate_db_from_csv()

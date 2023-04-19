@@ -72,17 +72,17 @@ def retrieve_mysql_datas_from(subset_type, application_path):
     cur.execute(request)
 
     for x in cur.fetchall():
-        if x[0] is not None:
+        if x[0] != "":
             corpus_fr = x[0]
         else:
             corpus_fr = x[1]
 
-        if x[3] is not None:
+        if x[3] != "":
             corpus_en = x[3]
         else:
             corpus_en = x[2]
 
-        if x[4] is not None:
+        if x[4] != "":
             corpus_glosses = x[4]
         else:
             corpus_glosses = x[5]

@@ -23,7 +23,7 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-24_d.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-24_e.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
 
@@ -43,12 +43,12 @@ if __name__ == '__main__':
             res_eval.append(float(tmp))
 
     # display loss curve
-    plt.plot(range(len(res)), res, c=color1, label="learning phase - training")
-    plt.plot(range(len(res_eval)), res_eval, c=color2, label="learning phase - validation")
+    plt.plot(range(len(res)), res, c=color1, label="learning phase - glosses training")
+    plt.plot(range(len(res_eval)), res_eval, c=color2, label="learning phase - glosses validation")
     plt.legend()
     plt.ylabel("Kullback-Leibler divergence loss")
     plt.xlabel("epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-04-24_d.png')
+    plt.savefig('img/learning_curves_ST_2023-04-24_e.png')
     plt.show()

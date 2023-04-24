@@ -1,0 +1,36 @@
+Checking Model Outputs,
+Example 0 ========,
+Source Text (Input)        ," <s> et lui a dit qu' il devait lui fournir quelque chose de bon , </s>"
+Target Text (Ground Truth) , <s> CHOSE BON DIT DEVOIR FOURNIR </s>
+Model Output ( beam )     , <s> NOUVEAU DIRE CHOSE PEUR AVOIR </s> 
+BLEU score * 100 , 92.9728668645461 ---
+Model Output ( greedy )     , <s> DIRE CHOSE BON ALLER DONNER </s> 
+BLEU score * 100 , 93.59501559223197 ---
+Example 1 ========,
+Source Text (Input)        , <s> Elle a d' abord pensé qu' elle n' irait pas au mariage ; </s>
+Target Text (Ground Truth) , <s> ABORD PAS MARIAGE AVOIR PENSE ALLER </s>
+Model Output ( beam )     , <s> ABORD DOUCEMENT </s> 
+BLEU score * 100 , 92.01518985232838 ---
+Model Output ( greedy )     , <s> ABORD MARCHER MARIAGE PAS POUVOIR </s> 
+BLEU score * 100 , 92.62258381335468 ---
+Example 2 ========,
+Source Text (Input)        ," <s> et lorsque quelqu' un s' approchait trop près de lui et voulait l' attaquer , </s>"
+Target Text (Ground Truth) , <s> TROP PRES APPROCHER VOULOIR ATTAQUER </s>
+Model Output ( beam )     , <s> CANARD ELLE PENSER MOI REVENIR </s> 
+BLEU score * 100 , 92.6655143388149 ---
+Model Output ( greedy )     , <s> TROP PLUS PETIT ATTRAPER FLEUR </s> 
+BLEU score * 100 , 93.28964442408365 ---
+Example 3 ========,
+Source Text (Input)        , <s> Je ne serai plus ton père . </s>
+Target Text (Ground Truth) , <s> NE PLUS PERE ETRE </s>
+Model Output ( beam )     , <s> MOI PERE </s> 
+BLEU score * 100 , 94.24728512492106 ---
+Model Output ( greedy )     , <s> MOI PERE </s> 
+BLEU score * 100 , 94.24728512492106 ---
+Example 4 ========,
+Source Text (Input)        , <s> et est resté un an avec ce maître de même . </s>
+Target Text (Ground Truth) , <s> AN MAITRE MEME RESTE </s>
+Model Output ( beam )     , <s> TEMPS LONG ICI </s> 
+BLEU score * 100 , 93.93978580595311 ---
+Model Output ( greedy )     , <s> PAYSAN MEME MOMENT CHAT MEME MAITRE </s> 
+BLEU score * 100 , 92.00258244094087 ---

@@ -52,7 +52,7 @@ class NMT(nn.Module):
         self.encoder = Encoder(EncoderLayer(self.d_model, c(self.attn), c(ff), dropout), n)
         self.decoder = Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(ff), dropout), n)
         self.src_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.src), embed_weights=self.vocab.src_vector), c(position))
-        self.tgt_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.tgt)), c(position))
+        self.tgt_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.tgt), embed_weights=self.vocab.tgt_vector), c(position))
         self.generator = Generator(self.d_model, len(vocab.tgt))
 
         # This was important from their (annotated transformer) code.
@@ -86,16 +86,6 @@ class NMT(nn.Module):
         # We normalize the tgt_t+1 to probabilities
         return log_softmax(self.generator(decoding_output[:, -1]), dim=1)
 
-    # def output_format_reference(self, vec):
-    #     delta = self.output_max - len(vec)
-    #     res = vec + [str(Tag.BLANK.value)] * delta
-    #     return [res]
-    #
-    # def output_format_hypothesis(self, vec):
-    #     delta = self.output_max - len(vec.value)
-    #     res_val = vec.value + [str(Tag.BLANK.value)] * delta
-    #     res = Hypothesis(value=res_val, score=vec.score)
-    #     return [res]
 
 """
 The transformer architecture itself is basically :

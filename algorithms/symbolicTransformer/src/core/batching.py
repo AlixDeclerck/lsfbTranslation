@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
 from common.output_decoder import subsequent_mask
-from common.constant import Tag
+from common.constant import Tag, Corpus
 
 
 def collate_batch(
@@ -78,9 +78,9 @@ def create_dataloaders(
 
     # sub-select from target mode
     if architecture_dev_mode:
-        full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "EN"]].to_numpy()
+        full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
     else:
-        full = pandas.DataFrame(complete, columns=['FR', 'EN', 'gloss'])[["FR", "gloss"]].to_numpy()
+        full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
     train_iter, tmp_iter = split_list(full)
     test_iter, valid_iter = split_list(tmp_iter)

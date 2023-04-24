@@ -58,8 +58,8 @@ class Vocab:
         self.src_vector = None
         self.tgt = None
         self.tgt_vector = None
-        self.token_fr = tokens[0]
-        self.token_en = tokens[1]
+        self.french_tokenizer = tokens[0]
+        self.english_tokenizer = tokens[1]
         self.archi_dev_mode = config["architecture_dev_mode"]
         self.vocab_handler(
             config["model_path"]+config["vocab_file_name"],
@@ -152,13 +152,13 @@ class Vocab:
         return output(embedding.T)
 
     def tokenize_fr(self, text):
-        return self.tokenize(text, self.token_fr)
+        return self.tokenize(text, self.french_tokenizer)
 
     def tokenize_gloss(self, text):
-        return self.tokenize(text, self.token_fr)
+        return self.tokenize(text, self.french_tokenizer)
 
     def tokenize_en(self, text):
-        return self.tokenize(text, self.token_en)
+        return self.tokenize(text, self.english_tokenizer)
 
     def unembed_src(self, text):
         """Index to string on the source vocabulary"""

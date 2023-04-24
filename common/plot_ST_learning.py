@@ -23,7 +23,7 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-24_c.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-24_d.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
 
@@ -50,5 +50,5 @@ if __name__ == '__main__':
     plt.xlabel("epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-04-24_c.png')
+    plt.savefig('img/learning_curves_ST_2023-04-24_d.png')
     plt.show()

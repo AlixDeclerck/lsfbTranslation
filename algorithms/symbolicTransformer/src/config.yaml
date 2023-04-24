@@ -30,7 +30,7 @@ model_path:                   "model/"
 model_prefix:                 "symbolicTransformer_model_"
 model_suffix:                 "final.pt"
 vocab_file_name:              "vocab.pt"
-architecture_dev_mode:        True                              # True for "EN", False for "GLOSS"
+architecture_dev_mode:        False                              # True for "EN", False for "GLOSS"
 
 using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
 distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)

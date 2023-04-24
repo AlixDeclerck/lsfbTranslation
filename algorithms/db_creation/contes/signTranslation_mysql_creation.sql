@@ -70,7 +70,8 @@ INSERT INTO LANG (name) VALUES ("FR");
 INSERT INTO LANG (name) VALUES ("EN");
 INSERT INTO LANG (name) VALUES ("GLOSS_LSF");
 
--- PARALLELS
+-- PARALLELS are generalized,
+-- a text and a generated text for each LANG.name
 CREATE TABLE PARALLEL_ITEM (
    story_name varchar(48) NOT NULL,
    lang varchar(32) NOT NULL,
@@ -86,27 +87,15 @@ CREATE TABLE PARALLEL_ITEM (
    FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
 );
 
-
--- CREATE TABLE PARALLEL_ITEM (
--- story_name varchar(48) NOT NULL,
---    FR MEDIUMTEXT NOT NULL,
---    GLOSS_LSF varchar(512),
---    GENERATED_LSF varchar(512),
---    TENSE varchar(128),
---    GLOSS_LSFB varchar(512),
---    EN MEDIUMTEXT,
---    NUM int NOT NULL,
---    GENERATED_FR MEDIUMTEXT,
---    GENERATED_EN MEDIUMTEXT,
---    env_type varchar(8) NOT NULL,
---    PRIMARY KEY (story_name, NUM),
---    FOREIGN KEY (story_name) REFERENCES STORY(file_name),
---    FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
--- );
-
 -- USED REQUESTS
 -- DROP TABLE PARALLEL_ITEM
 -- DELETE FROM PARALLEL_ITEM WHERE story_name = "001_prince_frog"
--- SELECT * FROM PARALLEL_ITEM
 -- ALTER TABLE PARALLEL_ITEM MODIFY COLUMN TENSE VARCHAR(128);
--- select * from PARALLEL_ITEM s where s.FR like "%Raiponce,%" and story_name = "012_rapunzel";
+-- select  p2.txt as txt_fr, p2.txt_generated as fr_generated,
+--         p1.txt as txt_en, p1.txt_generated as en_generated,
+--         p3.txt as txt_gloss, p3.txt_generated as gloss_generated,
+--         p1.num as num, p1.story_name as story_name
+-- from PARALLEL_ITEM p1
+--          inner join PARALLEL_ITEM p2 on p1.num = p2.num and p1.story_name = p2.story_name
+--          inner join PARALLEL_ITEM p3 on p2.num = p3.num and p2.story_name = p3.story_name
+-- where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = 'TRAIN'

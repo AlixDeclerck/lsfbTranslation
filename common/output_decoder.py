@@ -142,7 +142,7 @@ def model_beam_search(model, batch_entry, beam_size: int = 5, max_decoding_time_
         t += 1
 
         # retrieve tokens from hypothesis
-        tgt = torch.tensor([model.vocab.embed_tgt(hyp) for hyp in hypotheses], dtype=torch.long, device=model.device)
+        tgt = torch.tensor([model.vocab.stoi_tgt(hyp) for hyp in hypotheses], dtype=torch.long, device=model.device)
 
         # compute the decoder output based on the attention time_t
         log_p_t = model.step(

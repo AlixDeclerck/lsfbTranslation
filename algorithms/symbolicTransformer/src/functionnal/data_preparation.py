@@ -4,9 +4,8 @@ import copy
 import spacy
 import torch
 import torchtext
-from torchtext.vocab import build_vocab_from_iterator, vocab
+from torchtext.vocab import build_vocab_from_iterator
 from common.constant import Tag, Corpus, EnvType
-
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 
 
@@ -66,9 +65,11 @@ class Vocab:
             config["model_path"]+config["vocab_file_name"],
             config["application_path"],
             config["dimension"],
-            bool(config["fast_text_corpus"]))
+            bool(config["fast_text_corpus"]),
+            bool(config["architecture_dev_mode"]),
+        )
 
-    def vocab_handler(self, file_path, application_path, dim, is_fast_text):
+    def vocab_handler(self, file_path, application_path, dim, is_fast_text, is_en):
         """handle the vocabulary (create or load if exists) """
         if not exists(file_path):
             self.src, self.tgt = self.vocab_builder_parallels(application_path)
@@ -77,14 +78,107 @@ class Vocab:
             self.src, self.tgt = torch.load(file_path)
 
         if is_fast_text:
-            self.src_vector = self.create_parallels_embeddings(dim)
+            self.src_vector = self.create_src_embeddings(dim)
+            self.tgt_vector = self.create_tgt_embeddings(dim, is_en)
 
-    def create_parallels_embeddings(self, dim):
-        # Corpus initialization
+    def vocab_builder_parallels(self, application_path):
+        """create a vocabulary (mapping between token and index - one hot vector)"""
+        special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
+        learning_corpus = []
+        for env in EnvType:
+            learning_corpus += retrieve_conte_dataset(env.value, application_path)
+
+        def yield_tokens(data_iter, tokenizer, index):
+            for from_to_tuple in data_iter:
+                yield tokenizer(from_to_tuple[index])
+
+        print("Building FRENCH Vocabulary ...")
+        vocab_src = build_vocab_from_iterator(
+            yield_tokens(learning_corpus, self.tokenize_fr, index=Corpus.TEXT_FR.value[1]),
+            min_freq=1,
+            specials=special_tag,
+        )
+
+        if self.archi_dev_mode:
+            print("Building ENGLISH Vocabulary ...")
+            vocab_tgt = build_vocab_from_iterator(
+                yield_tokens(learning_corpus, self.tokenize_en, index=Corpus.TEXT_EN.value[1]),
+                min_freq=1,
+                specials=special_tag)
+        else:
+            print("Building GLOSS Vocabulary ...")
+            vocab_tgt = build_vocab_from_iterator(
+                yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),
+                min_freq=1,
+                specials=special_tag)
+
+        vocab_src.set_default_index(vocab_src[str(Tag.UNKNOWN.value[0])])
+        vocab_tgt.set_default_index(vocab_tgt[str(Tag.UNKNOWN.value[0])])
+
+        return vocab_src, vocab_tgt
+
+    def create_src_embeddings(self, dim):
+        """
+            retrieve fasttext french embeddings for the source property
+            :param dim: the embeddings goes (token, 300)x(300, dim) with a Linear
+            :return: source embeddings
+        """
+        # corpus initialization
         fast_text_corpus = torchtext.vocab.FastText(language='fr')
-        corpus_dict = fast_text_corpus.stoi
-        corpus_embeddings = fast_text_corpus.vectors
 
+        # embedding
+        embedding, dimension = self.update_embeddings(fast_text_corpus.stoi, fast_text_corpus.vectors, self.src.vocab.itos_[4:])
+        output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
+
+        return output(embedding.T)
+
+    def create_tgt_embeddings(self, dim, is_en):
+        """
+            retrieve fasttext english / gloss embeddings for the source property
+            :param dim: the embeddings goes (token, 300)x(300, dim) with a Linear
+            :param is_en: target configuration : english or glosses
+            :return: target embeddings
+        """
+        # corpus initialization
+        if is_en:
+            fast_text_corpus = torchtext.vocab.FastText(language='en')
+        else:
+            fast_text_corpus = torchtext.vocab.FastText(language='fr')
+
+        # embedding
+        embedding, dimension = self.update_embeddings(fast_text_corpus.stoi, fast_text_corpus.vectors, self.tgt.vocab.itos_[4:])
+        output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
+
+        return output(embedding.T)
+
+    def tokenize_fr(self, text):
+        return self.tokenize(text, self.token_fr)
+
+    def tokenize_gloss(self, text):
+        return self.tokenize(text, self.token_fr)
+
+    def tokenize_en(self, text):
+        return self.tokenize(text, self.token_en)
+
+    def unembed_src(self, text):
+        """Index to string on the source vocabulary"""
+        return [self.src.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
+
+    def unembed_tgt(self, text):
+        """Index to string on the target vocabulary"""
+        return [self.tgt.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
+
+    def stoi_tgt(self, text):
+        """String to index on the target vocabulary"""
+        return [self.tgt[x] for x in text]
+
+    def save_vocab(self, file_path):
+        """Local persist at provided path"""
+        if file_path is not None and self.src is not None and self.tgt is not None:
+            torch.save((self.src, self.tgt), file_path)
+
+    @staticmethod
+    def update_embeddings(corpus_dict, corpus_embeddings, words):
         res = torch.cat((
             torch.zeros(corpus_embeddings.shape[1], 1),
             torch.unsqueeze(corpus_embeddings[0], 1),
@@ -92,19 +186,25 @@ class Vocab:
             torch.zeros(corpus_embeddings.shape[1], 1)), 1
         )
 
-        for word in self.src.vocab.itos_[4:]:
+        for word in words:
             if word in corpus_dict:
                 index = corpus_dict[word]
                 res = torch.cat((res, torch.unsqueeze(corpus_embeddings[index], 1)), 1)
             else:
                 res = torch.cat((res, torch.zeros(corpus_embeddings.shape[1], 1)), 1)
 
-        output = torch.nn.Linear(corpus_embeddings.shape[1], dim, bias=False, device=None, dtype=None)
-        return output(res.T)
+        return res, corpus_embeddings.shape[1]
+
+    @staticmethod
+    def pretty_print_token(txt, tokens):
+        print(
+            txt
+            + " ".join(tokens).replace("\n", "")
+        )
 
     @staticmethod
     def vocab_builder_fast_text(dim):
-
+        """A complete vocab builder that generate 10^6 tokens, need big GPU"""
         # Corpus initialization
         fast_text_corpus = torchtext.vocab.FastText(language='fr')
         corpus_dict = fast_text_corpus.stoi
@@ -151,85 +251,6 @@ class Vocab:
         )
 
         return corpus_dict, corpus_embeddings
-
-    def vocab_builder_parallels(self, application_path):
-        """create a vocabulary (mapping between token and index - one hot vector)"""
-        special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
-        learning_corpus = []
-        for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path)
-
-        def yield_tokens(data_iter, tokenizer, index):
-            for from_to_tuple in data_iter:
-                yield tokenizer(from_to_tuple[index])
-
-        print("Building FRENCH Vocabulary ...")
-        vocab_src = build_vocab_from_iterator(
-            yield_tokens(learning_corpus, self.tokenize_fr, index=Corpus.TEXT_FR.value[1]),
-            min_freq=1,
-            specials=special_tag,
-        )
-
-        if self.archi_dev_mode:
-            print("Building ENGLISH Vocabulary ...")
-            vocab_tgt = build_vocab_from_iterator(
-                yield_tokens(learning_corpus, self.tokenize_en, index=Corpus.TEXT_EN.value[1]),
-                min_freq=1,
-                specials=special_tag)
-        else:
-            print("Building GLOSS Vocabulary ...")
-            vocab_tgt = build_vocab_from_iterator(
-                yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),
-                min_freq=1,
-                specials=special_tag)
-
-        vocab_src.set_default_index(vocab_src[str(Tag.UNKNOWN.value[0])])
-        vocab_tgt.set_default_index(vocab_tgt[str(Tag.UNKNOWN.value[0])])
-
-        return vocab_src, vocab_tgt
-
-    def vocab_embedder_fast_text_fr(self):
-        """update vocabulary and embeddings with a d=300 vectors embedding and its vocabulary """
-        # vocab_tgt = torchtext.vocab.FastText(language='en')
-        vocab_src = torchtext.vocab.FastText(language='fr')
-        special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
-
-        self.src.vocab.itos_.clear()
-        self.src.vocab.itos_.append(special_tag+vocab_src.itos[1:])
-        self.src_vector = torch.cat((torch.cat((torch.zeros(300, 1), torch.unsqueeze(vocab_src.vectors[0], 1), torch.zeros(300, 1), torch.zeros(300, 1)), 1).T, vocab_src.vectors[1:]))
-
-    def tokenize_fr(self, text):
-        return self.tokenize(text, self.token_fr)
-
-    def tokenize_gloss(self, text):
-        return self.tokenize(text, self.token_fr)
-
-    def tokenize_en(self, text):
-        return self.tokenize(text, self.token_en)
-
-    def unembed_src(self, text):
-        """Index to string on the source vocabulary"""
-        return [self.src.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
-
-    def unembed_tgt(self, text):
-        """Index to string on the target vocabulary"""
-        return [self.tgt.get_itos()[x] for x in text if x != Tag.BLANK.value[1]]
-
-    def embed_tgt(self, text):
-        """String to index on the target vocabulary"""
-        return [self.tgt[x] for x in text]
-
-    def save_vocab(self, file_path):
-        """Local persist at provided path"""
-        if file_path is not None and self.src is not None and self.tgt is not None:
-            torch.save((self.src, self.tgt), file_path)
-
-    @staticmethod
-    def pretty_print_token(txt, tokens):
-        print(
-            txt
-            + " ".join(tokens).replace("\n", "")
-        )
 
     @staticmethod
     def tokenize(text, tokenizer):

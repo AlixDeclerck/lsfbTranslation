@@ -45,7 +45,7 @@ def retrieve_mysql_conte(conte_num, language, application_path):
     :return: dictionary
     """
     res = []
-    request = "select p.num, p."+str(language)+" from PARALLEL_ITEM p where p.story_name like '"+str(conte_num)+"%';"
+    request = "select p.num, p.txt from PARALLEL_ITEM p where p.story_name like '"+str(conte_num)+"%' and lang like "+str(language)+";"
     pt = dal.data_provider(SELECTED_DB, application_path)
     cur = pt.cursor()
     cur.execute(request)
@@ -66,7 +66,7 @@ def retrieve_mysql_datas_from(subset_type, application_path):
     :return: dictionary
     """
     res = []
-    request = "select p.FR, p.GENERATED_FR, p.EN, p.GENERATED_EN, p.GLOSS_LSF, p.GENERATED_LSF from PARALLEL_ITEM as p where p.env_type = '"+str(subset_type)+"';"
+    request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt as txt_gloss, p3.txt_generated as gloss_generated from PARALLEL_ITEM p1 inner join PARALLEL_ITEM p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join PARALLEL_ITEM p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"';"
     pt = dal.data_provider(SELECTED_DB, application_path)
     cur = pt.cursor()
     cur.execute(request)

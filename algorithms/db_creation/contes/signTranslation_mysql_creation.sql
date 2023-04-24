@@ -65,23 +65,44 @@ CREATE TABLE ENVIRONMENT (type varchar(8) NOT NULL, PRIMARY KEY (type));
 INSERT INTO ENVIRONMENT (type) VALUES ("train");
 INSERT INTO ENVIRONMENT (type) VALUES ("test");
 
+CREATE TABLE LANG (name varchar(16) NOT NULL, PRIMARY KEY (name));
+INSERT INTO LANG (name) VALUES ("FR");
+INSERT INTO LANG (name) VALUES ("EN");
+INSERT INTO LANG (name) VALUES ("GLOSS_LSF");
+
 -- PARALLELS
 CREATE TABLE PARALLEL_ITEM (
-    story_name varchar(48) NOT NULL,
-    FR MEDIUMTEXT NOT NULL,
-    GLOSS_LSF varchar(512),
-    GENERATED_LSF varchar(512),
-    TENSE varchar(128),
-    GLOSS_LSFB varchar(512),
-    EN MEDIUMTEXT,
-    NUM int NOT NULL,
-    GENERATED_FR MEDIUMTEXT,
-    GENERATED_EN MEDIUMTEXT,
-    env_type varchar(8) NOT NULL,
-    PRIMARY KEY (story_name, NUM),
-    FOREIGN KEY (story_name) REFERENCES STORY(file_name),
-    FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
+   story_name varchar(48) NOT NULL,
+   lang varchar(32) NOT NULL,
+   txt MEDIUMTEXT NOT NULL,
+   txt_generated varchar(512),
+   tense varchar(128),
+   num int NOT NULL,
+   score varchar(64),
+   env_type varchar(8) NOT NULL,
+   PRIMARY KEY (story_name, num, lang),
+   FOREIGN KEY (story_name) REFERENCES STORY(file_name),
+   FOREIGN KEY (lang) REFERENCES LANG(name),
+   FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
 );
+
+
+-- CREATE TABLE PARALLEL_ITEM (
+-- story_name varchar(48) NOT NULL,
+--    FR MEDIUMTEXT NOT NULL,
+--    GLOSS_LSF varchar(512),
+--    GENERATED_LSF varchar(512),
+--    TENSE varchar(128),
+--    GLOSS_LSFB varchar(512),
+--    EN MEDIUMTEXT,
+--    NUM int NOT NULL,
+--    GENERATED_FR MEDIUMTEXT,
+--    GENERATED_EN MEDIUMTEXT,
+--    env_type varchar(8) NOT NULL,
+--    PRIMARY KEY (story_name, NUM),
+--    FOREIGN KEY (story_name) REFERENCES STORY(file_name),
+--    FOREIGN KEY (env_type) REFERENCES ENVIRONMENT(type)
+-- );
 
 -- USED REQUESTS
 -- DROP TABLE PARALLEL_ITEM

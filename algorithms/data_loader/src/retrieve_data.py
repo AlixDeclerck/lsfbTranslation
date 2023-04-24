@@ -36,16 +36,22 @@ def show_mysql_conte(application_path):
         print("- "+x[0])
 
 
-def retrieve_mysql_conte(conte_num, language, application_path):
+def retrieve_mysql_conte(conte_num, language, application_path, generated=False):
     """
     get a dictionary from dataset :
     :param conte_num: a conte designed by a num
     :param language: text_fr, text_en, gloss_lsf
     :param application_path: the application path to retrieve database information
+    :param generated: False when expected translation, true when hypothesis
     :return: dictionary
     """
+    if generated:
+        txt_value = "p.txt_generated"
+    else:
+        txt_value = "p.txt"
+
     res = []
-    request = "select p.num, p.txt from PARALLEL_ITEM p where p.story_name like '"+str(conte_num)+"%' and lang like "+str(language)+";"
+    request = "select p.num, "+str(txt_value)+" from PARALLEL_ITEM p where p.story_name like '"+str(conte_num)+"%' and lang like '"+str(language)+"';"
     pt = dal.data_provider(SELECTED_DB, application_path)
     cur = pt.cursor()
     cur.execute(request)

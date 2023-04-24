@@ -65,7 +65,6 @@ class SpacyPhrase:
             for s in sub_phrase.tense:
                 self.tenses.append(s)
 
-
     """
     create a sentence from tokens and print it
     """

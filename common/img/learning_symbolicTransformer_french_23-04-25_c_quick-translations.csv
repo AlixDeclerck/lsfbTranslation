@@ -1,0 +1,36 @@
+Checking Model Outputs,
+Example 0 ========,
+Source Text (Input)        ," <s> Quand ils entendirent ces mots , les bons petits nains furent saisis de compassion et ils lui donnèrent le cercueil . </s>"
+Target Text (Ground Truth) , <s> MOTS ENTENDRE BONS PETITS NAINS COMPASSION SAISIS CERCUEIL DONNER </s>
+Model Output ( beam )     , <s> ENFANTS DIRE TOUS LES DEUX ACCEPTER </s> 
+BLEU score * 100 , 87.56835414470129 ---
+Model Output ( greedy )     , <s> DIRE AH MERE SEULEMENT NE PAS CERCUEIL FAIRE FAIT ? </s> 
+BLEU score * 100 , 86.60059948255235 ---
+Example 1 ========,
+Source Text (Input)        , <s> et nous devons vraiment montrer que nous en sommes reconnaissants . </s>
+Target Text (Ground Truth) , <s> VRAIMENT RECONNAISSANTS DEVOIR MONTRER </s>
+Model Output ( beam )     , <s> VRAIMENT PLAISIR AVOIR FAIRE </s> 
+BLEU score * 100 , 94.56408718881468 ---
+Model Output ( greedy )     , <s> VRAIMENT PLAISIR FAIRE AURAS SUREMENT </s> 
+BLEU score * 100 , 93.28964442408365 ---
+Example 2 ========,
+Source Text (Input)        ," <s> et quand elle vit que la paysanne en mangeait , elle ne put résister plus longtemps . </s>"
+Target Text (Ground Truth) , <s> PAYSANNE VOIR MANGER NE PUT PLUS LONGTEMPS RESISTER </s>
+Model Output ( beam )     , <s> NOURRICE VOIR PAS PLUS VITE <unk> MANGER </s> 
+BLEU score * 100 , 89.75398194027876 ---
+Model Output ( greedy )     , <s> VOIR FILLE PLUS BELLE JAMAIS ENCORE PLUS BELLE - <unk> </s> 
+BLEU score * 100 , 86.90393372164556 ---
+Example 3 ========,
+Source Text (Input)        , <s> et s' envolèrent vers la campagne . </s>
+Target Text (Ground Truth) , <s> CAMPAGNE ENVOLER </s>
+Model Output ( beam )     , <s> LUI TIRER </s> 
+BLEU score * 100 , 96.48830849339393 ---
+Model Output ( greedy )     , <s> ROI PRENDRE </s> 
+BLEU score * 100 , 96.48830849339393 ---
+Example 4 ========,
+Source Text (Input)        , <s> où vivaient les petites gens . </s>
+Target Text (Ground Truth) , <s> PETITES GENS VIVRE </s>
+Model Output ( beam )     , <s> GENS VOYAIENT </s> 
+BLEU score * 100 , 95.5216927313537 ---
+Model Output ( greedy )     , <s> NE PAS BOUGER GENS GENS VOYAIENT </s> 
+BLEU score * 100 , 91.69843751091292 ---

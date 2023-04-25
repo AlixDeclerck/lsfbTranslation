@@ -4,6 +4,7 @@ import copy
 import spacy
 import torch
 import torchtext
+import unidecode
 from torchtext.vocab import build_vocab_from_iterator
 from common.constant import Tag, Corpus, EnvType
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
@@ -142,11 +143,14 @@ class Vocab:
         # corpus initialization
         if is_en:
             fast_text_corpus = torchtext.vocab.FastText(language='en')
+            corpus_stoi = fast_text_corpus.stoi
+            corpus_vectors = fast_text_corpus.vectors
         else:
             fast_text_corpus = torchtext.vocab.FastText(language='fr')
+            corpus_stoi, corpus_vectors = self.gloss_the_corpus(fast_text_corpus)
 
         # embedding
-        embedding, dimension = self.update_embeddings(fast_text_corpus.stoi, fast_text_corpus.vectors, self.tgt.vocab.itos_[4:])
+        embedding, dimension = self.update_embeddings(corpus_stoi, corpus_vectors, self.tgt.vocab.itos_[4:])
         output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
 
         return output(embedding.T)
@@ -176,6 +180,31 @@ class Vocab:
         """Local persist at provided path"""
         if file_path is not None and self.src is not None and self.tgt is not None:
             torch.save((self.src, self.tgt), file_path)
+
+    @staticmethod
+    def gloss_the_corpus(original_corpus):
+        """
+        We use the fasttext french embedding to create glosses embeddings
+        Side effect : when a word (key) exist with different accents we keep only the last embedding (value)
+        Then we recreate a new stoi / vectors
+        :param original_corpus:
+        :return: stoi, vector
+        """
+        new_stoi = {'</s>': original_corpus.vectors[0]}
+
+        for x in list(original_corpus.stoi.items())[1:]:
+            new_key = unidecode.unidecode(x[0]).upper()
+            new_embedding = original_corpus.vectors[x[1]]
+            new_stoi.update({new_key: new_embedding})
+
+        res_stoi = {'</s>': 0}
+        res_vectors = [original_corpus.vectors[0]]
+        items = list(new_stoi.items())[1:]
+        for index, x in enumerate(items, start=1):
+            res_vectors.append(x[1])
+            res_stoi.update({x[0]: index})
+
+        return res_stoi, torch.stack(res_vectors)
 
     @staticmethod
     def update_embeddings(corpus_dict, corpus_embeddings, words):

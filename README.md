@@ -56,6 +56,7 @@ conda install -c conda-forge gputil
 conda install -c pytorch torchtext==0.12
 conda install -c anaconda altair
 conda install -c anaconda pyyaml
+conda install -c conda-forge unidecode
 ```
 
 ### Words are our glosses

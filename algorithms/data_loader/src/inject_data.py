@@ -10,7 +10,8 @@ import pandas
 import dal as db
 import retrieve_data as ff
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from common.constant import EnvType, Corpus
+from common.constant import EnvType, Corpus, Tag, Hypothesis
+from common.metrics.bleu import processing_bleu_score
 from docopt import docopt
 import os
 
@@ -90,14 +91,18 @@ class ConteHandler:
 
     @staticmethod
     def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name):
+        if text != "" and generated != "":
+            reference, hypothesis = assemble_txt_bleu(text, generated)
+            score = processing_bleu_score(reference, hypothesis, shrink=True, display=False)
+        else:
+            score = 0
 
-        print(f"[{i}] inserted {story_name}| {lang} | {text} | {generated} | {tense} | {num_line} | {env_name} ")
+        print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {num_line} | {env_name} ")
         sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (story_name, num_line, lang, text, generated, tense, 0, env_name)
+        val = (story_name, num_line, lang, text, generated, tense, score, env_name)
 
         cur = conn.cursor()
         cur.execute(sql, val)
-
         conn.commit()
 
     def populate_db(self, conn, cpt, story_name, conte):
@@ -168,6 +173,21 @@ class ConteHandler:
 
         return content
 
+def assemble_txt_bleu(ref, hyp):
+    return [Tag.START.value[0]] + ref.split(" ") + [Tag.STOP.value[0]], [Hypothesis(value=[Tag.START.value[0]] + hyp.split(" ") + [Tag.STOP.value[0]], score=None)][0]
+
+
+def show_bleu_score(ref, hyp):
+    reference, hypothesis = assemble_txt_bleu(ref, hyp)
+    print(f"ref : {ref}")
+    print(f"hyp : {hyp}")
+    processing_bleu_score(
+        reference,
+        hypothesis,
+        output_max=config["output_max_words"],
+        shrink=True,
+        display=True)
+
 # ----------------------------------------------------------
 
 
@@ -183,10 +203,13 @@ if __name__ == "__main__":
         config['learning']['split_factor'], config['configuration_path']['selected_db'])
 
     # list the cvs in conte directory
-    print(contes.retrieve_csv_contes())
+    # print(contes.retrieve_csv_contes())
 
     # uncomment to create csv files from the xlsx source folder
     # contes.convert()
 
-    # uncomment to add csv population to database (3346 row inserted)
+    # uncomment to add csv population to database (5802 phrases inserted)
     # contes.populate_db_from_csv()
+
+    # show bleu score
+    # show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")

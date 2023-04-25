@@ -59,7 +59,7 @@ def check_outputs(
 
             # pretty print the model output
             model_output_beam = pretty_print_hypothesis(hypothesis_beam, "beam")
-            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["output_max_words"])
+            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["output_max_words"], display=True, shrink=True)
 
         hypothesis_greedy, estimation_greedy = greedy_decode(
             model,
@@ -69,7 +69,7 @@ def check_outputs(
 
         # pretty print the model output
         model_output_greedy = pretty_print_hypothesis(hypothesis_greedy, "greedy")
-        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["output_max_words"])
+        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["output_max_words"], display=True, shrink=True)
 
         # CONSTRUCT RESULT VALUE LIST
         results.append([

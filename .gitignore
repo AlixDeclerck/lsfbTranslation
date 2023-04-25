@@ -19,7 +19,7 @@ objects.json
 relationships.json
 chkpt_*
 tmp.py
-source_csv*
+# source_csv*
 report
 .vector_cache
 

@@ -1,4 +1,5 @@
-"The hypothesis contains 0 counts of 4-gram overlaps. Therefore the BLEU score evaluates to 0, independently of how many N-gram overlaps of lower order it contains.",
+"The hypothesis contains 0 counts of 4-gram overlaps. Therefore the BLEU score evaluates to 0, ",
+independently of how many N-gram overlaps of lower order it contains.,
 Consider using lower n-gram order or use SmoothingFunction(),
 ,
 Example 0 ========,

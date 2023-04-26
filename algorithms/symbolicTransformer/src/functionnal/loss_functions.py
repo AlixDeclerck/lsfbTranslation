@@ -14,8 +14,8 @@ class SimpleLossCompute:
         :param generator: model generator
         :param criterion: Kullback-Leibler's criterion
         """
-        self.KLdl = config["KL_divergence_loss"]
-        self.using_gpu = config["using_gpu"]
+        self.KLdl = config["hyper_parameters"]["KL_divergence_loss"]
+        self.using_gpu = config["learning_config"]["using_gpu"]
         self.generator = generator
         self.criterion = criterion
 

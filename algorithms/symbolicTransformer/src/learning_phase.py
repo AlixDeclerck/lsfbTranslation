@@ -8,7 +8,6 @@ Usage:
 
 import os
 
-from common.constant import dir_separator
 from docopt import docopt
 from common.constant import EnvType
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import load_spacy_tokenizers, Vocab
@@ -24,7 +23,7 @@ if __name__ == '__main__':
 
     # update configuration of given parameters
     args = docopt(__doc__)
-    config["application_path"] = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator
+    config["configuration_path"]["application_path"] = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"]
 
     # PREPROCESSING
     vocab = Vocab(load_spacy_tokenizers(), config)

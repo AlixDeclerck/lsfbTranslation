@@ -198,9 +198,9 @@ if __name__ == "__main__":
 
     args = docopt(__doc__)
     contes = ConteHandler(
-        os.environ['HOME']+config['application_path']+args['--app-path']+config['application_path'],
+        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
         config['configuration_path']['xlsx_path'], config['configuration_path']['csv_path'],
-        config['learning']['split_factor'], config['configuration_path']['selected_db'])
+        config['learning_config']['split_factor'], config['configuration_path']['selected_db'])
 
     # list the cvs in conte directory
     # print(contes.retrieve_csv_contes())

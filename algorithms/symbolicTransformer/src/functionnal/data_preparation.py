@@ -10,15 +10,16 @@ from common.constant import Tag, Corpus, EnvType
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 
 
-def retrieve_conte_dataset(selected_environment, application_path):
+def retrieve_conte_dataset(selected_environment, application_path, selected_db):
     """
     Extract the parallel sentences and glosses from database
     :param selected_environment: a chosen string environment {train, test, dev}
     :param application_path: the given code path
+    :param selected_db: db_dev or db_test
     :return: corpus dataframe
     """
     db_dataset = []
-    for d in retrieve_mysql_datas_from(selected_environment, application_path):
+    for d in retrieve_mysql_datas_from(selected_environment, application_path, selected_db):
         db_dataset.append([
             d.get(Corpus.TEXT_FR.value[0]),
             d.get(Corpus.TEXT_EN.value[0]),
@@ -61,19 +62,20 @@ class Vocab:
         self.tgt_vector = None
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
-        self.archi_dev_mode = config["architecture_dev_mode"]
+        self.archi_dev_mode = config["learning_config"]["architecture_dev_mode"]
         self.vocab_handler(
-            config["model_path"]+config["vocab_file_name"],
-            config["application_path"],
-            config["dimension"],
-            bool(config["fast_text_corpus"]),
-            bool(config["architecture_dev_mode"]),
+            config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"],
+            config["configuration_path"]["application_path"],
+            config["hyper_parameters"]["dimension"],
+            bool(config["learning_config"]["fast_text_corpus"]),
+            bool(config["learning_config"]["architecture_dev_mode"]),
+            str(config["configuration_path"]["selected_db"])
         )
 
-    def vocab_handler(self, file_path, application_path, dim, is_fast_text, is_en):
+    def vocab_handler(self, file_path, application_path, dim, is_fast_text, is_en, selected_db):
         """handle the vocabulary (create or load if exists) """
         if not exists(file_path):
-            self.src, self.tgt = self.vocab_builder_parallels(application_path)
+            self.src, self.tgt = self.vocab_builder_parallels(application_path, selected_db)
             self.save_vocab(file_path)
         else:
             self.src, self.tgt = torch.load(file_path)
@@ -82,12 +84,12 @@ class Vocab:
             self.src_vector = self.create_src_embeddings(dim)
             self.tgt_vector = self.create_tgt_embeddings(dim, is_en)
 
-    def vocab_builder_parallels(self, application_path):
+    def vocab_builder_parallels(self, application_path, selected_db):
         """create a vocabulary (mapping between token and index - one hot vector)"""
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

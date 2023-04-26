@@ -59,6 +59,7 @@ def create_dataloaders(
         device,
         architecture_dev_mode,
         application_path,
+        selected_db,
         batch_size=12000,
         max_padding=128,
         is_distributed=True
@@ -74,7 +75,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    complete = retrieve_conte_dataset(environment, application_path)
+    complete = retrieve_conte_dataset(environment, application_path, selected_db)
 
     # sub-select from target mode
     if architecture_dev_mode:

@@ -16,7 +16,7 @@ from algorithms.symbolicTransformer.src.core.architecture import NMT
 
 
 def load_or_train_model(vocab, environment, config):
-    model_path = str(config["model_path"])+str(config["model_prefix"])+str(config["model_suffix"])
+    model_path = str(config["configuration_path"]["model_path"])+str(config["configuration_path"]["model_prefix"])+str(config["configuration_path"]["model_suffix"])
     if not exists(model_path):
         train_model(vocab, environment, config)
 
@@ -26,7 +26,7 @@ def load_or_train_model(vocab, environment, config):
 
 
 def train_model(vocab, environment, config):
-    if config["distributed"]:
+    if config["learning_config"]["distributed"]:
         train_distributed_model(vocab, config)
     else:
         train_worker(0, 1, vocab, environment, config, True, False)
@@ -93,20 +93,21 @@ def train_worker(
         vocab,
         environment,
         gpu,
-        architecture_dev_mode=config["architecture_dev_mode"],
-        application_path=config["application_path"],
-        batch_size=config["batch_size"] // ngpus_per_node,
-        max_padding=config["max_padding"],
+        architecture_dev_mode=config["learning_config"]["architecture_dev_mode"],
+        application_path=config["configuration_path"]["application_path"],
+        selected_db=config["configuration_path"]["selected_db"],
+        batch_size=config["hyper_parameters"]["batch_size"] // ngpus_per_node,
+        max_padding=config["learning_config"]["max_padding"],
         is_distributed=is_distributed
     )
 
     # optimizer
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=config["base_lr"],                               # learning rate (default: 1e-3)
+        lr=config["hyper_parameters"]["base_lr"],                               # learning rate (default: 1e-3)
         betas=(0.9, 0.98),                                  # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
         eps=1e-9,                                           # term added to the denominator to improve numerical stability
-        weight_decay=config["optimizer_weight_decay"],      # weight decay (L2 penalty) (default: 0)
+        weight_decay=config["hyper_parameters"]["optimizer_weight_decay"],      # weight decay (L2 penalty) (default: 0)
         amsgrad=False                                       # AMSGrad variant (default: False)
     )
 
@@ -114,7 +115,7 @@ def train_worker(
     lr_scheduler = LambdaLR(
         optimizer=optimizer,
         lr_lambda=lambda step: rate(
-            step, d_model, factor=1, warmup=config["warmup"]
+            step, d_model, factor=1, warmup=config["hyper_parameters"]["warmup"]
         ),
     )
 
@@ -122,7 +123,7 @@ def train_worker(
     train_state = TrainState()
 
     # training by epochs
-    for epoch in range(config["num_epochs"]):
+    for epoch in range(config["hyper_parameters"]["num_epochs"]):
         if is_distributed:
             train_dataloader.sampler.set_epoch(epoch)
             valid_dataloader.sampler.set_epoch(epoch)
@@ -136,16 +137,16 @@ def train_worker(
             SimpleLossCompute(module.generator, criterion, config),
             optimizer,
             lr_scheduler,
-            accum_step=config["accum_step"],
+            accum_step=config["hyper_parameters"]["accum_step"],
             mode="train+log",
-            accum_iter=config["accum_iter"],
+            accum_iter=config["hyper_parameters"]["accum_iter"],
             train_state=train_state,
         )
 
         # saving module
         GPUtil.showUtilization()
         if is_main_process and model_saving_strategy:
-            file_path = "%s%.2d.pt" % (config["model_path"]+config["model_prefix"], epoch)
+            file_path = "%s%.2d.pt" % (config["configuration_path"]["model_path"]+config["configuration_path"]["model_prefix"], epoch)
             torch.save(module.state_dict(), file_path)
 
         torch.cuda.empty_cache()
@@ -159,7 +160,7 @@ def train_worker(
             SimpleLossCompute(module.generator, criterion, config),
             DummyOptimizer(),
             DummyScheduler(),
-            accum_step=config["accum_step"],
+            accum_step=config["hyper_parameters"]["accum_step"],
             mode="eval",
         )
 
@@ -168,7 +169,7 @@ def train_worker(
         torch.cuda.empty_cache()
 
     if model_saving_strategy:
-        file_path = "%s%s%s" % (config["model_path"], config["model_prefix"], config["model_suffix"])
+        file_path = "%s%s%s" % (config["configuration_path"]["model_path"], config["configuration_path"]["model_prefix"], config["configuration_path"]["model_suffix"])
         torch.save(module.state_dict(), file_path)
 
 

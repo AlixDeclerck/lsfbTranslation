@@ -13,6 +13,7 @@ from phrases import SpacyPhrase
 from data.conte import samples
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_conte, show_mysql_conte
 from common.constant import Corpus
+from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 txt_samples = [
     "La perfection réside dans l'amour que l'on porte.",
@@ -40,12 +41,14 @@ def format_nbr(num):
 
 def main():
 
+    config = load_config()
+
     if args['--mode'] == "list":
-        show_mysql_conte(application_path)
+        show_mysql_conte(application_path, config["configuration_path"]["selected_db"])
 
     else:
         if args['--mode'] == "database":
-            learning_corpus = retrieve_mysql_conte(format_nbr(53), Corpus.TEXT_FR.value[2], application_path, False)
+            learning_corpus = retrieve_mysql_conte(format_nbr(53), Corpus.TEXT_FR.value[2], application_path, config["configuration_path"]["selected_db"], False)
         else:
             learning_corpus = samples.cinderella
 

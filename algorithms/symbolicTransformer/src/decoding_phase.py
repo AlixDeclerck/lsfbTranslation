@@ -17,7 +17,7 @@ from algorithms.symbolicTransformer.src.functionnal.attention_visualization impo
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import load_spacy_tokenizers, Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType
-from common.constant import pretty_print_hypothesis, dir_separator
+from common.constant import pretty_print_hypothesis
 from common.metrics.bleu import processing_bleu_score
 from common.output_decoder import greedy_decode, beam_search
 
@@ -46,30 +46,30 @@ def check_outputs(
         vocab.pretty_print_token("Target Text (Ground Truth) : ", reference)
 
         # DECODING
-        if not learning_configuration["beam_search"]:
+        if not learning_configuration["inference_decoding"]["beam_search"]:
             model_output_beam = None
 
         else:
             hypothesis_beam, estimation_beam = beam_search(
                 model,
                 data_val_batch,
-                beam_size=int(learning_configuration["beam"]['beam-size']),
-                max_decoding_time_step=int(learning_configuration["beam"]['max-decoding-time-step'])
+                beam_size=int(learning_configuration["inference_decoding"]['beam-size']),
+                max_decoding_time_step=int(learning_configuration["inference_decoding"]['max-decoding-time-step'])
             )
 
             # pretty print the model output
             model_output_beam = pretty_print_hypothesis(hypothesis_beam, "beam")
-            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["output_max_words"], display=True, shrink=True)
+            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["learning_config"]["output_max_words"], display=True, shrink=True)
 
         hypothesis_greedy, estimation_greedy = greedy_decode(
             model,
             data_val_batch,
-            learning_configuration["max_padding"]
+            learning_configuration["learning_config"]["max_padding"]
         )
 
         # pretty print the model output
         model_output_greedy = pretty_print_hypothesis(hypothesis_greedy, "greedy")
-        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["output_max_words"], display=True, shrink=True)
+        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["learning_config"]["output_max_words"], display=True, shrink=True)
 
         # CONSTRUCT RESULT VALUE LIST
         results.append([
@@ -92,8 +92,9 @@ def run_model_example(config, n_examples=5):
         vocab,
         EnvType.TEST.value,
         torch.device("cpu"),
-        architecture_dev_mode=config["architecture_dev_mode"],
+        architecture_dev_mode=config["learning_config"]["architecture_dev_mode"],
         application_path=application_path,
+        selected_db=config["configuration_path"]["selected_db"],
         batch_size=1,
         is_distributed=False
     )
@@ -102,7 +103,7 @@ def run_model_example(config, n_examples=5):
 
     model = NMT(vocab, config)
     model.load_state_dict(
-        torch.load(config["model_path"]+config["model_prefix"]+config["model_suffix"], map_location=torch.device("cpu"))
+        torch.load(config["configuration_path"]["model_path"]+config["configuration_path"]["model_prefix"]+config["configuration_path"]["model_suffix"], map_location=torch.device("cpu"))
     )
 
     print("Checking Model Outputs:")
@@ -121,14 +122,14 @@ if __name__ == '__main__':
 
     # CONFIGURATION
     args = docopt(__doc__)
-    application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
-    torch.cuda.empty_cache()
     learning_configuration = load_config()
+    application_path = os.environ['HOME'] + learning_configuration["configuration_path"]["application_path"] + args['--app-path'] + learning_configuration["configuration_path"]["application_path"]
+    torch.cuda.empty_cache()
 
     if not args['cpu']:
-        learning_configuration["using_gpu"] = True
+        learning_configuration["learning_config"]["using_gpu"] = True
     else:
-        learning_configuration["using_gpu"] = False
+        learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
     used_model, inferred_data = run_model_example(config=learning_configuration)

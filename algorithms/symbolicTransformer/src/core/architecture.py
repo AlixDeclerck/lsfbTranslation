@@ -31,18 +31,18 @@ class NMT(nn.Module):
         """
 
         self.vocab = vocab
-        self.d_model = config["dimension"]
-        self.output_max = config["output_max_words"]
+        self.d_model = config["hyper_parameters"]["dimension"]
+        self.output_max = config["learning_config"]["output_max_words"]
 
-        if config["using_gpu"]:
+        if config["learning_config"]["using_gpu"]:
             self.device = torch.device('cuda', 0)
         else:
             self.device = torch.device('cpu', 0)
 
-        n = config["layers"]
-        d_ff = config["feed_forward_dimension"]
-        h = config["h_attention_layers"]
-        dropout = config["dropout"]
+        n = config["hyper_parameters"]["layers"]
+        d_ff = config["hyper_parameters"]["feed_forward_dimension"]
+        h = config["hyper_parameters"]["h_attention_layers"]
+        dropout = config["hyper_parameters"]["dropout"]
 
         c = copy.deepcopy
         self.attn = MultiHeadedAttention(self.d_model, h)
@@ -243,6 +243,7 @@ class MultiHeadedAttention(nn.Module):
         if mask is not None:
             # Same mask applied to all h heads.
             mask = mask.unsqueeze(1)
+
         nbatches = query.size(0)
 
         # 1) Do all the linear projections in batch from d_model => h x d_k

@@ -11,16 +11,16 @@ import os
 import matplotlib.pyplot as plt
 import pandas
 from docopt import docopt
-
-from common.constant import dir_separator, color1, color2
+from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 16
 
 if __name__ == '__main__':
 
     # update path from given parameters
+    config = load_config()
     args = docopt(__doc__)
-    path = os.environ['HOME'] + dir_separator + args['--app-path'] + dir_separator + "algorithms/symbolicTransformer/src/output/"
+    path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-25_c.csv")
@@ -43,8 +43,8 @@ if __name__ == '__main__':
             res_eval.append(float(tmp))
 
     # display loss curve
-    plt.plot(range(len(res)), res, c=color1, label="learning phase - glosses training")
-    plt.plot(range(len(res_eval)), res_eval, c=color2, label="learning phase - glosses validation")
+    plt.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label="learning phase - glosses training")
+    plt.plot(range(len(res_eval)), res_eval, c=str(config["graphics"]["color2"]), label="learning phase - glosses validation")
     plt.legend()
     plt.ylabel("Kullback-Leibler divergence loss")
     plt.xlabel("epochs")

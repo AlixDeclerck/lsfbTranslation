@@ -1,10 +1,8 @@
 import sys
 from typing import List
-
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-
 from common.constant import Hypothesis, Tag
 
 

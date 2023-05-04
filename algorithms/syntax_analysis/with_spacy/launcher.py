@@ -41,14 +41,14 @@ def format_nbr(num):
 
 def main():
 
-    config = load_config()
+    config = load_config("../../symbolicTransformer/src/config.yaml")
 
     if args['--mode'] == "list":
         show_mysql_conte(application_path, config["configuration_path"]["selected_db"])
 
     else:
         if args['--mode'] == "database":
-            learning_corpus = retrieve_mysql_conte(format_nbr(53), Corpus.TEXT_FR.value[2], application_path, config["configuration_path"]["selected_db"], False)
+            learning_corpus = retrieve_mysql_conte(format_nbr(2), Corpus.TEXT_FR.value[2], application_path, config["configuration_path"]["selected_db"], False)
         else:
             learning_corpus = samples.cinderella
 

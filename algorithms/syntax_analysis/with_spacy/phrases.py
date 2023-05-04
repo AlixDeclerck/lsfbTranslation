@@ -38,7 +38,7 @@ class SpacyPhrase:
     def handle_scenes(self):
         sub_phrase = SubPhrase()
         for token in self.phrases:
-            if "PUNCT" == token.pos_ or "et" == token.text:
+            if "PUNCT" == token.pos_:  # or "et" == token.text:
                 if sub_phrase.__len__() > 0:
                     self.scene.append(sub_phrase)
                     sub_phrase = SubPhrase()
@@ -54,11 +54,7 @@ class SpacyPhrase:
         self.tokens = []
         self.tenses = []
         for sub_phrase in self.scene:
-            for s in sub_phrase.event:
-                self.tokens.append(s)
-            for s in sub_phrase.classificator:
-                self.tokens.append(s)
-            for s in sub_phrase.subject:
+            for s in sub_phrase.content:
                 self.tokens.append(s)
             for s in sub_phrase.action:
                 self.tokens.append(s)
@@ -86,8 +82,19 @@ class SpacyPhrase:
 
             for t in self.tokens:
                 if not isinstance(t, str):
-                    res += t.text+" "
+                    # tokens (content)
+                    if t.text.lower() == "je":
+                        res += "moi "
+                    elif t.text.lower() in ["te", "tu"]:
+                        res += "toi "
+                    elif t.text.lower() == "il":
+                        res += "lui "
+                    elif t.text.lower() == "ils":
+                        res += "eux "
+                    else:
+                        res += t.text+" "
                 else:
+                    # String (verbs)
                     res += t+" "
 
             formated_res = "".join([x for x in unicodedata.normalize("NFKD", res).upper() if not unicodedata.combining(x)])

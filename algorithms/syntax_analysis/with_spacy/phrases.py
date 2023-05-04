@@ -50,7 +50,7 @@ class SpacyPhrase:
     """
     using basic grammatical scene construction steps 
     """
-    def make_sentence(self):
+    def grammar_handler(self):
         self.tokens = []
         self.tenses = []
         for sub_phrase in self.scene:
@@ -64,19 +64,27 @@ class SpacyPhrase:
     """
     create a sentence from tokens and print it
     """
-    def write(self):
+    def handle_output(self, database=False):
         # print(f"1 phrase with {self.__len__()} sub phrases")  # sanity check
-        print(self.raw_txt)
 
-        # tenses ()
+        # Print the source phrase
+        if not database:
+            print(self.raw_txt)
+
+        # Prepare the tenses
         if len(self.tenses) < 1:
             tenses = str(Tag.UNKNOWN.value[0])
         else:
             tenses = "".join([str(x) for x in self.tenses if len(x) > 0])
 
-        # display tokens and tenses
+        # Print the tokens and tenses
         if len(self.tokens) < 1:
-            print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
+            # base case
+            if database:
+                self.retrieve_cell(str(Tag.UNKNOWN.value[0])+"|"+tenses)
+            else:
+                print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
+
         else:
             res = ""
 
@@ -98,10 +106,18 @@ class SpacyPhrase:
                     res += t+" "
 
             formated_res = "".join([x for x in unicodedata.normalize("NFKD", res).upper() if not unicodedata.combining(x)])
-            print(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
+            if database:
+                self.retrieve_cell(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
+            else:
+                print(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
 
         # lines separator
-        print("-----")
+        if not database:
+            print("-----")
+
+    @staticmethod
+    def retrieve_cell(text):
+        print(text)
 
     def __len__(self):
         return len(self.scene)

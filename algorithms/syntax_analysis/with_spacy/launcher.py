@@ -56,8 +56,8 @@ def main():
             phrases = SpacyPhrase(nlp(txt))
             phrases.preprocessing()
             phrases.handle_scenes()
-            phrases.make_sentence()
-            phrases.write()
+            phrases.grammar_handler()
+            phrases.handle_output(database=config["inference_decoding"]["persist-approx"])
 
 
 if __name__ == '__main__':

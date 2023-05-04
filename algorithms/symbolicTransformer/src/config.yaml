@@ -32,6 +32,7 @@ inference_decoding:
     beam_search:                  True                             # False for greedy search
     beam-size:                    10                               # number of tree branches
     max-decoding-time-step:       70                               # number of iterations during inference
+    persist-approx:               False                            # False mean syntax analysis return text on screen, True mean saving in database
 
 learning_config:
     architecture_dev_mode:        False                             # True for "EN", False for "GLOSS"

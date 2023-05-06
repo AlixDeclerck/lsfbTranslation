@@ -1,5 +1,6 @@
 configuration_path:
     application_path:             "/"
+    configuration_file:           "algorithms/symbolicTransformer/config.yaml"
     csv_path:                     "data/conte/source_csv/"
     model_path:                   "model/"
     model_prefix:                 "symbolicTransformer_model_"

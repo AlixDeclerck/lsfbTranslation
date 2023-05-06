@@ -38,7 +38,7 @@ class ConteHandler:
             df = pandas.DataFrame(read_file)
             df.to_csv(destination_path, index=False, header=True)
 
-    def populate_db_from_csv(self):
+    def populate_db_from_csv(self, application_path):
         """
         add in database (db_creation/contes)
         a new population of conte from csv files
@@ -63,12 +63,23 @@ class ConteHandler:
             story_name = s.removesuffix(".csv")
             print("insert : "+story_name)
             conte = ff.get_conte(self.learning_dir + s)
-            cpt = self.populate_parallels(conn, cpt, story_name, conte, languages)
+            cpt = self.populate_parallels(conn, cpt, story_name, conte, languages, application_path)
 
         print(f"{cpt} phrases inserted")
         conn.close()
 
-    def populate_parallels(self, conn, cpt, story_name, conte, languages):
+    def populate_parallels(self, conn, cpt, story_name, conte, languages, application_path):
+
+        is_persist = config["inference_decoding"]["persist-approx"]
+
+        if is_persist:
+            lsf_approx = approximate_phrases(story_name.split("_")[0], application_path+config["configuration_path"]["application_path"], config)
+            if len(list(conte.iterrows())) != len(lsf_approx):
+                print("Sanity check fail : No congruence with approximation size")
+                is_persist = False
+
+        else:
+            lsf_approx = None
 
         for i, ln in enumerate(conte.iterrows()):
 
@@ -76,6 +87,12 @@ class ConteHandler:
                 env_name = EnvType.TEST.value
             else:
                 env_name = EnvType.TRAINING.value
+
+            # process LSF approximation
+            if is_persist:
+                generated_lsf = lsf_approx[i]
+            else:
+                generated_lsf = ln[1].GENERATED_LSF
 
             print(f"--- {env_name} insertions --------------")
 
@@ -85,7 +102,7 @@ class ConteHandler:
                 elif lang[0] == Corpus.TEXT_EN.value[2]:
                     self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", env_name)
                 elif lang[0] == Corpus.GLOSS_LSF.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, ln[1].GENERATED_LSF, "", env_name)
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name)
 
             cpt += 1
         return cpt
@@ -107,8 +124,14 @@ class ConteHandler:
         conn.commit()
 
     def populate_db(self, conn, cpt, story_name, conte):
-
-        lsf_approx = approximate_phrases(story_name, config)
+        """
+        deprecated
+        :param conn:
+        :param cpt:
+        :param story_name:
+        :param conte:
+        :return:
+        """
 
         for i, ln in enumerate(conte.iterrows()):
 
@@ -120,13 +143,7 @@ class ConteHandler:
             print(f"--- {env_name} insertions --------------")
             text_fr = ln[1].FR
             gloss_lsf = ln[1].GLOSS_LSF
-
-            # process LSF approximation
-            if config["inference_decoding"]["persist-approx"]:
-                generated_lsf = lsf_approx[i]
-            else:
-                generated_lsf = ln[1].GENERATED_LSF
-
+            generated_lsf = ln[1].GENERATED_LSF
             tense = ln[1].TENSE
             gloss_lsfb = ln[1].GLOSS_LSFB
             text_en = ln[1].EN
@@ -218,7 +235,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    # contes.populate_db_from_csv()
+    contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
 
     # show bleu score
     # show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")

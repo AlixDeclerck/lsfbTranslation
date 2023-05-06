@@ -1,7 +1,7 @@
 import unicodedata
 
 from common.constant import Tag
-from scene_construction import SubPhrase
+from algorithms.syntax_analysis.with_spacy.scene_construction import SubPhrase
 
 
 class SpacyPhrase:
@@ -15,6 +15,7 @@ class SpacyPhrase:
         self.scene = []             # a list of sub_phrases
         self.tokens = []            # a list of tokens to display
         self.tenses = []            # a list of tenses (parallel with tokens)
+        self.to_save = []
 
     """
     constructing glosses from raw_text 
@@ -81,7 +82,7 @@ class SpacyPhrase:
         if len(self.tokens) < 1:
             # base case
             if database:
-                self.retrieve_cell(str(Tag.UNKNOWN.value[0])+"|"+tenses)
+                return str(Tag.UNKNOWN.value[0])+"|"+tenses
             else:
                 print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
 
@@ -107,17 +108,13 @@ class SpacyPhrase:
 
             formated_res = "".join([x for x in unicodedata.normalize("NFKD", res).upper() if not unicodedata.combining(x)])
             if database:
-                self.retrieve_cell(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
+                return formated_res+"|"+tenses  # the | sign permit easy integration into csv
             else:
                 print(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
 
         # lines separator
         if not database:
             print("-----")
-
-    @staticmethod
-    def retrieve_cell(text):
-        print(text)
 
     def __len__(self):
         return len(self.scene)

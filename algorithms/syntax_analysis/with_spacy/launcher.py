@@ -9,7 +9,7 @@ Usage:
 import os
 import spacy
 from docopt import docopt
-from phrases import SpacyPhrase
+from algorithms.syntax_analysis.with_spacy.phrases import SpacyPhrase
 from data.conte import samples
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_conte, show_mysql_conte
 from common.constant import Corpus
@@ -22,14 +22,10 @@ txt_samples = [
     "Je considère Edward Snowden comme un héros et il n'a trouvé asile qu'en Russie. Cela me terrifie!",
 ]
 
+# nlp : the doc object
+nlp = spacy.load("fr_core_news_sm")
+
 # --------------------------------------------------------------------------
-
-args = docopt(__doc__)                  # read application parameters
-dir_separator = "/"                     # linux folder structure
-nlp = spacy.load("fr_core_news_sm")     # nlp : the doc object
-
-# Construct application path
-application_path = os.environ['HOME']+dir_separator+args['--app-path']+dir_separator
 
 def format_nbr(num):
     if num < 10:
@@ -46,7 +42,10 @@ def main():
     True for populate the database, false to display on screen
     :return: approximations
     """
-    config = load_config("../../symbolicTransformer/src/config.yaml")
+
+    args = docopt(__doc__)
+    config = load_config(os.environ['HOME']+"/"+args['--app-path']+"/algorithms/symbolicTransformer/src/config.yaml")
+    application_path = os.environ['HOME']+config["configuration_path"]["application_path"]+args['--app-path']+config["configuration_path"]["application_path"]
 
     if args['--mode'] == "list":
         show_mysql_conte(application_path, config["configuration_path"]["selected_db"])
@@ -59,10 +58,16 @@ def main():
 
     else:
         if args['--mode'] == "database":
-            approximate_phrases(2, config)
+            approximate_phrases(2, application_path, config)
 
-def approximate_phrases(corpus, cfg):
-    learning_corpus = retrieve_mysql_conte(format_nbr(corpus), Corpus.TEXT_FR.value[2], application_path, cfg["configuration_path"]["selected_db"], False)
+def approximate_phrases(corpus, application_path, cfg):
+    learning_corpus = retrieve_mysql_conte(
+        conte_num=corpus,
+        language=Corpus.TEXT_FR.value[2],
+        application_path=str(application_path),
+        selected_db=cfg["configuration_path"]["selected_db"],
+        generated=False)
+
     res = []
     for txt in learning_corpus:
         phrases = SpacyPhrase(nlp(txt))

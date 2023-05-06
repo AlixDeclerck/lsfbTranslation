@@ -40,24 +40,38 @@ def format_nbr(num):
         return str(num)
 
 def main():
-
+    """
+    A parameter define a mode (list or databases) to know where we read the file
+    The configuration keep a persist-approx boolean that define the output:
+    True for populate the database, false to display on screen
+    :return: approximations
+    """
     config = load_config("../../symbolicTransformer/src/config.yaml")
 
     if args['--mode'] == "list":
         show_mysql_conte(application_path, config["configuration_path"]["selected_db"])
-
-    else:
-        if args['--mode'] == "database":
-            learning_corpus = retrieve_mysql_conte(format_nbr(2), Corpus.TEXT_FR.value[2], application_path, config["configuration_path"]["selected_db"], False)
-        else:
-            learning_corpus = samples.cinderella
-
-        for txt in learning_corpus:
+        for txt in samples.cinderella:
             phrases = SpacyPhrase(nlp(txt))
             phrases.preprocessing()
             phrases.handle_scenes()
             phrases.grammar_handler()
-            phrases.handle_output(database=config["inference_decoding"]["persist-approx"])
+            phrases.handle_output(database=False)
+
+    else:
+        if args['--mode'] == "database":
+            approximate_phrases(2, config)
+
+def approximate_phrases(corpus, cfg):
+    learning_corpus = retrieve_mysql_conte(format_nbr(corpus), Corpus.TEXT_FR.value[2], application_path, cfg["configuration_path"]["selected_db"], False)
+    res = []
+    for txt in learning_corpus:
+        phrases = SpacyPhrase(nlp(txt))
+        phrases.preprocessing()
+        phrases.handle_scenes()
+        phrases.grammar_handler()
+        res.append(phrases.handle_output(database=cfg["inference_decoding"]["persist-approx"]))
+
+    return res
 
 
 if __name__ == '__main__':

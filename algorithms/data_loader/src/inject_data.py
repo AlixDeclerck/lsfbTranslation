@@ -12,6 +12,7 @@ import retrieve_data as ff
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType, Corpus, Tag, Hypothesis
 from common.metrics.bleu import processing_bleu_score
+from algorithms.syntax_analysis.with_spacy.launcher import approximate_phrases
 from docopt import docopt
 import os
 
@@ -107,6 +108,8 @@ class ConteHandler:
 
     def populate_db(self, conn, cpt, story_name, conte):
 
+        lsf_approx = approximate_phrases(story_name, config)
+
         for i, ln in enumerate(conte.iterrows()):
 
             if (i % int(self.split_factor)) == 0:
@@ -117,7 +120,13 @@ class ConteHandler:
             print(f"--- {env_name} insertions --------------")
             text_fr = ln[1].FR
             gloss_lsf = ln[1].GLOSS_LSF
-            generated_lsf = ln[1].GENERATED_LSF
+
+            # process LSF approximation
+            if config["inference_decoding"]["persist-approx"]:
+                generated_lsf = lsf_approx[i]
+            else:
+                generated_lsf = ln[1].GENERATED_LSF
+
             tense = ln[1].TENSE
             gloss_lsfb = ln[1].GLOSS_LSFB
             text_en = ln[1].EN

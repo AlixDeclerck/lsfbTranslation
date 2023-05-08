@@ -58,7 +58,21 @@ def main():
 
     else:
         if args['--mode'] == "database":
-            approximate_phrases(2, application_path, config)
+            learning_corpus = retrieve_mysql_conte(
+                conte_num="001",
+                language=Corpus.TEXT_FR.value[2],
+                application_path=str(application_path),
+                selected_db=config["configuration_path"]["selected_db"],
+                generated=False)
+            # approximate_phrases(1, application_path, config)
+
+            for txt in learning_corpus:
+                phrases = SpacyPhrase(nlp(txt))
+                phrases.preprocessing()
+                phrases.handle_scenes()
+                phrases.grammar_handler()
+                phrases.handle_output()
+
 
 def approximate_phrases(corpus, application_path, cfg):
     learning_corpus = retrieve_mysql_conte(

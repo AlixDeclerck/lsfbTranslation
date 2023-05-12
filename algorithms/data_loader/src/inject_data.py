@@ -111,7 +111,7 @@ class ConteHandler:
     def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name):
         if text != "" and generated != "":
             reference, hypothesis = assemble_txt_bleu(text, generated)
-            score = processing_bleu_score(reference, hypothesis, shrink=True, display=False)
+            score = processing_bleu_score(reference, hypothesis, display=False)
         else:
             score = 0
 

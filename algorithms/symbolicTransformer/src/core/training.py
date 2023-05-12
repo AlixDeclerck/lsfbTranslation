@@ -67,7 +67,7 @@ def train_worker(
     torch.cuda.set_device(gpu)
 
     pad_idx = vocab.tgt[Tag.BLANK.value[0]]
-    d_model = config["dimension"]
+    d_model = config["hyper_parameters"]["dimension"]
     model = NMT(vocab, config)
     model.cuda(gpu)
     module = model
@@ -84,7 +84,7 @@ def train_worker(
 
     # label smoothing
     criterion = LabelSmoothing(
-        size=len(vocab.tgt), padding_idx=pad_idx, smoothing=config["target_label_smoothing"]
+        size=len(vocab.tgt), padding_idx=pad_idx, smoothing=config["hyper_parameters"]["target_label_smoothing"]
     )
     criterion.cuda(gpu)
 

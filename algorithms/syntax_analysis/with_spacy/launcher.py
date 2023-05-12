@@ -46,6 +46,7 @@ def main():
     args = docopt(__doc__)
     config = load_config(os.environ['HOME']+"/"+args['--app-path']+"/algorithms/symbolicTransformer/src/config.yaml")
     application_path = os.environ['HOME']+config["configuration_path"]["application_path"]+args['--app-path']+config["configuration_path"]["application_path"]
+    output_only_glosses = True
 
     if args['--mode'] == "list":
         show_mysql_conte(application_path, config["configuration_path"]["selected_db"])
@@ -54,24 +55,28 @@ def main():
             phrases.preprocessing()
             phrases.handle_scenes()
             phrases.grammar_handler()
-            phrases.handle_output(database=False)
+            phrases.handle_output(glosses=output_only_glosses)
 
     else:
         if args['--mode'] == "database":
             learning_corpus = retrieve_mysql_conte(
-                conte_num="001",
+                conte_num=format_nbr(5),
                 language=Corpus.TEXT_FR.value[2],
                 application_path=str(application_path),
                 selected_db=config["configuration_path"]["selected_db"],
                 generated=False)
-            # approximate_phrases(1, application_path, config)
 
+            res = []
             for txt in learning_corpus:
                 phrases = SpacyPhrase(nlp(txt))
                 phrases.preprocessing()
                 phrases.handle_scenes()
                 phrases.grammar_handler()
-                phrases.handle_output()
+                res.append(phrases.handle_output(glosses=output_only_glosses))
+
+            if output_only_glosses:
+                for r in res:
+                    print(r)
 
 
 def approximate_phrases(corpus, application_path, cfg):
@@ -88,7 +93,7 @@ def approximate_phrases(corpus, application_path, cfg):
         phrases.preprocessing()
         phrases.handle_scenes()
         phrases.grammar_handler()
-        res.append(phrases.handle_output(database=cfg["inference_decoding"]["persist-approx"]))
+        res.append(phrases.handle_output(glosses=cfg["inference_decoding"]["persist-approx"]))
 
     return res
 

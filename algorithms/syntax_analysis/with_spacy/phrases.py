@@ -65,11 +65,11 @@ class SpacyPhrase:
     """
     create a sentence from tokens and print it
     """
-    def handle_output(self, database=False):
+    def handle_output(self, glosses=False):
         # print(f"1 phrase with {self.__len__()} sub phrases")  # sanity check
 
         # Print the source phrase
-        if not database:
+        if not glosses:
             print(self.raw_txt)
 
         # Prepare the tenses
@@ -81,7 +81,7 @@ class SpacyPhrase:
         # Print the tokens and tenses
         if len(self.tokens) < 1:
             # base case
-            if database:
+            if glosses:
                 return str(Tag.UNKNOWN.value[0])+"|"+tenses
             else:
                 print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
@@ -107,13 +107,13 @@ class SpacyPhrase:
                     res += t+" "
 
             formated_res = "".join([x for x in unicodedata.normalize("NFKD", res).upper() if not unicodedata.combining(x)])
-            if database:
+            if glosses:
                 return formated_res+"|"+tenses  # the | sign permit easy integration into csv
             else:
                 print(formated_res+"|"+tenses)  # the | sign permit easy integration into csv
 
         # lines separator
-        if not database:
+        if not glosses:
             print("-----")
 
     def __len__(self):

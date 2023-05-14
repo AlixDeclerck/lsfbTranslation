@@ -24,7 +24,7 @@ hyper_parameters:
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers:                       5                                 # originally 6
-    num_epochs:                   20                                # Annotated transformer choose 8
+    num_epochs:                   30                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.8                               # velocity of label smoothing
     warmup:                       3000

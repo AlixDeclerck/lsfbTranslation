@@ -132,7 +132,7 @@ if __name__ == '__main__':
         learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
-    used_model, inferred_data = run_model_example(config=learning_configuration)
+    used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=18)
 
     # DISPLAY RESULT
     plot_attention_maps(used_model, inferred_data, get_decoder_self)

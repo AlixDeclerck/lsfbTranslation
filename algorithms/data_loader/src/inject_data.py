@@ -73,7 +73,12 @@ class ConteHandler:
         is_persist = config["inference_decoding"]["persist-approx"]
 
         if is_persist:
-            lsf_approx = approximate_phrases(conte.FR.values, config)
+            if conte.FR[0] != "":
+                corpus = conte.FR.values
+            else:
+                corpus = conte.GENERATED_FR.values
+
+            lsf_approx = approximate_phrases(corpus, config)
             if len(list(conte.iterrows())) != len(lsf_approx):
                 print("Sanity check fail : No congruence with approximation size")
                 is_persist = False
@@ -238,7 +243,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    # contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
+    contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
 
     # show bleu score
-    show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")
+    # show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")

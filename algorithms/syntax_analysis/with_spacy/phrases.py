@@ -81,10 +81,14 @@ class SpacyPhrase:
         # Print the tokens and tenses
         if len(self.tokens) < 1:
             # base case
+            res = ""
+            for p in self.phrases:
+                res += p.text.upper()+" "
+
             if glosses:
-                return str(Tag.UNKNOWN.value[0])+"|"+tenses
+                return res+"|"+tenses
             else:
-                print(str(Tag.UNKNOWN.value[0])+"|"+tenses)
+                print(res+"|"+tenses)
 
         else:
             res = ""

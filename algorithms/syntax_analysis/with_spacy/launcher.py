@@ -79,16 +79,9 @@ def main():
                     print(r)
 
 
-def approximate_phrases(corpus, application_path, cfg):
-    learning_corpus = retrieve_mysql_conte(
-        conte_num=corpus,
-        language=Corpus.TEXT_FR.value[2],
-        application_path=str(application_path),
-        selected_db=cfg["configuration_path"]["selected_db"],
-        generated=False)
-
+def approximate_phrases(conte, cfg):
     res = []
-    for txt in learning_corpus:
+    for txt in conte:
         phrases = SpacyPhrase(nlp(txt))
         phrases.preprocessing()
         phrases.handle_scenes()

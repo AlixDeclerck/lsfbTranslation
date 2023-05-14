@@ -218,8 +218,8 @@ def show_bleu_score(ref, hyp):
     processing_bleu_score(
         reference,
         hypothesis,
-        output_max=config["output_max_words"],
-        shrink=True,
+        output_max=config["learning_config"]["output_max_words"],
+        shrink=False,
         display=True)
 
 # ----------------------------------------------------------
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
+    # contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
 
     # show bleu score
-    # show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")
+    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")

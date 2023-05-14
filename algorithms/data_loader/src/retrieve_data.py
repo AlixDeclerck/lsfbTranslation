@@ -53,7 +53,7 @@ def retrieve_mysql_conte(conte_num, language, application_path, selected_db, gen
         txt_value = "p.txt"
 
     res = []
-    request = "select p.num, "+str(txt_value)+" from PARALLEL_ITEM p where p.story_name like '%"+str(conte_num)+"%' and lang like '"+str(language)+"';"
+    request = "select p.num, "+str(txt_value)+" from PARALLEL_ITEM p where p.story_name like '%"+str(conte_num)+"%' and lang = '"+str(language)+"';"
     pt = dal.data_provider(selected_db, application_path)
     cur = pt.cursor()
     cur.execute(request)

@@ -73,7 +73,7 @@ class ConteHandler:
         is_persist = config["inference_decoding"]["persist-approx"]
 
         if is_persist:
-            lsf_approx = approximate_phrases(story_name.split("_")[0], application_path+config["configuration_path"]["application_path"], config)
+            lsf_approx = approximate_phrases(conte.FR.values, config)
             if len(list(conte.iterrows())) != len(lsf_approx):
                 print("Sanity check fail : No congruence with approximation size")
                 is_persist = False
@@ -90,28 +90,31 @@ class ConteHandler:
 
             # process LSF approximation
             if is_persist:
-                generated_lsf = lsf_approx[i]
+                data = lsf_approx[i].split("|")
+                generated_lsf = data[0]
+                generated_tense = data[1]
             else:
                 generated_lsf = ln[1].GENERATED_LSF
+                generated_tense = ln[1].TENSE
 
             print(f"--- {env_name} insertions --------------")
 
             for lang in languages:
                 if lang[0] == Corpus.TEXT_FR.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, ln[1].TENSE, env_name)
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, env_name, config["learning_config"]["output_max_words"])
                 elif lang[0] == Corpus.TEXT_EN.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", env_name)
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", env_name, config["learning_config"]["output_max_words"])
                 elif lang[0] == Corpus.GLOSS_LSF.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name)
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name, config["learning_config"]["output_max_words"])
 
             cpt += 1
         return cpt
 
     @staticmethod
-    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name):
+    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name, max_output):
         if text != "" and generated != "":
             reference, hypothesis = assemble_txt_bleu(text, generated)
-            score = processing_bleu_score(reference, hypothesis, display=False)
+            score = processing_bleu_score(reference, hypothesis, output_max=max_output, display=True)
         else:
             score = 0
 
@@ -235,7 +238,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
+    # contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
 
     # show bleu score
-    # show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")
+    show_bleu_score("FORME BLANCHE PAS REPONDRE PAS BOUGER", "APPARITION NE PAS REPONDRE NE PAS BOUGER")

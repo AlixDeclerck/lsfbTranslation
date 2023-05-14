@@ -40,7 +40,7 @@ learning_config:
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false
     max_padding:                  72
-    output_max_words:             80                                # originally 80
+    output_max_words:             20                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
     split_factor:                 9                                 # coefficient for the corpus split in training or validation
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

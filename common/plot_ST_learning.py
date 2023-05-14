@@ -18,12 +18,12 @@ NUMBER_OF_TRAINING_RESULTS = 16
 if __name__ == '__main__':
 
     # update path from given parameters
-    config = load_config()
+    config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-04-25_c.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-12.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
 
@@ -50,5 +50,5 @@ if __name__ == '__main__':
     plt.xlabel("epochs")
     # plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-04-25_c.png')
+    plt.savefig('img/learning_curves_ST_2023-05-12.png')
     plt.show()

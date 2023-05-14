@@ -77,6 +77,7 @@ CREATE TABLE PARALLEL_ITEM (
    lang varchar(32) NOT NULL,
    txt MEDIUMTEXT NOT NULL,
    txt_generated varchar(512),
+   txt_generation_date DATE,
    tense varchar(128),
    num int NOT NULL,
    score varchar(64),

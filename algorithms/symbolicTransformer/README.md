@@ -1,9 +1,9 @@
 # Symbolic Transformer
 
 ## Abstract
-First step was to read the `progressive Transformer` (https://arxiv.org/abs/2004.14874) that show us a proven architecture to learn translation from common language to glosses.
-
-Second step, basing on the `annotated transformer` last the state-of-the-art improvements (https://nlp.seas.harvard.edu/annotated-transformer/, https://nlp.seas.harvard.edu/2018/04/03/attention.html) we recreated `symbolic Transformer` that was the first step given in `progressive Transformer`
+What we call the symbolic transformer is inspired by the first architecture of the `progressive Transformer` (see credit).
+We input texts and output glosses using `pytorch`, `spacy` and `fast-text` though the `annotated transformer` (see credit).
+We make it more runnable using the `standford NMT` (see credit) and some functionalities.
 
 ## Model architecture & pytorch
 
@@ -33,3 +33,30 @@ The optimizer implements `Adam algorithm`
 ### scheduler and learning rate
 
 - https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LambdaLR.html
+
+## Credits
+
+@article{progressiveTransformer,
+doi = {10.48550/ARXIV.2004.14874},
+url = {https://arxiv.org/abs/2004.14874},
+author = {Saunders, Ben and Camgoz, Necati Cihan and Bowden, Richard},
+keywords = {Computer Vision and Pattern Recognition (cs.CV), Computation and Language (cs.CL), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+title = {Progressive Transformers for End-to-End Sign Language Production},
+publisher = {arXiv},
+year = {2020},
+copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@article{the_annotated_transformer,
+author  = {Austin Huang, Suraj Subramanian, Jonathan Sum, Khalid Almubarak, and Stella Biderman},
+title   = "\url{http://nlp.seas.harvard.edu/annotated-transformer/}",
+year    = "2022",
+journal = "web"
+}
+
+@article{NMT_seq2seq_Standford,
+author  = "Pencheng Yin, Sahil Chopra, Vera Lin",
+title   = "Neural Machine Translation with sequence-to-sequence, attention, and subwords",
+year    = "2019",
+journal = "Standford"
+}

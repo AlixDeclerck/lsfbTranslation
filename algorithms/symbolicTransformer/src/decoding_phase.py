@@ -7,14 +7,13 @@ Usage:
 """
 
 import os
-
 import torch
 from docopt import docopt
 
 from algorithms.symbolicTransformer.src.core.architecture import NMT
 from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
 from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps, get_decoder_self
-from algorithms.symbolicTransformer.src.functionnal.data_preparation import load_spacy_tokenizers, Vocab
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType
 from common.constant import pretty_print_hypothesis
@@ -28,11 +27,7 @@ Huang, et al. 2022 / Rush, et al. 2019
 nlp.seas.harvard.edu/annotated-transformer
 """
 
-def check_outputs(
-        model,
-        vocab,
-        dataloader_validation,
-        n_examples=15):
+def check_outputs(model, vocab, dataloader_validation, n_examples=15):
 
     results = []
     for example_id in range(n_examples):

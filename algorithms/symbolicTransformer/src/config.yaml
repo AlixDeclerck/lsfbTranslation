@@ -27,7 +27,7 @@ hyper_parameters:
     layers:                       6                                 # originally 6
     num_epochs:                   20                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
-    target_label_smoothing:       0.5                               # velocity of label smoothing
+    target_label_smoothing:       0.8                               # velocity of label smoothing
     warmup:                       1000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
     adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))

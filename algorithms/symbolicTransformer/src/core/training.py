@@ -114,11 +114,11 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
     # OPTIMIZATION
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=config["hyper_parameters"]["base_lr"],
-        betas=(config["hyper_parameters"]["adam_optimizer_betas_1"], config["hyper_parameters"]["adam_optimizer_betas_2"]),
-        eps=config["hyper_parameters"]["adam_optimizer_eps"],
-        weight_decay=config["hyper_parameters"]["optimizer_weight_decay"],
-        amsgrad=config["hyper_parameters"]["adam_optimizer_amsgrad"]
+        lr=float(config["hyper_parameters"]["base_lr"]),
+        betas=(float(config["hyper_parameters"]["adam_optimizer_betas_1"]), float(config["hyper_parameters"]["adam_optimizer_betas_2"])),
+        eps=float(config["hyper_parameters"]["adam_optimizer_eps"]),
+        weight_decay=float(config["hyper_parameters"]["optimizer_weight_decay"]),
+        amsgrad=bool(config["hyper_parameters"]["adam_optimizer_amsgrad"])
     )
 
     # SCHEDULER

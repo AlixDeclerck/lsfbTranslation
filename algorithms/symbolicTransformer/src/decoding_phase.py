@@ -21,6 +21,12 @@ from common.constant import pretty_print_hypothesis
 from common.metrics.bleu import processing_bleu_score
 from common.output_decoder import greedy_decode, beam_search
 
+"""
+The decoding phase contents are coming from :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
 
 def check_outputs(
         model,

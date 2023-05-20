@@ -54,17 +54,7 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
     return src, tgt
 
 
-def create_dataloaders(
-        vocab,
-        environment,
-        device,
-        english_output,
-        application_path,
-        selected_db,
-        batch_size=12000,
-        max_padding=128,
-        is_distributed=True
-        ):
+def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True):
 
     def collate_fn(batch):
         return collate_batch(
@@ -76,7 +66,7 @@ def create_dataloaders(
         )
 
     # Dataset that will do the batches
-    complete = retrieve_conte_dataset(environment, application_path, selected_db)
+    complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection)
 
     # sub-select from target mode
     if english_output:

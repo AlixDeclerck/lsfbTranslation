@@ -32,6 +32,7 @@ hyper_parameters:
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
     adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
     adam_optimizer_betas_2:       0.98                              # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
+    adam_optimizer_amsgrad:       False                             # use the AMSGrad variant of this algorithm from the paper On the Convergence of Adam and Beyond (default: False)
 
 inference_decoding:
     beam_search:                  True                              # False for greedy search
@@ -40,7 +41,7 @@ inference_decoding:
     persist-approx:               True                              # False mean syntax analysis return text on screen, True mean saving in database
 
 learning_config:
-    corpus_selection:             0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"}
+    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"}
     english_output:               False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false

@@ -8,6 +8,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from os.path import exists
 import os
 from common.constant import Tag
+from common.persist_result import persist_training, persist_validation
 
 from algorithms.symbolicTransformer.src.core.batching import Batch, create_dataloaders
 from algorithms.symbolicTransformer.src.functionnal.tuning import DummyOptimizer, DummyScheduler, LabelSmoothing
@@ -35,8 +36,15 @@ def train_model(vocab, environment, config):
     if config["learning_config"]["distributed"]:
         train_distributed_model(vocab, config)
     else:
-        train_worker(0, 1, vocab, environment, config, True, False)
-
+        train_worker(
+            gpu=0,
+            ngpus_per_node=1,
+            vocab=vocab,
+            environment=environment,
+            config=config,
+            model_saving_strategy=True,
+            is_distributed=False
+        )
 
 def train_distributed_model(vocab, config):
 
@@ -60,18 +68,14 @@ class TrainState:
     tokens: int = 0         # total # of tokens processed
 
 
-def train_worker(
-        gpu,
-        ngpus_per_node,
-        vocab,
-        environment,
-        config,
-        model_saving_strategy=False,
-        is_distributed=False):
+def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_strategy=False, is_distributed=False):
 
-    print(f"Train worker process using GPU: {gpu} for training", flush=True)
+    persist_learning_measure = config["hyper_parameters"]["persist_learning_measure"]
+
+    if not persist_learning_measure:
+        print(f"Train worker process using GPU: {gpu} for training", flush=True)
+
     torch.cuda.set_device(gpu)
-
     pad_idx = vocab.tgt[Tag.BLANK.value[0]]
     d_model = config["hyper_parameters"]["dimension"]
     model = NMT(vocab, config)
@@ -79,7 +83,7 @@ def train_worker(
     module = model
     is_main_process = True
 
-    # distributed case
+    # MULTI GPU CASE
     if is_distributed:
         dist.init_process_group(
             "nccl", init_method="env://", rank=gpu, world_size=ngpus_per_node
@@ -88,13 +92,13 @@ def train_worker(
         module = model.module
         is_main_process = gpu == 0
 
-    # label smoothing
+    # LABEL SMOOTHING
     criterion = LabelSmoothing(
         size=len(vocab.tgt), padding_idx=pad_idx, smoothing=config["hyper_parameters"]["target_label_smoothing"]
     )
     criterion.cuda(gpu)
 
-    # dataloaders with batch_sampler
+    # BATCH SAMPLING
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
         environment,
@@ -107,17 +111,17 @@ def train_worker(
         is_distributed=is_distributed
     )
 
-    # optimizer
+    # OPTIMIZATION
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=config["hyper_parameters"]["base_lr"],                               # learning rate (default: 1e-3)
-        betas=(config["hyper_parameters"]["adam_optimizer_betas_1"], config["hyper_parameters"]["adam_optimizer_betas_2"]),                                  # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
-        eps=config["hyper_parameters"]["adam_optimizer_eps"],                                           # term added to the denominator to improve numerical stability
-        weight_decay=config["hyper_parameters"]["optimizer_weight_decay"],      # weight decay (L2 penalty) (default: 0)
-        amsgrad=False                                       # AMSGrad variant (default: False)
+        lr=config["hyper_parameters"]["base_lr"],
+        betas=(config["hyper_parameters"]["adam_optimizer_betas_1"], config["hyper_parameters"]["adam_optimizer_betas_2"]),
+        eps=config["hyper_parameters"]["adam_optimizer_eps"],
+        weight_decay=config["hyper_parameters"]["optimizer_weight_decay"],
+        amsgrad=config["hyper_parameters"]["adam_optimizer_amsgrad"]
     )
 
-    # scheduler
+    # SCHEDULER
     lr_scheduler = LambdaLR(
         optimizer=optimizer,
         lr_lambda=lambda step: rate(
@@ -125,10 +129,8 @@ def train_worker(
         ),
     )
 
-    # train state
+    # TRAINING
     train_state = TrainState()
-
-    # training by epochs
     for epoch in range(config["hyper_parameters"]["num_epochs"]):
         if is_distributed:
             train_dataloader.sampler.set_epoch(epoch)
@@ -136,7 +138,9 @@ def train_worker(
 
         # training
         model.train()
-        print(f"[GPU{gpu}] Epoch {epoch} Training ====", flush=True)
+        if not persist_learning_measure:
+            print(f"[GPU{gpu}] Epoch {epoch} Training ====", flush=True)
+
         _, train_state = run_epoch(
             (Batch(b[0], b[1]) for b in train_dataloader),
             model,
@@ -157,8 +161,10 @@ def train_worker(
 
         torch.cuda.empty_cache()
 
-        # model evaluation
-        print(f"[GPU{gpu}] Epoch {epoch} Validation ====", flush=True)
+        # MODEL EVALUATION
+        if not persist_learning_measure:
+            print(f"[GPU{gpu}] Epoch {epoch} Validation ====", flush=True)
+
         model.eval()
         simple_loss = run_epoch(
             (Batch(b[0], b[1]) for b in valid_dataloader),
@@ -171,7 +177,12 @@ def train_worker(
         )
 
         # loss function in evaluation mode
-        print(simple_loss)
+        if persist_learning_measure:
+            persist_validation(epoch, simple_loss)
+        else:
+            print(simple_loss)
+
+        # gpu flush
         torch.cuda.empty_cache()
 
     if model_saving_strategy:
@@ -179,16 +190,7 @@ def train_worker(
         torch.save(module.state_dict(), file_path)
 
 
-def run_epoch(
-        data_iter,
-        model,
-        loss_compute,
-        optimizer,
-        scheduler,
-        accum_step,
-        mode="train",
-        accum_iter=1,
-        train_state=TrainState()):
+def run_epoch(data_iter, model, loss_compute, optimizer, scheduler, accum_step, mode="train", accum_iter=1, train_state=TrainState(), persist_learning_measure=False):
 
     """Train a single epoch"""
     start = time.time()
@@ -227,7 +229,15 @@ def run_epoch(
         if i % accum_step == 1 and (mode == "train" or mode == "train+log"):
             lr = optimizer.param_groups[0]["lr"]
             elapsed = time.time() - start
-            print("Epoch Step: %6d | Accumulation Step: %3d | Loss: %6.2f | Tokens / Sec: %7.1f | Learning Rate: %6.1e" % (i, n_accum, loss / batch.n_tokens, tokens / elapsed, lr))
+
+            if persist_learning_measure:
+                normalized_loss = loss / batch.n_tokens
+                tokens_time_processing = tokens / elapsed
+                persist_training(epoch=i, acc=n_accum, loss=normalized_loss, tokens=tokens_time_processing, lr=lr)
+
+            else:
+                print("Epoch Step: %6d | Accumulation Step: %3d | Loss: %6.2f | Tokens / Sec: %7.1f | Learning Rate: %6.1e" % (i, n_accum, loss / batch.n_tokens, tokens / elapsed, lr))
+
             start = time.time()
             tokens = 0
 

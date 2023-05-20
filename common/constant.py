@@ -41,3 +41,8 @@ class Corpus(Enum):
     TEXT_FR = "text_fr", 0, "FR"
     TEXT_EN = "text_en", 1, "EN"
     GLOSS_LSF = "gloss_lsf", 2, "GLOSS_LSF"
+
+class Dialect(Enum):
+    BOTH = 0
+    LSF = 1
+    GENERATED = 2

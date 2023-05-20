@@ -23,9 +23,10 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-16.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-20.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
+    learning_rate_column = df.iloc[:, [4]]
 
     res = []
     i = 0
@@ -36,6 +37,15 @@ if __name__ == '__main__':
                 tmp = ln[0].split(" ")[4]
                 res.append(float(tmp))
 
+    res_lr = []
+    j = 0
+    for ln in learning_rate_column.values.tolist():
+        if str(ln[0]) != 'nan' and ln[0][0:14] == " Learning Rate":
+            j += 1
+            if j % NUMBER_OF_TRAINING_RESULTS == 0:
+                tmp = ln[0].split(" ")[3]
+                res_lr.append(float(tmp)*10000)
+
     res_eval = []
     for ln in validation_column.values.tolist():
         if str(ln[0]) != 'nan' and ln[0][0] == "(":
@@ -45,10 +55,9 @@ if __name__ == '__main__':
     # display loss curve
     plt.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label="learning phase - glosses training")
     plt.plot(range(len(res_eval)), res_eval, c=str(config["graphics"]["color2"]), label="learning phase - glosses validation")
+    plt.plot(range(len(res_lr)), res_lr, c=str(config["graphics"]["color3"]), label="learning rate * 10 000")
     plt.legend()
     plt.ylabel("Kullback-Leibler divergence loss")
     plt.xlabel("epochs")
-    # plt.gca().invert_yaxis()
-    # plt.gca().invert_xaxis()
-    plt.savefig('img/learning_curves_ST_2023-05-16_matin.png')
+    plt.savefig('img/learning_curves_ST_2023-05-20.png')
     plt.show()

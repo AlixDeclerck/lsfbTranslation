@@ -70,7 +70,7 @@ class TrainState:
 
 def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_strategy=False, is_distributed=False):
 
-    persist_learning_measure = config["hyper_parameters"]["persist_learning_measure"]
+    persist_learning_measure = config["learning_config"]["persist_learning_measure"]
 
     if not persist_learning_measure:
         print(f"Train worker process using GPU: {gpu} for training", flush=True)

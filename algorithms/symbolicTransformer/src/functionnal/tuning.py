@@ -20,6 +20,13 @@ def load_config(path="config.yaml") -> dict:
     return cfg
 
 
+"""
+The tunings functionalities are coming from :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
+
 class LabelSmoothing(nn.Module):
     """
     Implement label smoothing with

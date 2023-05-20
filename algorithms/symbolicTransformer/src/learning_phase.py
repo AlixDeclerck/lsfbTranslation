@@ -25,8 +25,8 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     config["configuration_path"]["application_path"] = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"]
 
-    # PREPROCESSING
-    vocab = Vocab(load_spacy_tokenizers(), config)
+    # VOCABULARY
+    vocab = Vocab(config)
 
     # TRAINING
     trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)

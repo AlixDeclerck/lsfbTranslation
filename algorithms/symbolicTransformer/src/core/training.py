@@ -14,6 +14,12 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import DummyOptimizer
 from algorithms.symbolicTransformer.src.functionnal.loss_functions import SimpleLossCompute
 from algorithms.symbolicTransformer.src.core.architecture import NMT
 
+"""
+The training file contents are coming from :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
 
 def load_or_train_model(vocab, environment, config):
     model_path = str(config["configuration_path"]["model_path"])+str(config["configuration_path"]["model_prefix"])+str(config["configuration_path"]["model_suffix"])

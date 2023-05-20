@@ -7,17 +7,18 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
 from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
-from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from common.output_decoder import subsequent_mask
 from common.constant import Tag, Corpus
 
+"""
+The batching file contents are coming from :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
 
-def collate_batch(
-        batch,
-        vocab: Vocab,
-        device,
-        max_padding=128,
-        pad_id=Tag.BLANK.value[1]):
+def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[1]):
 
     bs_id = torch.tensor([0], device=device)  # <s> token id
     eos_id = torch.tensor([1], device=device)  # </s> token id

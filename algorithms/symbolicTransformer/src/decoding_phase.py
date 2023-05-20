@@ -85,7 +85,7 @@ def check_outputs(
 
 def run_model_example(config, n_examples=5):
 
-    vocab = Vocab(load_spacy_tokenizers(), config)
+    vocab = Vocab(config)
 
     print("Preparing Data ...")
     _, valid_dataloader = create_dataloaders(

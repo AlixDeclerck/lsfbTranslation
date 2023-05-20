@@ -1,6 +1,13 @@
 import torch.nn as nn
 import torch
 
+"""
+The KLD loss computation come from :
+Annotated transformer
+Huang, et al. 2022 / Rush, et al. 2019
+nlp.seas.harvard.edu/annotated-transformer
+"""
+
 class SimpleLossCompute:
     """
     A simple loss compute and train function.

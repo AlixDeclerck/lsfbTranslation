@@ -16,30 +16,30 @@ graphics:
 hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
     accum_step:                   10                                # Write loss only each n steps! Originally 40 but shrank due to small training corpus
-    base_lr:                      1.0
+    base_lr:                      1.0                               # learning rate
     batch_size:                   16                                # Annotated transformer choose 32
     dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
-    dropout:                      0.05
-    feed_forward_dimension:       2048
+    dropout:                      0.05                              # drop out regularization technique
+    feed_forward_dimension:       2048                              # the positionwise forward dimension
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers:                       6                                 # originally 6
     num_epochs:                   40                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.8                               # velocity of label smoothing
-    warmup:                       1000
+    warmup:                       1000                              # no usage
 
 inference_decoding:
-    beam_search:                  True                             # False for greedy search
-    beam-size:                    10                               # number of tree branches
-    max-decoding-time-step:       70                               # number of iterations during inference
+    beam_search:                  True                              # False for greedy search
+    beam-size:                    10                                # number of tree branches
+    max-decoding-time-step:       70                                # number of iterations during inference
     persist-approx:               False                             # False mean syntax analysis return text on screen, True mean saving in database
 
 learning_config:
     architecture_dev_mode:        False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false
-    max_padding:                  72
+    max_padding:                  72                                # padding on tensors
     output_max_words:             20                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
     split_factor:                 9                                 # coefficient for the corpus split in training or validation

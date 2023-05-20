@@ -9,6 +9,12 @@ from torchtext.vocab import build_vocab_from_iterator
 from common.constant import Tag, Corpus, EnvType
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 
+"""
+This code was genuinely inspired by 
+"the progressive transformer" (Ben Saunders et al.) and "the annotated transformer" (Huang / Rush et al.) 
+and was rewritten from scratch by Alix Declerck et al. UMONS
+We create a vocabulary to be used by the symbolicTransformer
+"""
 
 def retrieve_conte_dataset(selected_environment, application_path, selected_db):
     """
@@ -55,7 +61,8 @@ class Vocab:
     yield into tokens filled (by dataset text or glosses) into itos units by
     build_vocab_from_iterator (https://pytorch.org/text/stable/vocab.html)
     """
-    def __init__(self, tokens, config):
+    def __init__(self, config):
+        tokens = load_spacy_tokenizers()
         self.src = None
         self.src_vector = None
         self.tgt = None
@@ -235,7 +242,7 @@ class Vocab:
 
     @staticmethod
     def vocab_builder_fast_text(dim):
-        """A complete vocab builder that generate 10^6 tokens, need big GPU"""
+        """A complete vocab builder that generate 10^6 embedded tokens, need big GPU"""
         # Corpus initialization
         fast_text_corpus = torchtext.vocab.FastText(language='fr')
         corpus_dict = fast_text_corpus.stoi

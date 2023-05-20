@@ -93,7 +93,7 @@ def run_model_example(config, n_examples=5):
         vocab,
         EnvType.TEST.value,
         torch.device("cpu"),
-        architecture_dev_mode=config["learning_config"]["architecture_dev_mode"],
+        english_output=config["learning_config"]["english_output"],
         application_path=application_path,
         selected_db=config["configuration_path"]["selected_db"],
         batch_size=1,

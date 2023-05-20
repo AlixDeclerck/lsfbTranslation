@@ -69,13 +69,13 @@ class Vocab:
         self.tgt_vector = None
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
-        self.archi_dev_mode = config["learning_config"]["architecture_dev_mode"]
+        self.english_output = config["learning_config"]["english_output"]
         self.vocab_handler(
             config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"],
             config["configuration_path"]["application_path"],
             config["hyper_parameters"]["dimension"],
             bool(config["learning_config"]["fast_text_corpus"]),
-            bool(config["learning_config"]["architecture_dev_mode"]),
+            bool(config["learning_config"]["english_output"]),
             str(config["configuration_path"]["selected_db"])
         )
 
@@ -109,7 +109,7 @@ class Vocab:
             specials=special_tag,
         )
 
-        if self.archi_dev_mode:
+        if self.english_output:
             print("Building ENGLISH Vocabulary ...")
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_en, index=Corpus.TEXT_EN.value[1]),

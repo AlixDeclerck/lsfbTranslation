@@ -58,7 +58,7 @@ def create_dataloaders(
         vocab,
         environment,
         device,
-        architecture_dev_mode,
+        english_output,
         application_path,
         selected_db,
         batch_size=12000,
@@ -79,7 +79,7 @@ def create_dataloaders(
     complete = retrieve_conte_dataset(environment, application_path, selected_db)
 
     # sub-select from target mode
-    if architecture_dev_mode:
+    if english_output:
         full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
     else:
         full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()

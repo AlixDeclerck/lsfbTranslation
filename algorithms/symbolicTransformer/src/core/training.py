@@ -99,7 +99,7 @@ def train_worker(
         vocab,
         environment,
         gpu,
-        architecture_dev_mode=config["learning_config"]["architecture_dev_mode"],
+        english_output=config["learning_config"]["english_output"],
         application_path=config["configuration_path"]["application_path"],
         selected_db=config["configuration_path"]["selected_db"],
         batch_size=config["hyper_parameters"]["batch_size"] // ngpus_per_node,
@@ -111,8 +111,8 @@ def train_worker(
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=config["hyper_parameters"]["base_lr"],                               # learning rate (default: 1e-3)
-        betas=(0.9, 0.98),                                  # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
-        eps=1e-9,                                           # term added to the denominator to improve numerical stability
+        betas=(config["hyper_parameters"]["adam_optimizer_betas_1"], config["hyper_parameters"]["adam_optimizer_betas_2"]),                                  # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
+        eps=config["hyper_parameters"]["adam_optimizer_eps"],                                           # term added to the denominator to improve numerical stability
         weight_decay=config["hyper_parameters"]["optimizer_weight_decay"],      # weight decay (L2 penalty) (default: 0)
         amsgrad=False                                       # AMSGrad variant (default: False)
     )

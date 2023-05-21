@@ -87,6 +87,8 @@ class ConteHandler:
         else:
             lsf_approx = None
 
+        cpt_test = 0
+
         for i, ln in enumerate(conte.iterrows()):
 
             # LSF approximation
@@ -99,9 +101,10 @@ class ConteHandler:
                 generated_tense = ln[1].TENSE
 
             # environment definition
-            regularize_gloss = self.gloss_limit > 0 and len(ln[1].GLOSS_LSF) <= self.gloss_limit
+            regularize_gloss = 0 < self.gloss_limit and (self.gloss_limit < len(ln[1].GLOSS_LSF.split(" ")) or self.gloss_limit < len(ln[1].GENERATED_LSF.split(" ")))
             if not regularize_gloss and (i % int(self.split_factor)) == 0:
                 env_name = EnvType.TEST.value
+                cpt_test += 1
             else:
                 env_name = EnvType.TRAINING.value
 
@@ -117,6 +120,7 @@ class ConteHandler:
                     self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name, config["learning_config"]["output_max_words"])
 
             cpt += 1
+            print(f"=== {cpt_test} values added in test set ===")
         return cpt
 
     def retrieve_csv_contes(self):
@@ -212,8 +216,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    # os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']
-    contes.populate_db_from_csv()
+    # contes.populate_db_from_csv()
 
     # show bleu score
-    # show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")

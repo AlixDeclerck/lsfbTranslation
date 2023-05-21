@@ -16,7 +16,7 @@ and was rewritten from scratch by Alix Declerck et al. UMONS
 We create a vocabulary to be used by the symbolicTransformer
 """
 
-def retrieve_conte_dataset(selected_environment, application_path, selected_db, dialect=0):
+def retrieve_conte_dataset(selected_environment, application_path, selected_db, dialect):
     """
     Extract the parallel sentences and glosses from database
     :param selected_environment: a chosen string environment {train, test, dev}
@@ -25,8 +25,11 @@ def retrieve_conte_dataset(selected_environment, application_path, selected_db, 
     :param dialect: to choose which glosses are taken {0:"both", 1:"LSF", 2:"generated"}
     :return: corpus dataframe
     """
+
+    print("retrieve conte dataset for : ", dialect.value[1])
+
     db_dataset = []
-    for d in retrieve_mysql_datas_from(selected_environment, application_path, selected_db, dialect_selection=dialect):
+    for d in retrieve_mysql_datas_from(selected_environment, application_path, selected_db, dialect_selection=dialect.value[0]):
         db_dataset.append([
             d.get(Corpus.TEXT_FR.value[0]),
             d.get(Corpus.TEXT_EN.value[0]),
@@ -71,7 +74,11 @@ class Vocab:
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
         self.english_output = config["learning_config"]["english_output"]
-        self.dialect_selection = config["learning_config"]["dialect_selection"]
+        for dia in Dialect:
+            if config["learning_config"]["dialect_selection"] == dia.value[0]:
+                self.dialect_selection = dia
+                break
+
         self.vocab_handler(
             config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"],
             config["configuration_path"]["application_path"],
@@ -101,7 +108,7 @@ class Vocab:
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF.value)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

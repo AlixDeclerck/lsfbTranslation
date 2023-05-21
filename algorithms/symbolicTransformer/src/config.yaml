@@ -39,7 +39,7 @@ inference_decoding:
     beam-size:                    10                                # number of tree branches
     max-decoding-time-step:       70                                # number of iterations during inference
     persist-approx:               True                              # False mean syntax analysis return text on screen, True mean saving in database
-    number_of_inferences:         18                                # Number of phrases inferred
+    number_of_inferences:         16                                # Number of phrases inferred
 
 learning_config:
     dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
@@ -50,5 +50,5 @@ learning_config:
     output_max_words:             20                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
     test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
-    max_test_gloss_size:          5                                 # regularize the glosses size to k (zero mean no limit)
+    max_test_gloss_size:          6                                 # regularize the glosses size to k (zero mean no limit)
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

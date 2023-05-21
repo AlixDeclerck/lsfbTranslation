@@ -25,8 +25,8 @@ hyper_parameters:
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers:                       6                                 # originally 6
-    num_epochs:                   120                                # Annotated transformer choose 8
-    optimizer_weight_decay:       0.2                                 # L2 penalty #
+    num_epochs:                   40                                # Annotated transformer choose 8
+    optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       3000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
@@ -39,9 +39,10 @@ inference_decoding:
     beam-size:                    10                                # number of tree branches
     max-decoding-time-step:       70                                # number of iterations during inference
     persist-approx:               True                              # False mean syntax analysis return text on screen, True mean saving in database
+    number_of_inferences:         18                                # Number of phrases inferred
 
 learning_config:
-    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"}
+    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     english_output:               False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false

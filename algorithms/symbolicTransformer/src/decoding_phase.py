@@ -27,7 +27,7 @@ Huang, et al. 2022 / Rush, et al. 2019
 nlp.seas.harvard.edu/annotated-transformer
 """
 
-def check_outputs(model, vocab, dataloader_validation, n_examples=15):
+def check_outputs(model, vocab, dataloader_validation, n_examples=4):
 
     results = []
     for example_id in range(n_examples):
@@ -84,7 +84,7 @@ def check_outputs(model, vocab, dataloader_validation, n_examples=15):
     return results
 
 
-def run_model_example(config, n_examples=5):
+def run_model_example(config, n_examples=8):
 
     vocab = Vocab(config)
 
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
-    used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=18)
+    used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=learning_configuration["inference_decoding"]["number_of_inferences"])
 
     # DISPLAY RESULT
     plot_attention_maps(used_model, inferred_data, get_decoder_self)

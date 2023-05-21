@@ -23,7 +23,7 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-20.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-21_A.csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
     learning_rate_column = df.iloc[:, [4]]
@@ -59,5 +59,5 @@ if __name__ == '__main__':
     plt.legend()
     plt.ylabel("Kullback-Leibler divergence loss")
     plt.xlabel("epochs")
-    plt.savefig('img/learning_curves_ST_2023-05-20.png')
+    plt.savefig('img/learning_curves_ST_2023-05-21_A.png')
     plt.show()

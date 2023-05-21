@@ -63,12 +63,12 @@ class ConteHandler:
             story_name = s.removesuffix(".csv")
             print("insert : "+story_name)
             conte = ff.get_conte(self.learning_dir + s)
-            cpt = self.populate_parallels(conn, cpt, story_name, conte, languages, application_path)
+            cpt = self.populate_parallels(conn, cpt, story_name, conte, languages)
 
         print(f"{cpt} phrases inserted")
         conn.close()
 
-    def populate_parallels(self, conn, cpt, story_name, conte, languages, application_path):
+    def populate_parallels(self, conn, cpt, story_name, conte, languages):
 
         is_persist = config["inference_decoding"]["persist-approx"]
 
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     contes = ConteHandler(
         os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
         config['configuration_path']['xlsx_path'], config['configuration_path']['csv_path'],
-        config['learning_config']['split_factor'], config['configuration_path']['selected_db'])
+        config['learning_config']['test_division'], config['configuration_path']['selected_db'])
 
     # list the cvs in conte directory
     # print(contes.retrieve_csv_contes())

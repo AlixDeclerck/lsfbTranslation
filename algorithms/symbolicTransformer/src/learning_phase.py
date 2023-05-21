@@ -10,7 +10,7 @@ import os
 
 from docopt import docopt
 from common.constant import EnvType
-from algorithms.symbolicTransformer.src.functionnal.data_preparation import load_spacy_tokenizers, Vocab
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from algorithms.symbolicTransformer.src.core.training import load_or_train_model
 

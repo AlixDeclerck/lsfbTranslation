@@ -20,15 +20,15 @@ hyper_parameters:
     base_lr:                      0.1                               # learning rate
     batch_size:                   16                                # Annotated transformer choose 32
     dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
-    dropout:                      0.05                              # drop out regularization technique
+    dropout:                      0.01                              # drop out regularization technique
     feed_forward_dimension:       2048                              # the positionwise forward dimension
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers:                       6                                 # originally 6
-    num_epochs:                   20                                # Annotated transformer choose 8
-    optimizer_weight_decay:       0                                 # L2 penalty #
-    target_label_smoothing:       0.8                               # velocity of label smoothing
-    warmup:                       1000                              # learning rate scheduler's warmup
+    num_epochs:                   120                                # Annotated transformer choose 8
+    optimizer_weight_decay:       0.2                                 # L2 penalty #
+    target_label_smoothing:       0.5                               # velocity of label smoothing
+    warmup:                       3000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
     adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
     adam_optimizer_betas_2:       0.98                              # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
@@ -48,5 +48,5 @@ learning_config:
     max_padding:                  72                                # padding on tensors
     output_max_words:             20                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
-    split_factor:                 9                                 # coefficient for the corpus split in training or validation
+    test_division:                9                                 # coefficient k for the corpus split train vs test where 1/k are test items
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

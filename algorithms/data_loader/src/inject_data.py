@@ -68,7 +68,7 @@ class ConteHandler:
         print(f"{cpt} phrases inserted")
         conn.close()
 
-    def populate_parallels(self, conn, cpt, story_name, conte, languages):
+    def populate_parallels(self, conn, cpt, story_name, conte, languages, gloss_limit):
 
         is_persist = config["inference_decoding"]["persist-approx"]
 
@@ -88,12 +88,7 @@ class ConteHandler:
 
         for i, ln in enumerate(conte.iterrows()):
 
-            if (i % int(self.split_factor)) == 0:
-                env_name = EnvType.TEST.value
-            else:
-                env_name = EnvType.TRAINING.value
-
-            # process LSF approximation
+            # LSF approximation
             if is_persist:
                 data = lsf_approx[i].split("|")
                 generated_lsf = data[0]
@@ -102,8 +97,16 @@ class ConteHandler:
                 generated_lsf = ln[1].GENERATED_LSF
                 generated_tense = ln[1].TENSE
 
+            # environment definition
+            regularize_gloss = gloss_limit > 0 and ln[1].GLOSS <= gloss_limit
+            if not regularize_gloss and (i % int(self.split_factor)) == 0:
+                env_name = EnvType.TEST.value
+            else:
+                env_name = EnvType.TRAINING.value
+
             print(f"--- {env_name} insertions --------------")
 
+            # processing parallels by language
             for lang in languages:
                 if lang[0] == Corpus.TEXT_FR.value[2]:
                     self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, env_name, config["learning_config"]["output_max_words"])
@@ -112,60 +115,6 @@ class ConteHandler:
                 elif lang[0] == Corpus.GLOSS_LSF.value[2]:
                     self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name, config["learning_config"]["output_max_words"])
 
-            cpt += 1
-        return cpt
-
-    @staticmethod
-    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name, max_output):
-        if text != "" and generated != "":
-            reference, hypothesis = assemble_txt_bleu(text, generated)
-            score = processing_bleu_score(reference, hypothesis, output_max=max_output, display=True)
-        else:
-            score = 0
-
-        print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {num_line} | {env_name} ")
-        sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (story_name, num_line, lang, text, generated, tense, score, env_name)
-
-        cur = conn.cursor()
-        cur.execute(sql, val)
-        conn.commit()
-
-    def populate_db(self, conn, cpt, story_name, conte):
-        """
-        deprecated
-        :param conn:
-        :param cpt:
-        :param story_name:
-        :param conte:
-        :return:
-        """
-
-        for i, ln in enumerate(conte.iterrows()):
-
-            if (i % int(self.split_factor)) == 0:
-                env_name = EnvType.TEST.value
-            else:
-                env_name = EnvType.TRAINING.value
-
-            print(f"--- {env_name} insertions --------------")
-            text_fr = ln[1].FR
-            gloss_lsf = ln[1].GLOSS_LSF
-            generated_lsf = ln[1].GENERATED_LSF
-            tense = ln[1].TENSE
-            gloss_lsfb = ln[1].GLOSS_LSFB
-            text_en = ln[1].EN
-            num_line = ln[1].NUM
-            generated_fr = ln[1].GENERATED_FR
-            generated_en = ln[1].GENERATED_EN
-            print(f"[{i}] inserted {story_name} | {text_fr} | {gloss_lsf} | {generated_lsf} | {tense} | {gloss_lsfb} | {text_en} | {num_line} | {generated_fr} | {generated_en} | {env_name} ")
-            sql = "INSERT INTO PARALLEL_ITEM (story_name, FR, GLOSS_LSF, GENERATED_LSF, TENSE, GLOSS_LSFB, EN, NUM, GENERATED_FR, GENERATED_EN, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (story_name, text_fr, gloss_lsf, generated_lsf, tense, gloss_lsfb, text_en, num_line, generated_fr, generated_en, env_name)
-
-            cur = conn.cursor()
-            cur.execute(sql, val)
-
-            conn.commit()
             cpt += 1
         return cpt
 
@@ -206,6 +155,22 @@ class ConteHandler:
             os.chdir(actual_path)
 
         return content
+
+    @staticmethod
+    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name, max_output):
+        if text != "" and generated != "":
+            reference, hypothesis = assemble_txt_bleu(text, generated)
+            score = processing_bleu_score(reference, hypothesis, output_max=max_output, display=True)
+        else:
+            score = 0
+
+        print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {num_line} | {env_name} ")
+        sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (story_name, num_line, lang, text, generated, tense, score, env_name)
+
+        cur = conn.cursor()
+        cur.execute(sql, val)
+        conn.commit()
 
 def assemble_txt_bleu(ref, hyp):
     return [Tag.START.value[0]] + ref.split(" ") + [Tag.STOP.value[0]], [Hypothesis(value=[Tag.START.value[0]] + hyp.split(" ") + [Tag.STOP.value[0]], score=None)][0]

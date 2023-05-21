@@ -48,5 +48,6 @@ learning_config:
     max_padding:                  72                                # padding on tensors
     output_max_words:             20                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
-    test_division:                9                                 # coefficient k for the corpus split train vs test where 1/k are test items
+    test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
+    max_test_gloss_size:          5                                 # regularize the glosses size to k (zero mean no limit)
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

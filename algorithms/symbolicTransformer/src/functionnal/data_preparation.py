@@ -6,7 +6,7 @@ import torch
 import torchtext
 import unidecode
 from torchtext.vocab import build_vocab_from_iterator
-from common.constant import Tag, Corpus, EnvType
+from common.constant import Tag, Corpus, EnvType, Dialect
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
 
 """
@@ -94,11 +94,14 @@ class Vocab:
             self.tgt_vector = self.create_tgt_embeddings(dim, is_en)
 
     def vocab_builder_parallels(self, application_path, selected_db):
-        """create a vocabulary (mapping between token and index - one hot vector)"""
+        """
+            create a vocabulary (mapping between token and index - one hot vector)
+            We construct the vocabulary with valid glosses
+        """
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, self.dialect_selection)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF.value)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

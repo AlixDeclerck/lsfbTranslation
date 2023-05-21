@@ -18,11 +18,12 @@ import os
 
 class ConteHandler:
 
-    def __init__(self, application_path, xlsx_path, csv_path, sf, selected_db):
+    def __init__(self, application_path, xlsx_path, csv_path, sf, gl, selected_db):
         self.application_path = application_path
         self.stakeholders_dir = application_path + xlsx_path
         self.learning_dir = application_path + csv_path
         self.split_factor = sf
+        self.gloss_limit = gl
         self.selected_db = selected_db
 
     def convert(self):
@@ -38,7 +39,7 @@ class ConteHandler:
             df = pandas.DataFrame(read_file)
             df.to_csv(destination_path, index=False, header=True)
 
-    def populate_db_from_csv(self, application_path):
+    def populate_db_from_csv(self):
         """
         add in database (db_creation/contes)
         a new population of conte from csv files
@@ -68,7 +69,7 @@ class ConteHandler:
         print(f"{cpt} phrases inserted")
         conn.close()
 
-    def populate_parallels(self, conn, cpt, story_name, conte, languages, gloss_limit):
+    def populate_parallels(self, conn, cpt, story_name, conte, languages):
 
         is_persist = config["inference_decoding"]["persist-approx"]
 
@@ -98,7 +99,7 @@ class ConteHandler:
                 generated_tense = ln[1].TENSE
 
             # environment definition
-            regularize_gloss = gloss_limit > 0 and ln[1].GLOSS <= gloss_limit
+            regularize_gloss = self.gloss_limit > 0 and len(ln[1].GLOSS_LSF) <= self.gloss_limit
             if not regularize_gloss and (i % int(self.split_factor)) == 0:
                 env_name = EnvType.TEST.value
             else:
@@ -197,9 +198,12 @@ if __name__ == "__main__":
 
     args = docopt(__doc__)
     contes = ConteHandler(
-        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
-        config['configuration_path']['xlsx_path'], config['configuration_path']['csv_path'],
-        config['learning_config']['test_division'], config['configuration_path']['selected_db'])
+        application_path=os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
+        xlsx_path=config['configuration_path']['xlsx_path'],
+        csv_path=config['configuration_path']['csv_path'],
+        sf=config['learning_config']['test_division'],
+        gl=config['learning_config']['max_test_gloss_size'],
+        selected_db=config['configuration_path']['selected_db'])
 
     # list the cvs in conte directory
     # print(contes.retrieve_csv_contes())
@@ -208,7 +212,8 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    # contes.populate_db_from_csv(os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path'])
+    # os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']
+    contes.populate_db_from_csv()
 
     # show bleu score
-    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+    # show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")

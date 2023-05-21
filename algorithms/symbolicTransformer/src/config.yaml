@@ -42,7 +42,7 @@ inference_decoding:
     number_of_inferences:         16                                # Number of phrases inferred
 
 learning_config:
-    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     english_output:               False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false

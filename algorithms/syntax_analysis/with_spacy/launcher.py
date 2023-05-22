@@ -60,7 +60,7 @@ def main():
     else:
         if args['--mode'] == "database":
             learning_corpus = retrieve_mysql_conte(
-                conte_num=format_nbr(53),
+                conte_num=format_nbr(55),
                 language=Corpus.TEXT_FR.value[2],
                 application_path=str(application_path),
                 selected_db=config["configuration_path"]["selected_db"],

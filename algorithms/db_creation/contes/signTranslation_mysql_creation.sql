@@ -58,6 +58,18 @@ INSERT INTO STORY (file_name, id_author) VALUES ("039_the_elves",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("040_robber",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("050_sleeping_beauty",1);
 INSERT INTO STORY (file_name, id_author) VALUES ("053_snow_white",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("055_rumpelstilskin",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("060_two_brothers",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("063_three_feathers",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("064_golden_goose",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("066_rabbits_bride",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("069_jorinda_and_joringel",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("070_three_children_of_fortune",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("071_six_soldiers_of_fortune",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("072_the_wolf_and_the_man",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("073_the_wolf_and_the_fox",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("078_the_old_man_and_his_grandson",1);
+INSERT INTO STORY (file_name, id_author) VALUES ("079_the_water_nix",1);
 
 -- SEVERAL ELEMENTS (FOLDER, ENUM) ARE USING THE TEST, TRAINING AND VALIDATION NAMES
 -- ID SHOULD NOT BE CHANGED

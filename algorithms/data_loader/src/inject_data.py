@@ -216,7 +216,7 @@ if __name__ == "__main__":
     # contes.convert()
 
     # uncomment to add csv population to database (5802 phrases inserted)
-    # contes.populate_db_from_csv()
+    contes.populate_db_from_csv()
 
     # show bleu score
-    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+    # show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")

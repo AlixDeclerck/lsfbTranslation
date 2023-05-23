@@ -37,6 +37,10 @@ def retrieve_conte_dataset(selected_environment, application_path, selected_db, 
 
     return db_dataset
 
+def retrieve_corpus_txt(path):
+    with open(path) as f:
+        res = f.readlines()
+    return res
 
 def load_spacy_tokenizers():
     """
@@ -128,6 +132,10 @@ class Vocab:
                 specials=special_tag)
         else:
             print("Building GLOSS Vocabulary ...")
+
+            lsfb_corpus = retrieve_corpus_txt(application_path+"data/corpus_txt/lsfb_corpus.txt")
+            learning_corpus.append(["", "", lsfb_corpus[0]])
+
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),
                 min_freq=1,
@@ -148,7 +156,7 @@ class Vocab:
         fast_text_corpus = torchtext.vocab.FastText(language='fr')
 
         # embedding
-        embedding, dimension = self.update_embeddings(fast_text_corpus.stoi, fast_text_corpus.vectors, self.src.vocab.itos_[4:])
+        embedding, dimension = self.align_tokens(fast_text_corpus.stoi, fast_text_corpus.vectors, self.src.vocab.itos_[4:])
         output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
 
         return output(embedding.T)
@@ -167,10 +175,9 @@ class Vocab:
             corpus_vectors = fast_text_corpus.vectors
         else:
             fast_text_corpus = torchtext.vocab.FastText(language='fr')
-            corpus_stoi, corpus_vectors = self.gloss_the_corpus(fast_text_corpus)
+            corpus_stoi, corpus_vectors = self.add_embeddings(fast_text_corpus)
 
-        # embedding
-        embedding, dimension = self.update_embeddings(corpus_stoi, corpus_vectors, self.tgt.vocab.itos_[4:])
+        embedding, dimension = self.align_tokens(corpus_stoi, corpus_vectors, self.tgt.vocab.itos_[4:])
         output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
 
         return output(embedding.T)
@@ -202,7 +209,7 @@ class Vocab:
             torch.save((self.src, self.tgt), file_path)
 
     @staticmethod
-    def gloss_the_corpus(original_corpus):
+    def add_embeddings(original_corpus):
         """
         We use the fasttext french embedding to create glosses embeddings
         Side effect : when a word (key) exist with different accents we keep only the last embedding (value)
@@ -210,9 +217,11 @@ class Vocab:
         :param original_corpus:
         :return: stoi, vector
         """
-        new_stoi = {'</s>': original_corpus.vectors[0]}
+        new_stoi = {}
+        corp = list(original_corpus.stoi.items())[1:]
+        corp.reverse()
 
-        for x in list(original_corpus.stoi.items())[1:]:
+        for x in corp:
             new_key = unidecode.unidecode(x[0]).upper()
             new_embedding = original_corpus.vectors[x[1]]
             new_stoi.update({new_key: new_embedding})
@@ -220,14 +229,15 @@ class Vocab:
         res_stoi = {'</s>': 0}
         res_vectors = [original_corpus.vectors[0]]
         items = list(new_stoi.items())[1:]
-        for index, x in enumerate(items, start=1):
+        items.reverse()
+        for index, x in enumerate(items):
             res_vectors.append(x[1])
             res_stoi.update({x[0]: index})
 
         return res_stoi, torch.stack(res_vectors)
 
     @staticmethod
-    def update_embeddings(corpus_dict, corpus_embeddings, words):
+    def align_tokens(corpus_dict, corpus_embeddings, words):
         res = torch.cat((
             torch.zeros(corpus_embeddings.shape[1], 1),
             torch.unsqueeze(corpus_embeddings[0], 1),

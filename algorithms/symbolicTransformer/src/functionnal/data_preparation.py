@@ -84,6 +84,11 @@ class Vocab:
                 self.dialect_selection = dia
                 break
 
+        for dia in Dialect:
+            if config["learning_config"]["vocab_dialect"] == dia.value[0]:
+                self.vocab_dialect = dia
+                break
+
         self.vocab_handler(
             config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"],
             config["configuration_path"]["application_path"],
@@ -113,7 +118,7 @@ class Vocab:
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF, self.english_output, self.multi_source)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, self.vocab_dialect, self.english_output, self.multi_source)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

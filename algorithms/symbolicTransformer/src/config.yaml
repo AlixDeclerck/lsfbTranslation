@@ -13,6 +13,7 @@ graphics:
     color1:                       "#FF99EE"
     color2:                       "#000033"
     color3:                       "#DDDDDD"
+    color4:                       "#AAAAEE"
 
 hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
@@ -44,6 +45,7 @@ inference_decoding:
 learning_config:
     multi_sources:                True                              # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false

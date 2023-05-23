@@ -131,6 +131,7 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
 
     # TRAINING
     train_state = TrainState()
+    smallest_loss = float('inf')
     for epoch in range(config["hyper_parameters"]["num_epochs"]):
         if is_distributed:
             train_dataloader.sampler.set_epoch(epoch)
@@ -153,12 +154,6 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
             train_state=train_state,
         )
 
-        # saving module
-        GPUtil.showUtilization()
-        if is_main_process and model_saving_strategy:
-            file_path = "%s%.2d.pt" % (config["configuration_path"]["model_path"]+config["configuration_path"]["model_prefix"], epoch)
-            torch.save(module.state_dict(), file_path)
-
         torch.cuda.empty_cache()
 
         # MODEL EVALUATION
@@ -175,6 +170,15 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
             accum_step=config["hyper_parameters"]["accum_step"],
             mode="eval",
         )
+
+        # saving module
+        GPUtil.showUtilization()
+        if is_main_process and model_saving_strategy:
+            actual_loss = simple_loss[0].item()
+            if actual_loss < smallest_loss:
+                smallest_loss = actual_loss
+                file_path = "%s%.2d.pt" % (config["configuration_path"]["model_path"]+config["configuration_path"]["model_prefix"], epoch)
+                torch.save(module.state_dict(), file_path)
 
         # loss function in evaluation mode
         if persist_learning_measure:

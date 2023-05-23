@@ -16,7 +16,7 @@ and was rewritten from scratch by Alix Declerck et al. UMONS
 We create a vocabulary to be used by the symbolicTransformer
 """
 
-def retrieve_conte_dataset(selected_environment, application_path, selected_db, dialect, english_output=False):
+def retrieve_conte_dataset(selected_environment, application_path, selected_db, dialect, english_output=False, multi_source=False):
     """
     Extract the parallel sentences and glosses from database
     :param selected_environment: a chosen string environment {train, test, dev}
@@ -24,13 +24,14 @@ def retrieve_conte_dataset(selected_environment, application_path, selected_db, 
     :param selected_db: db_dev or db_test
     :param dialect: to choose which glosses are taken {0:"both", 1:"LSF", 2:"generated"}
     :param english_output: False mean we use glosses
+    :param multi_source : If true we take booth generated and FR source when possible
     :return: corpus dataframe
     """
 
     print("retrieve conte dataset for : ", dialect.value[1])
 
     db_dataset = []
-    for d in retrieve_mysql_datas_from(selected_environment, application_path, selected_db, dialect_selection=dialect.value[0]):
+    for d in retrieve_mysql_datas_from(selected_environment, application_path, selected_db, dialect_selection=dialect.value[0], src_multi=multi_source):
         data = [d.get(Corpus.TEXT_FR.value[0]), d.get(Corpus.TEXT_EN.value[0]), d.get(Corpus.GLOSS_LSF.value[0])]
         if english_output or data[2] != "":
             db_dataset.append(data)
@@ -77,6 +78,7 @@ class Vocab:
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
         self.english_output = config["learning_config"]["english_output"]
+        self.multi_source = config["learning_config"]["multi_sources"]
         for dia in Dialect:
             if config["learning_config"]["dialect_selection"] == dia.value[0]:
                 self.dialect_selection = dia
@@ -111,7 +113,7 @@ class Vocab:
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF, self.english_output)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, Dialect.LSF, self.english_output, self.multi_source)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:

@@ -66,13 +66,14 @@ def retrieve_mysql_conte(conte_num, language, application_path, selected_db, gen
     return res
 
 
-def retrieve_mysql_datas_from(subset_type, application_path, selected_db, dialect_selection=0):
+def retrieve_mysql_datas_from(subset_type, application_path, selected_db, dialect_selection=0, src_multi=False):
     """
     get a dictionary from dataset : text_fr, text_en, gloss_lsf
     :param subset_type: selected environment
     :param application_path: the application path to retrieve database information
     :param selected_db : the database used (db_dev or db_test)
     :param dialect_selection : to choose which glosses are taken {0:"both", 1:"LSF", 2:"generated"}
+    :param src_multi : If true we take booth generated and FR source when possible
     :return: dictionary
     """
     res = []
@@ -93,10 +94,14 @@ def retrieve_mysql_datas_from(subset_type, application_path, selected_db, dialec
     cur.execute(request)
 
     for x in cur.fetchall():
-        if x[0] != "":
-            corpus_fr = x[0]  # txt_fr
+        corpus_fr = []
+        if src_multi and x[0] != "" and x[1] != "":
+            corpus_fr.append(x[0])
+            corpus_fr.append(x[1])
+        elif x[0] != "":
+            corpus_fr.append(x[0])  # txt_fr
         else:
-            corpus_fr = x[1]  # fr_generated
+            corpus_fr.append(x[1])  # fr_generated
 
         if x[3] != "":
             corpus_en = x[3]  # en_generated
@@ -111,11 +116,12 @@ def retrieve_mysql_datas_from(subset_type, application_path, selected_db, dialec
         else:
             corpus_glosses = x[4]       # txt_gloss or gloss_generated depending on the request
 
-        res.append({
-            Corpus.TEXT_FR.value[0]: corpus_fr,
-            Corpus.TEXT_EN.value[0]: corpus_en,
-            Corpus.GLOSS_LSF.value[0]: corpus_glosses
-        })
+        for c in corpus_fr:
+            res.append({
+                Corpus.TEXT_FR.value[0]: c,
+                Corpus.TEXT_EN.value[0]: corpus_en,
+                Corpus.GLOSS_LSF.value[0]: corpus_glosses
+            })
 
     pt.close()
 

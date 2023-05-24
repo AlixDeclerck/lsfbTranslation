@@ -182,9 +182,9 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
 
         # loss function in evaluation mode
         if persist_learning_measure:
-            persist_validation(epoch, simple_loss)
+            persist_validation(epoch, simple_loss[0].item(), smallest_loss)
         else:
-            print(simple_loss)
+            print(str(simple_loss) + " , smallest_loss: " + str(smallest_loss))
 
         # gpu flush
         torch.cuda.empty_cache()

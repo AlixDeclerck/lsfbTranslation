@@ -19,14 +19,14 @@ hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
     accum_step:                   10                                # Write loss only each n steps! Originally 40 but shrank due to small training corpus
     base_lr:                      0.1                               # learning rate
-    batch_size:                   16                                # Annotated transformer choose 32
+    batch_size:                   8                                 # Annotated transformer choose 32
     dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
     dropout:                      0.01                              # drop out regularization technique
     feed_forward_dimension:       2048                              # the positionwise forward dimension
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers:                       6                                 # originally 6
-    num_epochs:                   40                                # Annotated transformer choose 8
+    num_epochs:                   80                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       3000                              # learning rate scheduler's warmup

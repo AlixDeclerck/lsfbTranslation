@@ -43,7 +43,7 @@ inference_decoding:
     number_of_inferences:         16                                # Number of phrases inferred
 
 learning_config:
-    multi_sources:                True                              # If we have FR & FR generated we take both to learn and vocab
+    multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True for "EN", False for "GLOSS"

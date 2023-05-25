@@ -5,48 +5,30 @@
 Usage:
     plot_ST_learning.py --app-path=<file>
 """
-
 import os
 import matplotlib.pyplot as plt
 import pandas
-from enum import Enum
+
+from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 40
-
-class Case(Enum):
-    """
-        To choose the file where inference is
-        and write the title
-    """
-    FIRST = "1", "A"
-    SECOND = "2", "B"
-    THIRD = "3", "C"
-    FOURTH = "4", "D"
-    FIFTH = "5", "E"
-
-class SubCase(Enum):
-    """
-        To choose the file where inference is
-        and write the title
-    """
-    FIRST = "1, sous cas 1", "A1"
-    SECOND = "1, sous cas 2", "A2"
-
+NUMBER_OF_TRAINING_RESULTS = 20
+case = Case.FIRST
+experimentation_detail = "enc_d = 5 - dec_d = 2 - batch size 16"
 
 if __name__ == '__main__':
 
-    # update path from given parameters
+    # configuration
+    today = d_date()
     config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
-    case = Case.FOURTH
+    filename = "img/learning_curves_ST_"+today+"_"+str(case.value[1])+".png"
+    title = "Experimentation n°"+str(case.value[0])+" ("+today+") "+experimentation_detail
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-24_"+str(case.value[1])+".csv")
-    filename = "img/learning_curves_ST_2023-05-24_"+str(case.value[1])+".png"
-    title = "Experimentation n°"+str(case.value[0])+" du 24/5/23 - smoothing 0.5 - batch size 8"
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(case.value[1])+".csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
     learning_rate_column = df.iloc[:, [4]]
@@ -82,7 +64,7 @@ if __name__ == '__main__':
             pocket_eval.append(tmp)
 
     # labels
-    training_set = str(validation_column.values.tolist()[0]).split(" : ")[1][1:-1]
+    training_set = str(validation_column.values.tolist()[0]).split(" : ")[1][1:-2]
     label_training = "training "+training_set+" "
     score = "{:.3f}".format(pocket_eval[-1])
     label_pocket = "best validation score : "+score

@@ -1,5 +1,6 @@
 from enum import Enum
 from collections import namedtuple
+from datetime import datetime
 
 Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
@@ -12,6 +13,13 @@ def pretty_print_hypothesis(hypothesis, method):
 
     print("\nModel Output ( " + method + " )     : " + str(res))
     return res
+
+def d_date():
+    today_date = datetime.today()
+    today_year = str(today_date.year)[-2:]
+    today_month = "0"+str(today_date.month) if today_date.month < 10 else str(today_date.month)
+    today_day = "0"+str(today_date.day) if today_date.day < 10 else str(today_date.day)
+    return today_year+"-"+today_month+"-"+today_day
 
 class Tag(Enum):
     """
@@ -46,3 +54,22 @@ class Dialect(Enum):
     BOTH = 0, "Both LSF and GENERATED glosses"
     LSF = 1, "LSF glosses only"
     GENERATED = 2, "Generated glosses only"
+
+class Case(Enum):
+    """
+        To choose the file where inference is
+        and write the title
+    """
+    FIRST = "1", "A"
+    SECOND = "2", "B"
+    THIRD = "3", "C"
+    FOURTH = "4", "D"
+    FIFTH = "5", "E"
+
+class SubCase(Enum):
+    """
+        To choose the file where inference is and write the title
+        We might use a sub_case only on the first experiment
+    """
+    FIRST = "1, sous cas 1", "A1"
+    SECOND = "1, sous cas 2", "A2"

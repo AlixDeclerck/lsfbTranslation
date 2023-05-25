@@ -9,43 +9,25 @@ import re
 import os
 import matplotlib.pyplot as plt
 import pandas
-from enum import Enum
+from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-class Case(Enum):
-    """
-        To choose the file where inference is
-        and write the title
-    """
-    FIRST = "1", "A"
-    SECOND = "2", "B"
-    THIRD = "3", "C"
-    FOURTH = "4", "D"
-    FIFTH = "5", "E"
-
-class SubCase(Enum):
-    """
-        To choose the file where inference is
-        and write the title
-    """
-    FIRST = "1, sous cas 1", "A1"
-    SECOND = "1, sous cas 2", "A2"
-
+case = Case.FIRST
 
 if __name__ == '__main__':
 
     # update path from given parameters
+    today = d_date()
     config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
-    case = Case.FOURTH
 
     # retrieve score
     N = config["inference_decoding"]["number_of_inferences"]
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-24_"+case.value[1]+"_quicktranslations.csv")
-    filename = "img/inference_scores_2023-05-24_"+str(case.value[1])+".png"
-    title = "Inférences : cas n°"+str(case.value[0]+" du 24/5/23")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+case.value[1]+"_quicktranslations.csv")
+    filename = "img/inference_scores_"+today+"_"+str(case.value[1])+".png"
+    title = "Inférences : cas n°"+str(case.value[0]+" ("+today+")")
     inference_result_title = df.iloc[:, [0]].values.tolist()
     inference_result_data = df.iloc[:, [1]].values.tolist()
     beam_scores = []

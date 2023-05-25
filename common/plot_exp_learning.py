@@ -7,13 +7,33 @@ Usage:
 """
 
 import os
-
 import matplotlib.pyplot as plt
 import pandas
+from enum import Enum
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 40
+
+class Case(Enum):
+    """
+        To choose the file where inference is
+        and write the title
+    """
+    FIRST = "1", "A"
+    SECOND = "2", "B"
+    THIRD = "3", "C"
+    FOURTH = "4", "D"
+    FIFTH = "5", "E"
+
+class SubCase(Enum):
+    """
+        To choose the file where inference is
+        and write the title
+    """
+    FIRST = "1, sous cas 1", "A1"
+    SECOND = "1, sous cas 2", "A2"
+
 
 if __name__ == '__main__':
 
@@ -21,9 +41,12 @@ if __name__ == '__main__':
     config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
+    case = Case.FOURTH
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-24_D.csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-24_"+str(case.value[1])+".csv")
+    filename = "img/learning_curves_ST_2023-05-24_"+str(case.value[1])+".png"
+    title = "Experimentation n°"+str(case.value[0])+" du 24/5/23 - smoothing 0.5 - batch size 8"
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
     learning_rate_column = df.iloc[:, [4]]
@@ -63,7 +86,7 @@ if __name__ == '__main__':
     label_training = "training "+training_set+" "
     score = "{:.3f}".format(pocket_eval[-1])
     label_pocket = "best validation score : "+score
-    label_validation = "training score"
+    label_validation = "validation score by epochs"
     label_lr = "learning rate * 10 000"
 
     # display loss curve
@@ -74,6 +97,6 @@ if __name__ == '__main__':
     plt.legend()
     plt.ylabel("Kullback-Leibler divergence loss")
     plt.xlabel("epochs")
-    plt.title("Experimentation 24/5/23 - smoothing 0.5 - batch size 8")
-    plt.savefig('img/learning_curves_ST_2023-05-24_D.png')
+    plt.title(title)
+    plt.savefig(filename)
     plt.show()

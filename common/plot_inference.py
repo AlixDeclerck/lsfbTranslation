@@ -18,11 +18,11 @@ class Case(Enum):
         To choose the file where inference is
         and write the title
     """
-    FIRST = 1, "A"
-    SECOND = 2, "B"
-    THIRD = 3, "C"
-    FOURTH = 4, "D"
-    FIFTH = 5, "E"
+    FIRST = "1", "A"
+    SECOND = "2", "B"
+    THIRD = "3", "C"
+    FOURTH = "4", "D"
+    FIFTH = "5", "E"
 
 class SubCase(Enum):
     """
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     N = config["inference_decoding"]["number_of_inferences"]
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_23-05-24_"+case.value[1]+"_quicktranslations.csv")
     filename = "img/inference_scores_2023-05-24_"+str(case.value[1])+".png"
-    title = "Inférences : cas n°"+str(case.value[0])
+    title = "Inférences : cas n°"+str(case.value[0]+" du 24/5/23")
     inference_result_title = df.iloc[:, [0]].values.tolist()
     inference_result_data = df.iloc[:, [1]].values.tolist()
     beam_scores = []

@@ -39,7 +39,8 @@ class NMT(nn.Module):
         else:
             self.device = torch.device('cpu', 0)
 
-        n = config["hyper_parameters"]["layers"]
+        n_encoder = config["hyper_parameters"]["layers_encoder"]
+        n_decoder = config["hyper_parameters"]["layers_decoder"]
         d_ff = config["hyper_parameters"]["feed_forward_dimension"]
         h = config["hyper_parameters"]["h_attention_layers"]
         dropout = config["hyper_parameters"]["dropout"]
@@ -49,8 +50,8 @@ class NMT(nn.Module):
         ff = PositionwiseFeedForward(self.d_model, d_ff, dropout)
         position = PositionalEncoding(self.d_model, dropout)
 
-        self.encoder = Encoder(EncoderLayer(self.d_model, c(self.attn), c(ff), dropout), n)
-        self.decoder = Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(ff), dropout), n)
+        self.encoder = Encoder(EncoderLayer(self.d_model, c(self.attn), c(ff), dropout), n_encoder)
+        self.decoder = Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(ff), dropout), n_decoder)
         self.src_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.src), embed_weights=self.vocab.src_vector), c(position))
         self.tgt_embed = nn.Sequential(Embeddings(self.d_model, len(vocab.tgt), embed_weights=self.vocab.tgt_vector), c(position))
         self.generator = Generator(self.d_model, len(vocab.tgt))

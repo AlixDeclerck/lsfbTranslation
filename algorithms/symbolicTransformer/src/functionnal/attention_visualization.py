@@ -29,7 +29,7 @@ def plot_attention_maps(model, input_data, getter_fn):
         ax[i].set_xticks(list(range(att_size)))
         ax[i].set_yticks(list(range(att_size)))
         ax[i].set_axis_off()
-        ax[i].invert_xaxis()
+        # ax[i].invert_yaxis()
         # ax[i].set_xticklabels(input_data.tolist())
         # ax[i].set_yticklabels(input_data.tolist())
         # ax[i].set_title(f"Layer {i}, Head {i}")

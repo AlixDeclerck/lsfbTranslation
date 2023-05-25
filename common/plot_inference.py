@@ -13,7 +13,7 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-case = Case.FIRST
+case = Case.SECOND
 
 if __name__ == '__main__':
 
@@ -35,9 +35,9 @@ if __name__ == '__main__':
 
     for i in range(len(inference_result_title)):
         target = i + 1
-        if inference_result_title[i][0][15:19] == "beam":
+        if str(inference_result_title[i][0])[15:19] == "beam":
             beam_scores.append(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", "")))
-        elif inference_result_title[i][0][15:21] == "greedy":
+        elif str(inference_result_title[i][0])[15:21] == "greedy":
             greedy_scores.append(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", "")))
 
     # mean

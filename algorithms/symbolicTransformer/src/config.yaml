@@ -27,7 +27,7 @@ hyper_parameters:
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
     layers_encoder:               5                                 # layers to understand the context
     layers_decoder:               2                                 # layers to perform the translation
-    num_epochs:                   40                                # Annotated transformer choose 8
+    num_epochs:                   120                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       3000                              # learning rate scheduler's warmup

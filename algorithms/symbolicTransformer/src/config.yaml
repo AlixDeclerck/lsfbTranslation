@@ -25,8 +25,8 @@ hyper_parameters:
     feed_forward_dimension:       2048                              # the positionwise forward dimension
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               8                                 # layers to understand the context
-    layers_decoder:               16                                 # layers to perform the translation
+    layers_encoder:               16                                 # layers to understand the context
+    layers_decoder:               8                                 # layers to perform the translation
     num_epochs:                   120                                # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing

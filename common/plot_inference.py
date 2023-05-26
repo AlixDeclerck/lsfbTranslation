@@ -13,7 +13,7 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-case = Case.FIRST
+case = Case.SECOND
 
 if __name__ == '__main__':
 

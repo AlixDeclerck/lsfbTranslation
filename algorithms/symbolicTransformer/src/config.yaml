@@ -28,7 +28,7 @@ hyper_parameters:
     layers_encoder:               12                                 # layers to understand the context
     layers_decoder:               12                                 # layers to perform the translation
     num_epochs:                   120                                # Annotated transformer choose 8
-    optimizer_weight_decay:       0.3                                 # L2 penalty #
+    optimizer_weight_decay:       0.1                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       3000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)

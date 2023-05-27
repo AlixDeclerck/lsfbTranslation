@@ -14,8 +14,8 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 40
-case = Case.THIRD
-experimentation_detail = "layers = 12 - weight_decay = 0.5 - batch size 8"
+case = Case.FOURTH
+experimentation_detail = "layers = 12 - weight_decay = 0 - batch size 8 - att layers 16"
 
 if __name__ == '__main__':
 

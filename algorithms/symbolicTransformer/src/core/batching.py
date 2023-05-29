@@ -66,7 +66,7 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
         )
 
     # Dataset that will do the batches
-    complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection, vocab.english_output, vocab.multi_source)
+    complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection, vocab.english_output, vocab.multi_source, vocab.row_limit)
 
     # sub-select from target mode
     if english_output:

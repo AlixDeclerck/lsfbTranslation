@@ -13,7 +13,22 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-case = Case.FOURTH
+def normalize_result(value):
+    """
+    Regarding the chosen N when we process BLEU score
+    we might have some very big numbers, we want that number having a constant value
+    to avoid different scale during plot
+    :param value : a value to normalize
+    :return: a float between 0 and 100
+    """
+    if value > 100:
+        return normalized_value
+    else:
+        return value
+
+
+case = Case.FIRST
+normalized_value = 0.05
 
 if __name__ == '__main__':
 
@@ -36,7 +51,7 @@ if __name__ == '__main__':
     for i in range(len(inference_result_title)):
         target = i + 1
         if str(inference_result_title[i][0])[15:19] == "beam":
-            beam_scores.append(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", "")))
+            beam_scores.append(normalize_result(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", ""))))
         elif str(inference_result_title[i][0])[15:21] == "greedy":
             greedy_scores.append(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", "")))
 

@@ -19,15 +19,15 @@ hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
     accum_step:                   10                                # Write loss only each n steps! Originally 40 but shrank due to small training corpus
     base_lr:                      0.1                               # learning rate
-    batch_size:                   8                                # Annotated transformer choose 32
+    batch_size:                   8                                 # Annotated transformer choose 32
     dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
     dropout:                      0.01                              # drop out regularization technique
     feed_forward_dimension:       2048                              # the positionwise forward dimension
-    h_attention_layers:           16                                 # h=8 parallel attention layers
+    h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               12                                 # layers to understand the context
-    layers_decoder:               12                                 # layers to perform the translation
-    num_epochs:                   120                                # Annotated transformer choose 8
+    layers_encoder:               12                                # layers to understand the context
+    layers_decoder:               12                                # layers to perform the translation
+    num_epochs:                   120                               # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       3000                              # learning rate scheduler's warmup
@@ -44,16 +44,16 @@ inference_decoding:
     number_of_inferences:         16                                # Number of phrases inferred
 
 learning_config:
-    multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
-    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
-    vocab_dialect:                0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
+    multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
+    dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True for "EN", False for "GLOSS"
     distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
     fast_text_corpus:             True                              # Spacy if false
     max_padding:                  72                                # padding on tensors
-    output_max_words:             20                                # originally 80
+    output_max_words:             11                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
     test_division:                6                                 # coefficient k for the corpus split train vs test where 1/k are test items
     max_test_gloss_size:          5                                 # regularize the glosses size to k (zero mean no limit)
-    row_limit:                    10000
+    row_limit:                    1000                              # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

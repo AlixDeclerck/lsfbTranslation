@@ -16,18 +16,18 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 def normalize_result(value):
     """
     Regarding the chosen N when we process BLEU score
-    we might have some very big numbers, we want that number having a constant value
+    we might have some extreme numbers, we want that number having a constant value
     to avoid different scale during plot
     :param value : a value to normalize
     :return: a float between 0 and 100
     """
-    if value > 100:
+    if value > 100 or value < 1:
         return normalized_value
     else:
         return value
 
 
-case = Case.FIRST
+case = Case.SECOND
 normalized_value = 0.05
 
 if __name__ == '__main__':
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         if str(inference_result_title[i][0])[15:19] == "beam":
             beam_scores.append(normalize_result(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", ""))))
         elif str(inference_result_title[i][0])[15:21] == "greedy":
-            greedy_scores.append(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", "")))
+            greedy_scores.append(normalize_result(float(re.sub('-',  '', inference_result_data[target][0]).replace(" ", ""))))
 
     # mean
     total_beam_score = 0

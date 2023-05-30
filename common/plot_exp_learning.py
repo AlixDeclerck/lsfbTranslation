@@ -13,9 +13,9 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 6
-case = Case.FIRST
-experimentation_detail = "layers = 12 - row_limit = 1000 - batch = 8 - max_output = 7 -  only LSF"
+NUMBER_OF_TRAINING_RESULTS = 9
+case = Case.SECOND
+experimentation_detail = "layers = 12 - row_limit = 2000 - batch = 8 - max_output = 7 -  only LSF"
 
 if __name__ == '__main__':
 

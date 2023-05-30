@@ -27,7 +27,7 @@ def normalize_result(value):
         return value
 
 
-case = Case.SECOND
+case = Case.THIRD
 normalized_value = 0.05
 
 if __name__ == '__main__':

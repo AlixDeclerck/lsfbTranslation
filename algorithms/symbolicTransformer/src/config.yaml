@@ -42,6 +42,7 @@ inference_decoding:
     max-decoding-time-step:       70                                # number of iterations during inference
     persist-approx:               True                              # False mean syntax analysis return text on screen, True mean saving in database
     number_of_inferences:         16                                # Number of phrases inferred
+    architecture_demo:            False                             # to limit the number of inferences
 
 learning_config:
     multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
@@ -53,7 +54,7 @@ learning_config:
     max_padding:                  72                                # padding on tensors
     output_max_words:             11                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
-    test_division:                6                                 # coefficient k for the corpus split train vs test where 1/k are test items
-    max_test_gloss_size:          5                                 # regularize the glosses size to k (zero mean no limit)
+    test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
+    max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
     row_limit:                    3000                              # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False

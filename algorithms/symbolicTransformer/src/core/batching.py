@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from common.output_decoder import subsequent_mask
-from common.constant import Tag, Corpus
+from common.constant import Tag, Corpus, Dialect
 
 """
 The batching file contents are coming from :
@@ -54,7 +54,7 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
     return src, tgt
 
 
-def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True):
+def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False):
 
     def collate_fn(batch):
         return collate_batch(
@@ -65,48 +65,78 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
             pad_id=Tag.BLANK.value[1],
         )
 
-    # Dataset that will do the batches
-    complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection, vocab.english_output, vocab.multi_source, vocab.row_limit)
+    if is_inference:
 
-    # sub-select from target mode
-    if english_output:
-        full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+        # Dataset that will do the batches
+        complete = retrieve_conte_dataset(environment, application_path, selected_db, Dialect.LSF, vocab.english_output, False, 10000)
+
+        # sub-select from target mode
+        if english_output:
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+        else:
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
+
+        test_iter = full
+        test_iter_map = to_map_style_dataset(test_iter)
+
+        test_sampler = (
+            DistributedSampler(test_iter_map) if is_distributed else None
+        )
+
+        test_dataloader = DataLoader(
+            test_iter_map,
+            batch_size=batch_size,
+            shuffle=(test_sampler is None),
+            sampler=test_sampler,
+            collate_fn=collate_fn,
+        )
+
+        return None, test_dataloader
+
     else:
-        full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
-    train_iter, tmp_iter = split_list(full)
-    test_iter, valid_iter = split_list(tmp_iter)
+        # Dataset that will do the batches
+        complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection, vocab.english_output, vocab.multi_source, vocab.row_limit)
 
-    # DistributedSampler needs a dataset len()
-    train_iter_map = to_map_style_dataset(train_iter)
+        # sub-select from target mode
+        if english_output:
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+        else:
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
-    train_sampler = (
-        DistributedSampler(train_iter_map) if is_distributed else None
-    )
+        train_iter, tmp_iter = split_list(full)
+        test_iter, valid_iter = split_list(tmp_iter)
 
-    valid_iter_map = to_map_style_dataset(valid_iter)
+        # DistributedSampler needs a dataset len()
+        train_iter_map = to_map_style_dataset(train_iter)
 
-    valid_sampler = (
-        DistributedSampler(valid_iter_map) if is_distributed else None
-    )
+        train_sampler = (
+            DistributedSampler(train_iter_map) if is_distributed else None
+        )
 
-    train_dataloader = DataLoader(
-        train_iter_map,
-        batch_size=batch_size,
-        shuffle=(train_sampler is None),
-        sampler=train_sampler,
-        collate_fn=collate_fn,
-    )
+        valid_iter_map = to_map_style_dataset(valid_iter)
 
-    valid_dataloader = DataLoader(
-        valid_iter_map,
-        batch_size=batch_size,
-        shuffle=(valid_sampler is None),
-        sampler=valid_sampler,
-        collate_fn=collate_fn,
-    )
+        valid_sampler = (
+            DistributedSampler(valid_iter_map) if is_distributed else None
+        )
 
-    return train_dataloader, valid_dataloader
+        train_dataloader = DataLoader(
+            train_iter_map,
+            batch_size=batch_size,
+            shuffle=(train_sampler is None),
+            sampler=train_sampler,
+            collate_fn=collate_fn,
+        )
+
+        valid_dataloader = DataLoader(
+            valid_iter_map,
+            batch_size=batch_size,
+            shuffle=(valid_sampler is None),
+            sampler=valid_sampler,
+            collate_fn=collate_fn,
+        )
+
+        return train_dataloader, valid_dataloader
 
 
 class Batch:

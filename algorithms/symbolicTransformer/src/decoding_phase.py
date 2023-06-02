@@ -7,6 +7,7 @@ Usage:
 """
 
 import os
+
 import torch
 from docopt import docopt
 
@@ -15,8 +16,7 @@ from algorithms.symbolicTransformer.src.core.batching import create_dataloaders,
 from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps, get_decoder_self
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from common.constant import EnvType
-from common.constant import pretty_print_hypothesis
+from common.constant import EnvType, pretty_print_hypothesis
 from common.metrics.bleu import processing_bleu_score
 from common.output_decoder import greedy_decode, beam_search
 
@@ -27,10 +27,15 @@ Huang, et al. 2022 / Rush, et al. 2019
 nlp.seas.harvard.edu/annotated-transformer
 """
 
-def check_outputs(model, vocab, dataloader_validation, n_examples=4):
+def check_outputs(model, vocab, dataloader_validation, n_examples=4, architecture_demo=False):
+
+    if architecture_demo:
+        number_of_inferences = n_examples
+    else:
+        number_of_inferences = len(dataloader_validation)
 
     results = []
-    for example_id in range(n_examples):
+    for example_id in range(number_of_inferences):
 
         print("\nExample %d ========\n" % example_id)
 
@@ -89,7 +94,7 @@ def run_model_example(config, n_examples=8):
     vocab = Vocab(config)
 
     print("Preparing Data ...")
-    _, valid_dataloader = create_dataloaders(
+    _, test_dataloader = create_dataloaders(
         vocab,
         EnvType.TEST.value,
         torch.device("cpu"),
@@ -97,7 +102,8 @@ def run_model_example(config, n_examples=8):
         application_path=application_path,
         selected_db=config["configuration_path"]["selected_db"],
         batch_size=1,
-        is_distributed=False
+        is_distributed=False,
+        is_inference=True
     )
 
     print("Loading Trained Model ...")
@@ -111,8 +117,9 @@ def run_model_example(config, n_examples=8):
     inferred_outputs = check_outputs(
         model,
         vocab,
-        valid_dataloader,
-        n_examples=n_examples)
+        test_dataloader,
+        n_examples=n_examples,
+        architecture_demo=config["inference_decoding"]["architecture_demo"])
 
     return model, inferred_outputs
 

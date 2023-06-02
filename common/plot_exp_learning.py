@@ -13,9 +13,10 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 14
-case = Case.THIRD
-experimentation_detail = "layers = 12 - row_limit = 3000 - batch = 8 - max_output = 7 -  only LSF"
+NUMBER_OF_TRAINING_RESULTS = 35
+case = Case.SECOND
+session = "session 01"
+experimentation_detail = "shuffling and data augmentation"
 
 if __name__ == '__main__':
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
     filename = "img/learning_curves_ST_"+today+"_"+str(case.value[1])+".png"
-    title = "Experimentation n°"+str(case.value[0])+" ("+today+") "+experimentation_detail
+    title = "Learning : "+session+", cas n°"+str(case.value[0])+" : "+experimentation_detail
 
     # retrieve loss
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(case.value[1])+".csv")

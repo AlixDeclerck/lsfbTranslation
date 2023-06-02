@@ -28,7 +28,7 @@ def normalize_result(value):
         return value
 
 
-case = Case.FIRST
+case = Case.SECOND
 normalized_value = 0.05
 session = "session 01"
 

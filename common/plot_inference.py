@@ -9,8 +9,7 @@ import re
 import os
 import matplotlib.pyplot as plt
 import pandas
-import numpy
-import statistics
+from statistics import stdev
 from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
@@ -31,6 +30,7 @@ def normalize_result(value):
 
 case = Case.FIRST
 normalized_value = 0.05
+session = "session 01"
 
 if __name__ == '__main__':
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # retrieve score
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+case.value[1]+"_quicktranslations.csv")
     filename = "img/inference_scores_"+today+"_"+str(case.value[1])+".png"
-    title = "Inférences : cas n°"+str(case.value[0]+" ("+today+")")
+    title = "Inférences : "+str(session)+", cas n°"+str(case.value[0])
     inference_result_title = df.iloc[:, [0]].values.tolist()
     inference_result_data = df.iloc[:, [1]].values.tolist()
     beam_scores = []
@@ -73,10 +73,10 @@ if __name__ == '__main__':
         beam_score_mean.append(beam_mean)
         greedy_score_mean.append(greedy_mean)
 
-    std_beam_score = str(round(statistics.stdev(beam_scores), 2))
-    std_greedy_score = str(round(statistics.stdev(greedy_scores), 2))
-    label_beam_score = "beam scores ( écart-type : "+std_beam_score+")"
-    label_greedy_score = "greedy scores ( écart-type : "+std_greedy_score+")"
+    std_beam_score = str(round(stdev(beam_scores), 2))
+    std_greedy_score = str(round(stdev(greedy_scores), 2))
+    label_beam_score = "beam scores (écart-type : "+std_beam_score+")"
+    label_greedy_score = "greedy scores (écart-type : "+std_greedy_score+")"
     avg_beam_score = "beam en moyenne : "+str(round(beam_mean, 2))
     avg_greedy_score = "greedy en moyenne : "+str(round(greedy_mean, 2))
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     plt.errorbar(x, greedy_scores, c=str(config["graphics"]["color3"]), label=label_greedy_score)
     plt.errorbar(x, greedy_score_mean, c=str(config["graphics"]["color4"]), dashes=[1, 2], label=avg_greedy_score)
     plt.legend()
-    plt.ylabel("score BLEU en pourcentage")
+    plt.ylabel("score BLEU exprimé en %")
     plt.xlabel("nombre de phrases")
     plt.title(title)
     plt.savefig(filename)

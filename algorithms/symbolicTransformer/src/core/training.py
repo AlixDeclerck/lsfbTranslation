@@ -108,7 +108,8 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
         selected_db=config["configuration_path"]["selected_db"],
         batch_size=config["hyper_parameters"]["batch_size"] // ngpus_per_node,
         max_padding=config["learning_config"]["max_padding"],
-        is_distributed=is_distributed
+        is_distributed=is_distributed,
+        shuffling=config["learning_config"]["shuffling"]
     )
 
     # OPTIMIZATION

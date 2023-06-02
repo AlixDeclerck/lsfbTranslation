@@ -6,7 +6,7 @@ from torchtext.data.functional import to_map_style_dataset
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
-from algorithms.symbolicTransformer.src.functionnal.tuning import split_list
+from algorithms.symbolicTransformer.src.functionnal.tuning import tiers_list
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from common.output_decoder import subsequent_mask
 from common.constant import Tag, Corpus, Dialect
@@ -54,7 +54,7 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
     return src, tgt
 
 
-def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False):
+def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False, shuffling=False):
 
     def collate_fn(batch):
         return collate_batch(
@@ -76,8 +76,7 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
         else:
             full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
-        test_iter = full
-        test_iter_map = to_map_style_dataset(test_iter)
+        test_iter_map = to_map_style_dataset(full)
 
         test_sampler = (
             DistributedSampler(test_iter_map) if is_distributed else None
@@ -104,8 +103,7 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
         else:
             full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
-        train_iter, tmp_iter = split_list(full)
-        test_iter, valid_iter = split_list(tmp_iter)
+        train_iter, valid_iter = tiers_list(full, shuffling)
 
         # DistributedSampler needs a dataset len()
         train_iter_map = to_map_style_dataset(train_iter)

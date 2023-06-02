@@ -1,5 +1,6 @@
 import torch
 import yaml
+import numpy
 import torch.nn as nn
 
 RUN_EXAMPLES = True
@@ -59,6 +60,15 @@ def split_list(a_list):
     half = len(a_list)//2
     return a_list[:half], a_list[half:]
 
+def tiers_list(a_list, shuffling=False):
+    tier = len(a_list)//3
+    if shuffling:
+        numpy.random.shuffle(a_list)
+
+    one_tiers_list = a_list[:tier]
+    two_tiers_list = a_list[tier:]
+
+    return two_tiers_list, one_tiers_list
 
 def show_example(fn, args=[]):
     if RUN_EXAMPLES:

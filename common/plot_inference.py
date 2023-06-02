@@ -9,6 +9,8 @@ import re
 import os
 import matplotlib.pyplot as plt
 import pandas
+import numpy
+import statistics
 from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
@@ -27,7 +29,7 @@ def normalize_result(value):
         return value
 
 
-case = Case.THIRD
+case = Case.FIRST
 normalized_value = 0.05
 
 if __name__ == '__main__':
@@ -39,7 +41,6 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve score
-    N = config["inference_decoding"]["number_of_inferences"]
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+case.value[1]+"_quicktranslations.csv")
     filename = "img/inference_scores_"+today+"_"+str(case.value[1])+".png"
     title = "Inférences : cas n°"+str(case.value[0]+" ("+today+")")
@@ -62,8 +63,8 @@ if __name__ == '__main__':
         total_beam_score += beam_scores[i]
         total_greedy_score += greedy_scores[i]
 
-    beam_mean = total_beam_score / float(N)
-    greedy_mean = total_greedy_score / float(N)
+    beam_mean = total_beam_score / float(len(beam_scores))
+    greedy_mean = total_greedy_score / float(len(greedy_scores))
 
     beam_score_mean = []
     greedy_score_mean = []
@@ -72,15 +73,22 @@ if __name__ == '__main__':
         beam_score_mean.append(beam_mean)
         greedy_score_mean.append(greedy_mean)
 
+    std_beam_score = str(round(statistics.stdev(beam_scores), 2))
+    std_greedy_score = str(round(statistics.stdev(greedy_scores), 2))
+    label_beam_score = "beam scores ( écart-type : "+std_beam_score+")"
+    label_greedy_score = "greedy scores ( écart-type : "+std_greedy_score+")"
+    avg_beam_score = "beam en moyenne : "+str(round(beam_mean, 2))
+    avg_greedy_score = "greedy en moyenne : "+str(round(greedy_mean, 2))
+
     fig = plt.figure()
     x = range(len(beam_scores))
-    plt.errorbar(x, beam_scores, c=str(config["graphics"]["color1"]), label='beam scores')
-    plt.errorbar(x, greedy_scores, c=str(config["graphics"]["color3"]), label='greedy scores')
-    plt.errorbar(x, beam_score_mean, c=str(config["graphics"]["color2"]), dashes=[1, 2], label='beam scores en moyenne')
-    plt.errorbar(x, greedy_score_mean, c=str(config["graphics"]["color4"]), dashes=[1, 2], label='greedy scores en moyenne')
+    plt.errorbar(x, beam_scores, c=str(config["graphics"]["color1"]), label=label_beam_score)
+    plt.errorbar(x, beam_score_mean, c=str(config["graphics"]["color2"]), dashes=[1, 2], label=avg_beam_score)
+    plt.errorbar(x, greedy_scores, c=str(config["graphics"]["color3"]), label=label_greedy_score)
+    plt.errorbar(x, greedy_score_mean, c=str(config["graphics"]["color4"]), dashes=[1, 2], label=avg_greedy_score)
     plt.legend()
-    plt.ylabel("score BLEU * 100")
-    plt.xlabel("phrases")
+    plt.ylabel("score BLEU en pourcentage")
+    plt.xlabel("nombre de phrases")
     plt.title(title)
     plt.savefig(filename)
     plt.show()

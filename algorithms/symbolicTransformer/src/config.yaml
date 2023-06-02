@@ -13,7 +13,7 @@ graphics:
     color1:                       "#FF99EE"
     color2:                       "#000033"
     color3:                       "#DDDDDD"
-    color4:                       "#AAAAEE"
+    color4:                       "#5555BB"
 
 hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)

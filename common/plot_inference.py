@@ -28,8 +28,9 @@ def normalize_result(value):
         return False, value
 
 
-case = Case.FIFTH
-session = "session 01"
+case = Case.FIRST
+session = "session 02"
+add = "S2_"
 
 if __name__ == '__main__':
 
@@ -40,8 +41,8 @@ if __name__ == '__main__':
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
 
     # retrieve score
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+case.value[1]+"_quicktranslations.csv")
-    filename = "img/inference_scores_"+today+"_"+str(case.value[1])+".png"
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(add)+case.value[1]+"_quicktranslations.csv")
+    filename = "img/inference_scores_"+today+"_"+str(add)+str(case.value[1])+".png"
     title = "Inférences : "+str(session)+", cas n°"+str(case.value[0])
     inference_result_title = df.iloc[:, [0]].values.tolist()
     inference_result_data = df.iloc[:, [1]].values.tolist()

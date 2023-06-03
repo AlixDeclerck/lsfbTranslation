@@ -51,9 +51,9 @@ class Corpus(Enum):
     GLOSS_LSF = "gloss_lsf", 2, "GLOSS_LSF"
 
 class Dialect(Enum):
-    BOTH = 0, "Both LSF and GENERATED glosses"
-    LSF = 1, "LSF glosses only"
-    GENERATED = 2, "Generated glosses only"
+    BOTH = 0, "Gloses générées + traductions LSF"
+    LSF = 1, "traductions LSF"
+    GENERATED = 2, "Gloses générées"
 
 class Case(Enum):
     """

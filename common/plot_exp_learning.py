@@ -3,7 +3,7 @@
 
 """
 Usage:
-    plot_ST_learning.py --app-path=<file>
+    plot_exp_learning.py --app-path=<file>
 """
 import os
 import matplotlib.pyplot as plt
@@ -13,10 +13,11 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 43
-case = Case.FIFTH
-session = "session 01"
-experimentation_detail = "LSF + augmentation + mélange"
+NUMBER_OF_TRAINING_RESULTS = 22
+case = Case.FIRST
+session = "session 02"
+add = "S2_"
+experimentation_detail = "8 encodeurs, 16 décodeurs, 8 têtes"
 
 if __name__ == '__main__':
 
@@ -25,11 +26,11 @@ if __name__ == '__main__':
     config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
-    filename = "img/learning_curves_ST_"+today+"_"+str(case.value[1])+".png"
-    title = "Learning : "+session+", cas n°"+str(case.value[0])+" : "+experimentation_detail
+    filename = "img/learning_curves_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
+    title = "Apprentissage : "+session+", cas n°"+str(case.value[0])+" : "+experimentation_detail
 
     # retrieve loss
-    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(case.value[1])+".csv")
+    df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(add)+str(case.value[1])+".csv")
     loss_column = df.iloc[:, [2]]
     validation_column = df.iloc[:, [0]]
     learning_rate_column = df.iloc[:, [4]]
@@ -66,11 +67,11 @@ if __name__ == '__main__':
 
     # labels
     training_set = str(validation_column.values.tolist()[0]).split(" : ")[1][1:-2]
-    label_training = "training "+training_set+" "
+    label_training = "entrainement "+training_set+" "
     score = "{:.3f}".format(pocket_eval[-1])
-    label_pocket = "best validation score : "+score
-    label_validation = "validation score by epochs"
-    label_lr = "learning rate * 10 000"
+    label_pocket = "meilleure erreur de validation : "+score
+    label_validation = "erreur en validation par epochs"
+    label_lr = "Taux d'apprentissage * 10 000"
 
     # display loss curve
     plt.plot(range(len(res_eval)), res_eval, c=str(config["graphics"]["color4"]), label=label_validation)
@@ -78,8 +79,8 @@ if __name__ == '__main__':
     plt.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label=label_training)
     plt.plot(range(len(res_lr)), res_lr, c=str(config["graphics"]["color3"]), label=label_lr)
     plt.legend()
-    plt.ylabel("Kullback-Leibler divergence loss")
-    plt.xlabel("epochs")
+    plt.ylabel("Divergence de Kullback-Leibler (Erreur)")
+    plt.xlabel("Epoques")
     plt.title(title)
     plt.savefig(filename)
     plt.show()

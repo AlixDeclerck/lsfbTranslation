@@ -25,8 +25,8 @@ hyper_parameters:
     feed_forward_dimension:       2048                              # the positionwise forward dimension
     h_attention_layers:           8                                 # h=8 parallel attention layers
     KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               12                                # layers to understand the context
-    layers_decoder:               12                                # layers to perform the translation
+    layers_encoder:               8                                 # layers to understand the context
+    layers_decoder:               16                                # layers to perform the translation
     num_epochs:                   120                               # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
@@ -45,7 +45,7 @@ inference_decoding:
     architecture_demo:            False                             # to limit the number of inferences
 
 learning_config:
-    multi_sources:                True                             # If we have FR & FR generated we take both to learn and vocab
+    multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True if "EN", False if "GLOSS"

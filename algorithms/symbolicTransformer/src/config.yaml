@@ -46,8 +46,8 @@ inference_decoding:
 
 learning_config:
     multi_sources:                True                             # If we have FR & FR generated we take both to learn and vocab
-    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
-    vocab_dialect:                0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
+    dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True if "EN", False if "GLOSS"
     distributed:                  False                             # True if Several processing unit
     fast_text_corpus:             True                              # Spacy if false
@@ -58,4 +58,4 @@ learning_config:
     max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
     row_limit:                    10000                             # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
-    shuffling:                    False                              # Shuffle the datas when splitting training (2/3) and validation (1/3)
+    shuffling:                    True                              # Shuffle the datas when splitting training (2/3) and validation (1/3)

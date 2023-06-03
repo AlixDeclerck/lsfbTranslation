@@ -45,9 +45,9 @@ inference_decoding:
     architecture_demo:            False                             # to limit the number of inferences
 
 learning_config:
-    multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
-    dialect_selection:            2                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
-    vocab_dialect:                2                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
+    multi_sources:                True                             # If we have FR & FR generated we take both to learn and vocab
+    dialect_selection:            0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_dialect:                0                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                             # True if "EN", False if "GLOSS"
     distributed:                  False                             # True if Several processing unit
     fast_text_corpus:             True                              # Spacy if false

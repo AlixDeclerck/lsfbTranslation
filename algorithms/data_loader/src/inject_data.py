@@ -7,6 +7,7 @@ Usage:
 """
 
 import pandas
+import datetime
 import dal as db
 import retrieve_data as ff
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
@@ -96,9 +97,12 @@ class ConteHandler:
                 data = lsf_approx[i].split("|")
                 generated_lsf = data[0]
                 generated_tense = data[1]
+                now = datetime.datetime.utcnow()
+                generation_date = now.strftime('%Y-%m-%d %H:%M:%S')
             else:
                 generated_lsf = ln[1].GENERATED_LSF
                 generated_tense = ln[1].TENSE
+                generation_date = None
 
             # environment definition
             regularize_gloss = 0 < self.gloss_limit and (self.gloss_limit < len(ln[1].GLOSS_LSF.split(" ")) or self.gloss_limit < len(ln[1].GENERATED_LSF.split(" ")))
@@ -113,11 +117,11 @@ class ConteHandler:
             # processing parallels by language
             for lang in languages:
                 if lang[0] == Corpus.TEXT_FR.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, generation_date, env_name, config["learning_config"]["output_max_words"])
                 elif lang[0] == Corpus.TEXT_EN.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", generation_date, env_name, config["learning_config"]["output_max_words"])
                 elif lang[0] == Corpus.GLOSS_LSF.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", generation_date, env_name, config["learning_config"]["output_max_words"])
 
             cpt += 1
             print(f"=== {cpt_test} values added in test set ===")
@@ -162,16 +166,16 @@ class ConteHandler:
         return content
 
     @staticmethod
-    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, env_name, max_output):
+    def parallel_insertion(conn, num_line, lang, i, story_name, text, generated, tense, today_date, env_name, max_output):
         if text != "" and generated != "":
             reference, hypothesis = assemble_txt_bleu(text, generated)
             score = processing_bleu_score(reference, hypothesis, output_max=max_output, display=True)
         else:
             score = 0
 
-        print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {num_line} | {env_name} ")
-        sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (story_name, num_line, lang, text, generated, tense, score, env_name)
+        print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {score} | {today_date} | {num_line} | {env_name} ")
+        sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, txt_generation_date, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (story_name, num_line, lang, text, generated, tense, score, today_date, env_name)
 
         cur = conn.cursor()
         cur.execute(sql, val)

@@ -13,7 +13,7 @@ graphics:
     color1:                       "#FF99EE"
     color2:                       "#000033"
     color3:                       "#DDDDDD"
-    color4:                       "#5555BB"
+    color4:                       "#AAEEFF"
 
 hyper_parameters:
     accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
@@ -30,7 +30,7 @@ hyper_parameters:
     num_epochs:                   120                               # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
     target_label_smoothing:       0.5                               # velocity of label smoothing
-    warmup:                       3000                              # learning rate scheduler's warmup
+    warmup:                       4000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
     adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
     adam_optimizer_betas_2:       0.98                              # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
@@ -45,17 +45,17 @@ inference_decoding:
     architecture_demo:            False                             # to limit the number of inferences
 
 learning_config:
-    multi_sources:                True                              # If we have FR & FR generated we take both to learn and vocab
+    multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
-    english_output:               False                             # True for "EN", False for "GLOSS"
-    distributed:                  False                             # Annotated transformer choose False (for more than one processing unit)
+    english_output:               False                             # True if "EN", False if "GLOSS"
+    distributed:                  False                             # True if Several processing unit
     fast_text_corpus:             True                              # Spacy if false
     max_padding:                  72                                # padding on tensors
-    output_max_words:             20                                # originally 80
+    output_max_words:             16                                # originally 80
     persist_learning_measure:     False                             # Write measures in database
     test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
     max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
-    row_limit:                    3000                              # Max number of sentences learned
+    row_limit:                    10000                             # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
     shuffling:                    True                              # Shuffle the datas when splitting training (2/3) and validation (1/3)

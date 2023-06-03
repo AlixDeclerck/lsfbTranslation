@@ -14,9 +14,9 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 22
-case = Case.FIRST
+case = Case.SECOND
 session = "session 01"
-experimentation_detail = "LSF + mélange"
+experimentation_detail = "LSF"
 
 if __name__ == '__main__':
 

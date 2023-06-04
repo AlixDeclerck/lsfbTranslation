@@ -14,10 +14,10 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 22
-case = Case.FOURTH
+case = Case.FIFTH
 session = "session 03"
 add = "S3_"
-experimentation_detail = "Dégradation des pondérations : 0.2"
+experimentation_detail = "Dégradation des pondérations : 0.2, pas de suppr."
 
 if __name__ == '__main__':
 

@@ -13,7 +13,7 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 22
+NUMBER_OF_TRAINING_RESULTS = 7
 case = Case.FIRST
 session = "session 05"
 add = "S5_"

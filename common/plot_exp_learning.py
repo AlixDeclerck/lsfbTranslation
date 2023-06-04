@@ -17,7 +17,7 @@ NUMBER_OF_TRAINING_RESULTS = 22
 case = Case.SIXTH
 session = "session 01"
 add = "S1_"
-experimentation_detail = "Limitation des entrées à 2000"
+experimentation_detail = "Traductions LSF avec augmentation"
 
 if __name__ == '__main__':
 

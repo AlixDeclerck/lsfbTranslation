@@ -14,10 +14,10 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 22
-case = Case.THIRD
-session = "session 02"
-add = "S2_"
-experimentation_detail = "8 encodeurs, 8 décodeurs, 16 têtes"
+case = Case.FIRST
+session = "session 03"
+add = "S3_"
+experimentation_detail = "élimination de paramètres 0.1"
 
 if __name__ == '__main__':
 

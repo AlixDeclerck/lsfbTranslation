@@ -28,7 +28,7 @@ def normalize_result(value):
         return False, value
 
 
-case = Case.THIRD
+case = Case.FOURTH
 session = "session 03"
 add = "S3_"
 

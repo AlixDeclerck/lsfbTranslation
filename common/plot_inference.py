@@ -28,9 +28,9 @@ def normalize_result(value):
         return False, value
 
 
-case = Case.FIFTH
-session = "session 03"
-add = "S3_"
+case = Case.FIRST
+session = "session 04"
+add = "S4_"
 
 if __name__ == '__main__':
 

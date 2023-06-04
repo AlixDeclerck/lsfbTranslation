@@ -56,6 +56,6 @@ learning_config:
     persist_learning_measure:     False                             # Write measures in database
     test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
     max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
-    row_limit:                    1000                             # Max number of sentences learned
+    row_limit:                    2000                             # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
     shuffling:                    True                              # Shuffle the datas when splitting training (2/3) and validation (1/3)

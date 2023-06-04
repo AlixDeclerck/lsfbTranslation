@@ -29,7 +29,7 @@ hyper_parameters:
     layers_decoder:               12                                # layers to perform the translation
     num_epochs:                   120                               # Annotated transformer choose 8
     optimizer_weight_decay:       0                                 # L2 penalty #
-    target_label_smoothing:       0.8                               # velocity of label smoothing
+    target_label_smoothing:       0.5                               # velocity of label smoothing
     warmup:                       4000                              # learning rate scheduler's warmup
     adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
     adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
@@ -56,6 +56,6 @@ learning_config:
     persist_learning_measure:     False                             # Write measures in database
     test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
     max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
-    row_limit:                    10000                             # Max number of sentences learned
+    row_limit:                    1000                             # Max number of sentences learned
     using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
     shuffling:                    True                              # Shuffle the datas when splitting training (2/3) and validation (1/3)

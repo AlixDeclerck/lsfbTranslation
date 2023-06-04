@@ -14,10 +14,10 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 22
-case = Case.SECOND
-session = "session 04"
-add = "S4_"
-experimentation_detail = "Lissage courbe d'apprentissage 0.8"
+case = Case.FIRST
+session = "session 05"
+add = "S5_"
+experimentation_detail = "Limitation des entrées à 1000"
 
 if __name__ == '__main__':
 

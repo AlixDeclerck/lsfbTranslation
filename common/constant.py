@@ -65,6 +65,7 @@ class Case(Enum):
     THIRD = "3", "C"
     FOURTH = "4", "D"
     FIFTH = "5", "E"
+    SIXTH = "6", "F"
 
 class SubCase(Enum):
     """

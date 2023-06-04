@@ -16,46 +16,46 @@ graphics:
     color4:                       "#AAEEFF"
 
 hyper_parameters:
-    accum_iter:                   10                                # doing a "step" optimizer each n iterations (Originally 10)
-    accum_step:                   10                                # Write loss only each n steps! Originally 40 but shrank due to small training corpus
-    base_lr:                      0.1                               # learning rate
-    batch_size:                   8                                 # Annotated transformer choose 32
-    dimension:                    512                               # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
-    dropout:                      0.01                              # drop out regularization technique
-    feed_forward_dimension:       2048                              # the positionwise forward dimension
-    h_attention_layers:           8                                 # h=8 parallel attention layers
-    KL_divergence_loss:           True                              # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               12                                # layers to understand the context
-    layers_decoder:               12                                # layers to perform the translation
-    num_epochs:                   120                               # Annotated transformer choose 8
-    optimizer_weight_decay:       0                                 # L2 penalty #
-    target_label_smoothing:       0.5                               # velocity of label smoothing
-    warmup:                       4000                              # learning rate scheduler's warmup
-    adam_optimizer_eps:           1e-9                              # term added to the denominator to improve numerical stability (default: 1e-8)
-    adam_optimizer_betas_1:       0.9                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
-    adam_optimizer_betas_2:       0.98                              # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
-    adam_optimizer_amsgrad:       False                             # use the AMSGrad variant of this algorithm from the paper On the Convergence of Adam and Beyond (default: False)
+    accum_iter:                   10                                 # doing a "step" optimizer each n iterations (Originally 10)
+    accum_step:                   10                                 # Write loss only each n steps! Originally 40 but shrank due to small training corpus
+    base_lr:                      0.1                                # learning rate
+    batch_size:                   8                                  # Annotated transformer choose 32
+    dimension:                    512                                # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
+    dropout:                      0.01                               # drop out regularization technique
+    feed_forward_dimension:       2048                               # the positionwise forward dimension
+    h_attention_layers:           8                                  # h=8 parallel attention layers
+    KL_divergence_loss:           True                               # True Kullback-Leibler divergence loss criterion, False similarity
+    layers_encoder:               12                                 # layers to understand the context
+    layers_decoder:               12                                 # layers to perform the translation
+    num_epochs:                   120                                # Annotated transformer choose 8
+    optimizer_weight_decay:       0                                  # L2 penalty #
+    target_label_smoothing:       0.5                                # velocity of label smoothing
+    warmup:                       4000                               # learning rate scheduler's warmup
+    adam_optimizer_eps:           1e-9                               # term added to the denominator to improve numerical stability (default: 1e-8)
+    adam_optimizer_betas_1:       0.9                                # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
+    adam_optimizer_betas_2:       0.98                               # coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
+    adam_optimizer_amsgrad:       False                              # use the AMSGrad variant of this algorithm from the paper On the Convergence of Adam and Beyond (default: False)
 
 inference_decoding:
-    beam_search:                  True                              # False for greedy search
-    beam-size:                    10                                # number of tree branches
-    max-decoding-time-step:       70                                # number of iterations during inference
-    persist-approx:               True                              # False mean syntax analysis return text on screen, True mean saving in database
-    number_of_inferences:         16                                # Number of phrases inferred
-    architecture_demo:            False                             # to limit the number of inferences
+    beam_search:                  True                               # False for greedy search
+    beam-size:                    10                                 # number of tree branches
+    max-decoding-time-step:       70                                 # number of iterations during inference
+    persist-approx:               True                               # False mean syntax analysis return text on screen, True mean saving in database
+    number_of_inferences:         16                                 # Number of phrases inferred
+    architecture_demo:            False                              # to limit the number of inferences
 
 learning_config:
-    multi_sources:                False                             # If we have FR & FR generated we take both to learn and vocab
-    dialect_selection:            1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
-    vocab_dialect:                1                                 # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
-    english_output:               False                             # True if "EN", False if "GLOSS"
-    distributed:                  False                             # True if Several processing unit
-    fast_text_corpus:             True                              # Spacy if false
-    max_padding:                  72                                # padding on tensors
-    output_max_words:             16                                # originally 80
-    persist_learning_measure:     False                             # Write measures in database
-    test_division:                7                                 # coefficient k for the corpus split train vs test where 1/k are test items
-    max_test_gloss_size:          0                                 # regularize the glosses size to k (zero mean no limit)
-    row_limit:                    2000                             # Max number of sentences learned
-    using_gpu:                    True                              # for training, decoding use parameters. GPU = True and CPU = False
-    shuffling:                    True                              # Shuffle the datas when splitting training (2/3) and validation (1/3)
+    multi_sources:                True                               # If we have FR & FR generated we take both to learn and vocab
+    dialect_selection:            1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_dialect:                1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
+    english_output:               False                              # True if "EN", False if "GLOSS"
+    distributed:                  False                              # True if Several processing unit
+    fast_text_corpus:             True                               # Spacy if false
+    max_padding:                  72                                 # padding on tensors
+    output_max_words:             16                                 # originally 80
+    persist_learning_measure:     False                              # Write measures in database
+    test_division:                7                                  # coefficient k for the corpus split train vs test where 1/k are test items
+    max_test_gloss_size:          0                                  # regularize the glosses size to k (zero mean no limit)
+    row_limit:                    10000                              # Max number of sentences learned
+    using_gpu:                    True                               # for training, decoding use parameters. GPU = True and CPU = False
+    shuffling:                    False                              # Shuffle the datas when splitting training (2/3) and validation (1/3)

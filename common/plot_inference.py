@@ -29,8 +29,8 @@ def normalize_result(value):
 
 
 case = Case.FIRST
-session = "session 01"
-add = "S1_"
+session = "session finale"
+add = "SF_"
 
 if __name__ == '__main__':
 

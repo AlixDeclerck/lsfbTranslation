@@ -15,8 +15,8 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 22
 case = Case.FIRST
-session = "session 01"
-add = "S1_"
+session = "session finale"
+add = "SF_"
 experimentation_detail = "Traductions LSF"
 
 if __name__ == '__main__':

@@ -143,4 +143,4 @@ if __name__ == '__main__':
     used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=learning_configuration["inference_decoding"]["number_of_inferences"])
 
     # DISPLAY RESULT
-    plot_attention_maps(used_model, inferred_data, get_decoder_self)
+    plot_attention_maps(used_model, inferred_data, learning_configuration["hyper_parameters"]["h_attention_layers"])

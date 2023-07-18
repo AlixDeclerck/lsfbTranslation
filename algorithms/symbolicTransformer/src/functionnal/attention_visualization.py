@@ -1,6 +1,8 @@
+import numpy
 import torch
 import matplotlib.pyplot as plt
 import math
+from common.constant import Case, d_date, Translation
 
 """
 The attention visualization was initially inspired from :
@@ -50,13 +52,28 @@ def plot_attention_maps(model, input_data, nbr_attentions):
     :param nbr_attentions: nombre of attentions used by the architecture of the model
     """
     limit = nbr_attentions-1
-    plot_attention_map(model, input_data, get_decoder_self, [0, math.floor(limit/2), limit])
 
-def plot_attention_map(model, input_data, getter_fn, att_to_display):
+    source_text = input_data[0][1]
+    beam_hypothesis = input_data[0][4]
+    greedy_hypothesis = input_data[0][5]
+    reference = input_data[0][2]
+
+    txt_translation = Translation(source_text=source_text, beam_hypothesis=beam_hypothesis, greedy_hypothesis=greedy_hypothesis, reference=reference)
+
+    plot_attention_map(model, txt_translation, get_decoder_self, [0, math.floor(limit/2), limit])
+
+def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     """
     We retrieve a specific attention matrix
     """
-    # selected attention
+    resizing_img_coef = 10
+    source_size = len(txt_translation.source_text)
+    target_size = len(txt_translation.beam_hypothesis)
+
+    case = Case.FIRST
+    today = d_date()
+    add = "SF_"
+    filename = "img/learning_curves_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
     attn = torch.squeeze(getter_fn(model, 1))
     att_size = attn.size(dim=1)
     selected_att = []
@@ -67,11 +84,20 @@ def plot_attention_map(model, input_data, getter_fn, att_to_display):
     fig, ax = plt.subplots(1, len(att_to_display))
 
     for i, att_t in enumerate(selected_att):
-        ax[i].imshow(torch.squeeze(att_t).detach().numpy(), origin='lower', vmin=0)
+        attention_matrix = torch.squeeze(att_t).detach().numpy()
+        attention_matrix = attention_matrix[0:source_size, 0:target_size]
+        # print(numpy.shape(attention_matrix))
+        ax[i].imshow(attention_matrix, vmin=0, origin='lower')  # , vmax=5
         ax[i].set_xticks(list(range(att_size)))
         ax[i].set_yticks(list(range(att_size)))
         ax[i].set_axis_off()
+        ax[i].invert_yaxis()
+        # ax[i].title("txt")
+        # ax[i].figure(figsize=(100, 100))
 
     fig.subplots_adjust(hspace=0.5)
+    # plt.gca().invert_yaxis()
+    # plt.colorbar()
+    plt.figure(figsize=(source_size*resizing_img_coef, target_size*resizing_img_coef))
+    plt.savefig(filename)
     plt.show()
-

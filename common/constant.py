@@ -74,3 +74,21 @@ class SubCase(Enum):
     """
     FIRST = "1, sous cas 1", "A1"
     SECOND = "1, sous cas 2", "A2"
+
+
+class AttentionType(Enum):
+    """
+        Configuration to display attentions matrix
+    """
+    ENCODER = "Encoder"
+    DECODER_SELF = "Decoder self"
+    DECODER_SRC = "Decoder src"
+
+
+class Translation:
+
+    def __init__(self, source_text, beam_hypothesis, greedy_hypothesis, reference):
+        self.source_text = source_text
+        self.beam_hypothesis = beam_hypothesis.split(" ")
+        self.greedy_hypothesis = greedy_hypothesis.split(" ")
+        self.reference = reference

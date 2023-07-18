@@ -192,7 +192,8 @@ def show_bleu_score(ref, hyp):
     processing_bleu_score(
         reference,
         hypothesis,
-        output_max=config["learning_config"]["output_max_words"],
+        # output_max=config["learning_config"]["output_max_words"],
+        output_max=3,
         shrink=False,
         display=True)
 
@@ -223,4 +224,4 @@ if __name__ == "__main__":
     # contes.populate_db_from_csv()
 
     # show bleu score
-    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDA DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDER DIT BONJOUR", hyp="DAME FENETRE REGARDER")

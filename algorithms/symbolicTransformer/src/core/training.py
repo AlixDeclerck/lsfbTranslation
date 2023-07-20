@@ -115,18 +115,18 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
     # OPTIMIZATION
     optimizer = torch.optim.Adam(
         model.parameters(),
-        lr=float(config["hyper_parameters"]["base_lr"]),
-        betas=(float(config["hyper_parameters"]["adam_optimizer_betas_1"]), float(config["hyper_parameters"]["adam_optimizer_betas_2"])),
-        eps=float(config["hyper_parameters"]["adam_optimizer_eps"]),
-        weight_decay=float(config["hyper_parameters"]["optimizer_weight_decay"]),
-        amsgrad=bool(config["hyper_parameters"]["adam_optimizer_amsgrad"])
+        lr=float(config["learning_optimization"]["base_lr"]),
+        betas=(float(config["learning_optimization"]["adam_optimizer_betas_1"]), float(config["learning_optimization"]["adam_optimizer_betas_2"])),
+        eps=float(config["learning_optimization"]["adam_optimizer_eps"]),
+        weight_decay=float(config["hyper_parameters"]["weight_decay"]),
+        amsgrad=bool(config["learning_optimization"]["adam_optimizer_amsgrad"])
     )
 
     # SCHEDULER
     lr_scheduler = LambdaLR(
         optimizer=optimizer,
         lr_lambda=lambda step: rate(
-            step, d_model, factor=1, warmup=config["hyper_parameters"]["warmup"]
+            step, d_model, factor=1, warmup=config["learning_optimization"]["warmup"]
         ),
     )
 

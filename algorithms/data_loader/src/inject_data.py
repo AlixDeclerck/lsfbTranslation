@@ -47,7 +47,7 @@ class ConteHandler:
         """
         conn = db.data_provider(self.selected_db, self.application_path)
 
-        sql = "delete from PARALLEL_ITEM "
+        sql = "delete from TRANSLATION"
         cur = conn.cursor()
         cur.execute(sql)
         conn.commit()
@@ -174,7 +174,7 @@ class ConteHandler:
             score = 0
 
         print(f"[{i}] insert {story_name}| {lang} | {text} | {generated} | {tense} | {score} | {today_date} | {num_line} | {env_name} ")
-        sql = "INSERT INTO PARALLEL_ITEM (story_name, num, lang, txt, txt_generated, tense, score, txt_generation_date, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO TRANSLATION (story_name, num, lang, txt, txt_generated, tense, score, txt_generation_date, env_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (story_name, num_line, lang, text, generated, tense, score, today_date, env_name)
 
         cur = conn.cursor()

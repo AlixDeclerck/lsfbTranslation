@@ -45,7 +45,7 @@ def data_provider(db, path):
 def select_mysql_datas_from(subset_type, conn):
     query_result = []
     p_sources = "p.text, p.gloss"
-    query = "select "+str(p_sources)+" from PARALLEL_ITEM as p inner join ENVIRONMENT as e on p.env_type = e.envId where e.type = '"+str(subset_type)+"';"
+    query = "select "+str(p_sources)+" from TRANSLATION as p inner join ENVIRONMENT as e on p.env_type = e.envId where e.type = '"+str(subset_type)+"';"
     cur = conn.cursor()
     cur.execute(query)
 

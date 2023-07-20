@@ -29,7 +29,7 @@ def show_mysql_conte(application_path, selected_db):
     :param selected_db : db_dev or db_test
     :return: dictionary
     """
-    request = "select distinct p.story_name from PARALLEL_ITEM p order by p.story_name asc;"
+    request = "select distinct p.story_name from TRANSLATION p order by p.story_name asc;"
     pt = dal.data_provider(selected_db, application_path)
     cur = pt.cursor()
     cur.execute(request)
@@ -53,7 +53,7 @@ def retrieve_mysql_conte(conte_num, language, application_path, selected_db, gen
         txt_value = "p.txt"
 
     res = []
-    request = "select p.num, "+str(txt_value)+" from PARALLEL_ITEM p where p.story_name like '%"+str(conte_num)+"%' and lang = '"+str(language)+"';"
+    request = "select p.num, "+str(txt_value)+" from TRANSLATION p where p.story_name like '%"+str(conte_num)+"%' and lang = '"+str(language)+"';"
     pt = dal.data_provider(selected_db, application_path)
     cur = pt.cursor()
     cur.execute(request)
@@ -81,13 +81,13 @@ def retrieve_mysql_datas_from(subset_type, application_path, selected_db, dialec
     both_value = False
 
     if Dialect.LSF.value[0] == dialect_selection:
-        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt as txt_gloss from PARALLEL_ITEM p1 inner join PARALLEL_ITEM p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join PARALLEL_ITEM p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
+        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt as txt_gloss from TRANSLATION p1 inner join TRANSLATION p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join TRANSLATION p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
 
     elif Dialect.GENERATED.value[0] == dialect_selection:
-        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt_generated as gloss_generated from PARALLEL_ITEM p1 inner join PARALLEL_ITEM p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join PARALLEL_ITEM p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
+        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt_generated as gloss_generated from TRANSLATION p1 inner join TRANSLATION p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join TRANSLATION p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
 
     else:
-        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt as txt_gloss, p3.txt_generated as gloss_generated from PARALLEL_ITEM p1 inner join PARALLEL_ITEM p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join PARALLEL_ITEM p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
+        request = "select p2.txt as txt_fr, p2.txt_generated as fr_generated, p1.txt as txt_en, p1.txt_generated as en_generated, p3.txt as txt_gloss, p3.txt_generated as gloss_generated from TRANSLATION p1 inner join TRANSLATION p2 on p1.num = p2.num and p1.story_name = p2.story_name inner join TRANSLATION p3 on p2.num = p3.num and p2.story_name = p3.story_name where p1.lang = 'EN' and p2.lang = 'FR' and p3.lang = 'GLOSS_LSF' and p1.env_type = '"+str(subset_type)+"' limit "+str(request_limit)+" ;"
         both_value = True
 
     pt = dal.data_provider(selected_db, application_path)

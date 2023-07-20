@@ -8,6 +8,7 @@ configuration_path:
     selected_db:                  "db_dev"
     vocab_file_name:              "vocab.pt"
     xlsx_path:                    "data/other_conte/xlsx/"
+    txt_corpus:                   "data/corpus_txt/lsfb_corpus.txt"
 
 graphics:
     color1:                       "#FF99EE"
@@ -49,6 +50,7 @@ inference_decoding:
 learning_config:
     multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    vocab_txt:                    False                              # If second corpus to text file
     vocab_dialect:                1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                              # True if "EN", False if "GLOSS"
     distributed:                  False                              # True if Several processing unit

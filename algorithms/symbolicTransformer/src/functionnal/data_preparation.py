@@ -78,6 +78,7 @@ class Vocab:
         self.tgt_vector = None
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
+        self.vocab_txt = config["learning_config"]["vocab_txt"]
         self.english_output = config["learning_config"]["english_output"]
         self.multi_source = config["learning_config"]["multi_sources"]
         self.row_limit = config["learning_config"]["row_limit"]
@@ -97,6 +98,7 @@ class Vocab:
         self.is_fasttext = bool(config["learning_config"]["fast_text_corpus"])
         self.english_output = bool(config["learning_config"]["english_output"])
         self.selected_db = str(config["configuration_path"]["selected_db"])
+        self.txt_corpus = str(config["configuration_path"]["txt_corpus"])
 
     def create(self):
         self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)
@@ -149,8 +151,9 @@ class Vocab:
         else:
             print("Building GLOSS Vocabulary ...")
 
-            lsfb_corpus = retrieve_corpus_txt(application_path+"data/corpus_txt/lsfb_corpus.txt")
-            learning_corpus.append(["", "", lsfb_corpus[0]])
+            if self.vocab_txt:
+                lsfb_corpus = retrieve_corpus_txt(application_path+self.txt_corpus)
+                learning_corpus.append(["", "", lsfb_corpus[0]])
 
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),

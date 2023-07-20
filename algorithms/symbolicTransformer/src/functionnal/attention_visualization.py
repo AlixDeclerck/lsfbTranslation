@@ -70,10 +70,10 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     source_size = len(txt_translation.source_text)
     target_size = len(txt_translation.beam_hypothesis)
 
-    case = Case.FIRST
+    case = Case.SECOND
     today = d_date()
     add = "SF_"
-    filename = "img/learning_curves_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
+    filename = "img/ATT_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
     attn = torch.squeeze(getter_fn(model, 1))
     att_size = attn.size(dim=1)
     selected_att = []

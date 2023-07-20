@@ -70,7 +70,7 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     source_size = len(txt_translation.source_text)
     target_size = len(txt_translation.beam_hypothesis)
 
-    case = Case.SECOND
+    case = Case.THIRD
     today = d_date()
     add = "SF_"
     filename = "img/ATT_ST_"+today+"_"+str(add)+str(case.value[1])+".png"

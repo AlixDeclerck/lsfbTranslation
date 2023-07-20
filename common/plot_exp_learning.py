@@ -13,8 +13,8 @@ from common.constant import Case, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 26
-case = Case.SECOND
+NUMBER_OF_TRAINING_RESULTS = 27
+case = Case.THIRD
 session = "session d'analyse"
 add = "SF_"
 experimentation_detail = "Traductions LSF"

@@ -92,6 +92,7 @@ def check_outputs(model, vocab, dataloader_validation, n_examples=4, architectur
 def run_model_example(config, n_examples=8):
 
     vocab = Vocab(config)
+    vocab.retrieve()
 
     print("Preparing Data ...")
     _, test_dataloader = create_dataloaders(

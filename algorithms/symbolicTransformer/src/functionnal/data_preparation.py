@@ -91,26 +91,33 @@ class Vocab:
                 self.vocab_dialect = dia
                 break
 
-        self.vocab_handler(
-            config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"],
-            config["configuration_path"]["application_path"],
-            config["hyper_parameters"]["dimension"],
-            bool(config["learning_config"]["fast_text_corpus"]),
-            bool(config["learning_config"]["english_output"]),
-            str(config["configuration_path"]["selected_db"])
-        )
+        self.vocab_name = config["configuration_path"]["model_path"]+config["configuration_path"]["vocab_file_name"]
+        self.application_path = config["configuration_path"]["application_path"]
+        self.dimension = config["hyper_parameters"]["dimension"]
+        self.is_fasttext = bool(config["learning_config"]["fast_text_corpus"])
+        self.english_output = bool(config["learning_config"]["english_output"])
+        self.selected_db = str(config["configuration_path"]["selected_db"])
 
-    def vocab_handler(self, file_path, application_path, dim, is_fast_text, is_en, selected_db):
-        """handle the vocabulary (create or load if exists) """
+    def create(self):
+        self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)
+
+    def retrieve(self):
+        if exists(self.vocab_name):
+            self.src, self.tgt = torch.load(self.vocab_name)
+            if self.is_fasttext:
+                self.src_vector = self.create_src_embeddings(self.dimension)
+                self.tgt_vector = self.create_tgt_embeddings(self.dimension, self.english_output)
+        else:
+            return "No vocabulary in ", self.vocab_name
+
+    def vocab_handler(self, file_path, application_path, selected_db):
+        """handle the vocabulary creation """
         if not exists(file_path):
             self.src, self.tgt = self.vocab_builder_parallels(application_path, selected_db)
             self.save_vocab(file_path)
-        else:
-            self.src, self.tgt = torch.load(file_path)
 
-        if is_fast_text:
-            self.src_vector = self.create_src_embeddings(dim)
-            self.tgt_vector = self.create_tgt_embeddings(dim, is_en)
+        else:
+            return "A Vocab exist in ", file_path
 
     def vocab_builder_parallels(self, application_path, selected_db):
         """

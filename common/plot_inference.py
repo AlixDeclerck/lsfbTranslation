@@ -29,7 +29,7 @@ def normalize_result(value):
 
 
 case = Case.FIRST
-session = "session finale"
+session = "session d'analyse'"
 add = "SF_"
 
 if __name__ == '__main__':

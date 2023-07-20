@@ -3,16 +3,13 @@
 
 """
 Usage:
-    learning_phase.py train --app-path=<file>
+    corpus_phase.py new --app-path=<file>
 """
 
 import os
-
 from docopt import docopt
-from common.constant import EnvType
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from algorithms.symbolicTransformer.src.core.training import load_or_train_model
 
 
 if __name__ == '__main__':
@@ -25,12 +22,6 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     config["configuration_path"]["application_path"] = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"]
 
-    # Retrieve vocabulary from disk
+    # VOCABULARY
     vocab = Vocab(config)
-    vocab.retrieve()
-
-    # TRAINING
-    trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)
-
-    # OUTPUT
-    print(trained_model)
+    print(vocab.create())

@@ -32,7 +32,8 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
 
         processed_tgt = torch.cat(
             [bs_id, torch.tensor(
-                    vocab.tgt(vocab.tokenize_en(_tgt)),
+                    # vocab.tgt(vocab.tokenize_en(_tgt)),
+                    vocab.tgt(vocab.tokenize_gloss(_tgt)),
                     dtype=torch.int64, device=device), eos_id], 0)
 
         src_list.append(

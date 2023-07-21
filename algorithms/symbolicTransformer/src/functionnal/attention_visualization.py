@@ -3,6 +3,7 @@ import torch
 import matplotlib.pyplot as plt
 import math
 from common.constant import Case, d_date, Translation
+# from common.metrics.bleu_score import Translation
 
 """
 The attention visualization was initially inspired from :
@@ -43,14 +44,15 @@ def get_decoder_src(model, layer):
     return model.decoder.layers[layer].src_attn.attn
 
 
-def plot_attention_maps(model, input_data, nbr_attentions):
+def plot_attention_maps(model, input_data, cfg):
     """
     todo: input_data have to a nice class with reference and all hypothesis + detail + infos
     We retrieve the attentions in the model using the 3 functions above
     :param model: model that was used during inference
     :param input_data: an object with all inferred values
-    :param nbr_attentions: nombre of attentions used by the architecture of the model
+    :param cfg: config file
     """
+    nbr_attentions = cfg["hyper_parameters"]["h_attention_layers"]
     limit = nbr_attentions-1
 
     source_text = input_data[0][1]
@@ -73,7 +75,7 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     case = Case.FIRST
     today = d_date()
     add = "SF_"
-    filename = "img/ATT_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
+    filename = "../../../common/img/ATT_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
     attn = torch.squeeze(getter_fn(model, 1))
     att_size = attn.size(dim=1)
     selected_att = []

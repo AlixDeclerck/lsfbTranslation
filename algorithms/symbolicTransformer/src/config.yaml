@@ -45,7 +45,7 @@ inference_decoding:
     max-decoding-time-step:       70                                 # number of iterations during inference
     persist-approx:               True                               # False mean syntax analysis return text on screen, True mean saving in database
     number_of_inferences:         1                                 # Number of phrases inferred
-    architecture_demo:            False                               # to limit the number of inferences
+    architecture_demo:            True                               # to limit the number of inferences
 
 learning_config:
     multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab

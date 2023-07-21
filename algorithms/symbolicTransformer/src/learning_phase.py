@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     # Retrieve vocabulary from disk
     vocab = Vocab(config)
-    vocab.retrieve()
+    vocab.retrieve_from_disk()
 
     # TRAINING
     trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)

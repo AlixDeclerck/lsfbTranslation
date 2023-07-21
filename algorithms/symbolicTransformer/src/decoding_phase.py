@@ -7,16 +7,17 @@ Usage:
 """
 
 import os
-
+import pandas
 import torch
 from docopt import docopt
-
+from torchtext.data.functional import to_map_style_dataset
 from algorithms.symbolicTransformer.src.core.architecture import NMT
-from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch
+from algorithms.symbolicTransformer.src.core.batching import create_dataloaders, Batch, collate_batch
 from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps, get_decoder_self
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from common.constant import EnvType, pretty_print_hypothesis
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
+from common.constant import EnvType, pretty_print_hypothesis, Dialect, Corpus
 from common.metrics.bleu import processing_bleu_score
 from common.output_decoder import greedy_decode, beam_search
 
@@ -92,7 +93,7 @@ def check_outputs(model, vocab, dataloader_validation, n_examples=4, architectur
 def run_model_example(config, n_examples=8):
 
     vocab = Vocab(config)
-    vocab.retrieve()
+    vocab.retrieve_from_disk()
 
     print("Preparing Data ...")
     _, test_dataloader = create_dataloaders(
@@ -125,6 +126,87 @@ def run_model_example(config, n_examples=8):
     return model, inferred_outputs
 
 
+def run_inference(config):
+    vocab = Vocab(config)
+    vocab.retrieve_from_disk()
+
+    print("Preparing Data ...")
+    test_dataset = retrieve_conte_dataset(
+        EnvType.TEST.value,
+        application_path,
+        config["configuration_path"]["selected_db"],
+        Dialect.LSF,
+        vocab.english_output, False, 10000)
+
+    print("Loading Trained Model ...")
+
+    model = NMT(vocab, config)
+    model.load_state_dict(
+        torch.load(config["configuration_path"]["model_path"]+config["configuration_path"]["model_prefix"]+config["configuration_path"]["model_suffix"], map_location=torch.device("cpu"))
+    )
+
+    if bool(config["learning_config"]["english_output"]):
+        full = pandas.DataFrame(test_dataset, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+    else:
+        full = pandas.DataFrame(test_dataset, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
+
+    datas = []
+    for f in full:
+        lst = []
+        lst.append(f)
+        datas.append(lst)
+
+    results = []
+    for data in datas:
+        data_val = collate_batch(data, vocab, model.device)
+        data_val_batch = Batch(data_val[0], data_val[1])
+
+        # retrieve tokens with itos elements
+        src_tokens = vocab.unembed_src(data_val_batch.src[0])
+        reference = vocab.unembed_tgt(data_val_batch.tgt[0])
+
+        # pretty print source and target
+        vocab.pretty_print_token("Source Text (Input)        : ", src_tokens)
+        vocab.pretty_print_token("Target Text (Ground Truth) : ", reference)
+
+        # DECODING
+        if not learning_configuration["inference_decoding"]["beam_search"]:
+            model_output_beam = None
+
+        else:
+            hypothesis_beam, estimation_beam = beam_search(
+                model,
+                data_val_batch,
+                beam_size=int(learning_configuration["inference_decoding"]['beam-size']),
+                max_decoding_time_step=int(learning_configuration["inference_decoding"]['max-decoding-time-step'])
+            )
+
+            # pretty print the model output
+            model_output_beam = pretty_print_hypothesis(hypothesis_beam, "beam")
+            processing_bleu_score(reference,  hypothesis_beam, output_max=learning_configuration["learning_config"]["output_max_words"], display=True)
+
+        hypothesis_greedy, estimation_greedy = greedy_decode(
+            model,
+            data_val_batch,
+            learning_configuration["learning_config"]["max_padding"]
+        )
+
+        # pretty print the model output
+        model_output_greedy = pretty_print_hypothesis(hypothesis_greedy, "greedy")
+        processing_bleu_score(reference,  hypothesis_greedy, output_max=learning_configuration["learning_config"]["output_max_words"], display=True)
+
+        # CONSTRUCT RESULT VALUE LIST
+        results.append([
+            data_val_batch,
+            src_tokens,
+            reference,
+            estimation_greedy,
+            model_output_beam,
+            model_output_greedy])
+
+    return model, results
+
+
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -141,7 +223,8 @@ if __name__ == '__main__':
         learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
-    used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=learning_configuration["inference_decoding"]["number_of_inferences"])
+    # used_model, inferred_data = run_model_example(config=learning_configuration, n_examples=learning_configuration["inference_decoding"]["number_of_inferences"])
+    used_model, inferred_data = run_inference(config=learning_configuration)
 
     # DISPLAY RESULT
-    plot_attention_maps(used_model, inferred_data, learning_configuration["hyper_parameters"]["h_attention_layers"])
+    plot_attention_maps(used_model, inferred_data, learning_configuration)

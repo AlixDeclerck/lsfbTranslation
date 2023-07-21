@@ -103,7 +103,7 @@ class Vocab:
     def create(self):
         self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)
 
-    def retrieve(self):
+    def retrieve_from_disk(self):
         if exists(self.vocab_name):
             self.src, self.tgt = torch.load(self.vocab_name)
             if self.is_fasttext:

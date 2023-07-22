@@ -4,16 +4,6 @@ from datetime import datetime
 
 Hypothesis = namedtuple('Hypothesis', ['value', 'score'])
 
-def pretty_print_hypothesis(hypothesis, method):
-    res = str(hypothesis.value[0])+" "
-    for i in range(1, len(hypothesis.value)):
-        res += str(hypothesis.value[i])+" "
-        if hypothesis.value[i] == str(Tag.STOP.value[0]):
-            break
-
-    print("\nModel Output ( " + method + " )     : " + str(res))
-    return res
-
 def d_date():
     today_date = datetime.today()
     today_year = str(today_date.year)[-2:]
@@ -83,6 +73,15 @@ class AttentionType(Enum):
     ENCODER = "Encoder"
     DECODER_SELF = "Decoder self"
     DECODER_SRC = "Decoder src"
+
+
+class HypothesisType(Enum):
+    """
+        Types of hypothesis
+    """
+    BEAM = "Beam search decoding"
+    GREEDY = "Greedy decoding"
+    APPROX = "Approximation"
 
 
 class Translation:

@@ -70,7 +70,7 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     """
     resizing_img_coef = 10
     source_size = len(txt_translation.source_text)
-    target_size = len(txt_translation.beam_hypothesis)
+    target_size = len(txt_translation.greedy_hypothesis)
 
     case = Case.FIRST
     today = d_date()

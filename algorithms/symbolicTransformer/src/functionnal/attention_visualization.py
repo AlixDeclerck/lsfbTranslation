@@ -103,3 +103,7 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     plt.figure(figsize=(source_size*resizing_img_coef, target_size*resizing_img_coef))
     plt.savefig(filename)
     plt.show()
+
+    # https://matplotlib.org/stable/gallery/statistics/hist.html
+    # figsize : fig, axs = plt.subplots(3, 1, figsize=(5, 15), sharex=True, sharey=True, tight_layout=True)
+

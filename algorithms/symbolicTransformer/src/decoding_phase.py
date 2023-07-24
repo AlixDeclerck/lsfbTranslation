@@ -23,7 +23,7 @@ from common.metrics.bleu_score import Translation
 
 def run_inference(config):
 
-    filepath = Path('decoding_scores_2023-07-22.csv')
+    filepath = Path('../../../common/output/decoding_scores_2023-07-22.csv')
     filepath.parent.mkdir(parents=True, exist_ok=True)
 
     hypothesis_beam = None

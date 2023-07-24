@@ -30,6 +30,8 @@ if __name__ == '__main__':
     # RETRIEVE SCORES
     df = pandas.read_csv(str(path)+filename)
     img_precision = "img/precision_"+today+"_"+str(add)+str(case.value[1])+".png"
+    img_trigram = "img/trigram_"+today+"_"+str(add)+str(case.value[1])+".png"
+    img_bp = "img/bp_"+today+"_"+str(add)+str(case.value[1])+".png"
     title = "Inférences : "+str(session)+", cas n°"+str(case.value[0])
 
     scores_beam = pandas.DataFrame(df[(df['title'] == "Beam")], columns=["bleu", "bp", "trigram"])
@@ -71,4 +73,39 @@ if __name__ == '__main__':
     plt.savefig(img_precision)
     plt.show()
 
+    # TRI-GRAMS
+    beam_trigram = [float(x) for x in scores_beam["trigram"]]
+    greedy_trigram = [float(x) for x in scores_greedy["trigram"]]
+
+    df = pandas.DataFrame(
+
+        beam_trigram,
+
+        columns=['beam'])
+
+    df['greedy'] = greedy_trigram
+
+    ax = df.plot.hist(bins=12, alpha=0.5)
+
+    plt.title("score des tri-grammes")
+    plt.savefig(img_trigram)
+    plt.show()
+
+    # BP
+    beam_bp = [float(x) for x in scores_beam["bp"]]
+    greedy_bp = [float(x) for x in scores_greedy["bp"]]
+
+    df = pandas.DataFrame(
+
+        beam_bp,
+
+        columns=['beam'])
+
+    df['greedy'] = greedy_bp
+
+    ax = df.plot.hist(bins=12, alpha=0.5)
+
+    plt.title("pénalité de concision")
+    plt.savefig(img_bp)
+    plt.show()
 

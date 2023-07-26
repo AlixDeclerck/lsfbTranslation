@@ -40,11 +40,11 @@ learning_optimization:
     adam_optimizer_amsgrad:       False                              # use the AMSGrad variant of this algorithm from the paper On the Convergence of Adam and Beyond (default: False)
 
 inference_decoding:
-    beam_search:                  True                               # False for greedy search
+    beam_search:                  False                               # False for greedy search
     beam-size:                    10                                 # number of tree branches
     max-decoding-time-step:       70                                 # number of iterations during inference
     persist-approx:               True                               # False mean syntax analysis return text on screen, True mean saving in database
-    max_number_of_inferences:     2                               # Number of phrases inferred
+    max_number_of_inferences:     1                               # Number of phrases inferred
 
 learning_config:
     multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
@@ -57,7 +57,7 @@ learning_config:
     max_padding:                  72                                 # padding on tensors
     output_max_words:             16                                 # originally 80
     persist_learning_measure:     False                              # Write measures in database
-    test_division:                9                                  # coefficient k for the corpus split train vs test where 1/k are test items
+    test_division:                10                                  # coefficient k for the corpus split train vs test where 1/k are test items
     max_test_gloss_size:          0                                  # regularize the glosses size to k (zero mean no limit)
     row_limit:                    10000                              # Max number of sentences learned
     using_gpu:                    True                               # for training, decoding use parameters. GPU = True and CPU = False

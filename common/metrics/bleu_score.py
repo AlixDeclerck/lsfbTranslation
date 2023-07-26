@@ -67,7 +67,10 @@ class Translation:
     def export(self, title, dataframe):
         dataframe.loc[len(dataframe.index)] = [title, self.source_text, self.reference[0][0], None, None, None]
         dataframe.loc[len(dataframe.index)] = ["Approximation", str(self.approximated_hypothesis["text"][0]), self.approximated_hypothesis["precisions"], round(self.approximated_hypothesis["bleu"], 2), round(self.approximated_hypothesis["brevity_penalty"], 2), round((self.approximated_hypothesis["precisions"][0]+self.approximated_hypothesis["precisions"][1]+self.approximated_hypothesis["precisions"][2]) / 3, 2)]
-        dataframe.loc[len(dataframe.index)] = ["Beam", str(self.beam_score["text"][0]), self.beam_score["precisions"], round(self.beam_score["bleu"], 2), round(self.beam_score["brevity_penalty"], 2), round((self.beam_score["precisions"][0]+self.beam_score["precisions"][1]+self.beam_score["precisions"][2]) / 3, 2)]
+
+        if self.beam_score is not None:
+            dataframe.loc[len(dataframe.index)] = ["Beam", str(self.beam_score["text"][0]), self.beam_score["precisions"], round(self.beam_score["bleu"], 2), round(self.beam_score["brevity_penalty"], 2), round((self.beam_score["precisions"][0]+self.beam_score["precisions"][1]+self.beam_score["precisions"][2]) / 3, 2)]
+
         dataframe.loc[len(dataframe.index)] = ["Greedy", str(self.greedy_score["text"][0]), self.greedy_score["precisions"], round(self.greedy_score["bleu"], 2), round(self.greedy_score["brevity_penalty"], 2), round((self.greedy_score["precisions"][0]+self.greedy_score["precisions"][1]+self.greedy_score["precisions"][2]) / 3, 2)]
         return dataframe
 

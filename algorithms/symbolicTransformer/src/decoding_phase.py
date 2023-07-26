@@ -16,17 +16,19 @@ from algorithms.symbolicTransformer.src.core.batching import Batch, collate_batc
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
 from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps
-from common.constant import EnvType, Dialect, Corpus, HypothesisType
+from common.constant import EnvType, Dialect, Corpus, HypothesisType, d_date
 from common.output_decoder import greedy_decode, beam_search
 from common.metrics.bleu_score import Translation
 
 
 def run_inference(config):
-
-    filepath = Path('../../../common/output/decoding_scores_2023-07-22.csv')
+    today = d_date()
+    path = "../../../common/output/decoding_scores_"+today+".csv"
+    filepath = Path(path)
     filepath.parent.mkdir(parents=True, exist_ok=True)
 
     hypothesis_beam = None
+    estimation_beam = None
     limit = config["inference_decoding"]["max_number_of_inferences"]
     is_beam_search = learning_configuration["inference_decoding"]["beam_search"]
     formated_test_dataset = []
@@ -54,7 +56,7 @@ def run_inference(config):
         application_path,
         config["configuration_path"]["selected_db"],
         Dialect.LSF,
-        vocab.english_output, False, 10000)
+        vocab.is_english_output, False, 10000)
     print("Test set loaded.. ")
     print("With "+str(len(test_dataset))+" elements")
     print()
@@ -98,7 +100,8 @@ def run_inference(config):
 
         # SCORING
         title = str(i+1)+". Traduction de : "
-        trans.add_hypothesis(HypothesisType.BEAM, hypothesis_beam)
+        if is_beam_search:
+            trans.add_hypothesis(HypothesisType.BEAM, hypothesis_beam)
         trans.add_hypothesis(HypothesisType.GREEDY, hypothesis_greedy)
         trans.display_translation(title)
         trans.export(title, df_scores)
@@ -106,13 +109,11 @@ def run_inference(config):
         # CONSTRUCT RESULT VALUE LIST
         results.append([
             data_val_batch,
-            trans.source_text,
-            trans.reference,
+            trans,
             estimation_greedy,
-            trans.beam_hypothesis,
-            trans.greedy_hypothesis])
+            estimation_beam])
 
-        if i == limit:
+        if i+1 == limit:
             df_scores.to_csv(filepath)
             return model, results
 
@@ -137,4 +138,4 @@ if __name__ == '__main__':
 
     # INFERENCE
     used_model, inferred_data = run_inference(config=learning_configuration)
-    # plot_attention_maps(used_model, inferred_data, learning_configuration)
+    plot_attention_maps(used_model, inferred_data, learning_configuration)

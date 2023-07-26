@@ -1,4 +1,5 @@
 import numpy
+import pandas
 import torch
 import matplotlib.pyplot as plt
 import math
@@ -13,6 +14,7 @@ nlp.seas.harvard.edu/annotated-transformer
 
 We recreated attentions output using matplotlib instead of altair
 """
+
 
 def get_encoder(model, layer):
     """
@@ -54,29 +56,26 @@ def plot_attention_maps(model, input_data, cfg):
     """
     nbr_attentions = cfg["hyper_parameters"]["h_attention_layers"]
     limit = nbr_attentions-1
-
-    source_text = input_data[0][1]
-    beam_hypothesis = input_data[0][4]
-    greedy_hypothesis = input_data[0][5]
-    reference = input_data[0][2]
-
-    txt_translation = Translation(source_text=source_text, beam_hypothesis=beam_hypothesis, greedy_hypothesis=greedy_hypothesis, reference=reference)
+    txt_translation = input_data[0][1]
 
     plot_attention_map(model, txt_translation, get_decoder_self, [0, math.floor(limit/2), limit])
+
 
 def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     """
     We retrieve a specific attention matrix
     """
     resizing_img_coef = 10
-    source_size = len(txt_translation.source_text)
-    target_size = len(txt_translation.greedy_hypothesis)
+    source_size = len(txt_translation.source_text.split(" "))
+    target = txt_translation.greedy_hypothesis.split(" ")
+    target = [i for i in target if i not in ["", " "]]
+    target_size = len(target)
 
     case = Case.FIRST
     today = d_date()
     add = "SF_"
     filename = "../../../common/img/ATT_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
-    attn = torch.squeeze(getter_fn(model, 1))
+    attn = torch.squeeze(getter_fn(model, 8))
     att_size = attn.size(dim=1)
     selected_att = []
 
@@ -87,7 +86,7 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
 
     for i, att_t in enumerate(selected_att):
         attention_matrix = torch.squeeze(att_t).detach().numpy()
-        attention_matrix = attention_matrix[0:source_size, 0:target_size]
+        # attention_matrix = attention_matrix[0:source_size, 0:target_size]
         # print(numpy.shape(attention_matrix))
         ax[i].imshow(attention_matrix, vmin=0, origin='lower')  # , vmax=5
         ax[i].set_xticks(list(range(att_size)))
@@ -100,10 +99,27 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
     fig.subplots_adjust(hspace=0.5)
     # plt.gca().invert_yaxis()
     # plt.colorbar()
-    plt.figure(figsize=(source_size*resizing_img_coef, target_size*resizing_img_coef))
+    # figsize=(source_size*resizing_img_coef, target_size*resizing_img_coef)
+    plt.figure()
     plt.savefig(filename)
     plt.show()
 
     # https://matplotlib.org/stable/gallery/statistics/hist.html
     # figsize : fig, axs = plt.subplots(3, 1, figsize=(5, 15), sharex=True, sharey=True, tight_layout=True)
 
+def plot_att_panda():
+    print("todo")
+    # df = pandas.DataFrame([
+    #     ['Beam', beam_ngrams[0].mean(), beam_ngrams[1].mean(), beam_ngrams[2].mean(), beam_ngrams[3].mean()],
+    #     ['Greedy', greedy_ngrams[0].mean(), greedy_ngrams[1].mean(), greedy_ngrams[2].mean(), greedy_ngrams[3].mean()],
+    #     ['Approx', approx_ngrams[0].mean(), approx_ngrams[1].mean(), approx_ngrams[2].mean(), approx_ngrams[3].mean()]],
+    #     columns=['ordre', 'unigram', 'bigram', '3-gram', '4-gram'])
+    #
+    # df.plot(x='ordre',
+    #         kind='bar',
+    #         stacked=False,
+    #         title='Mesure de traduction par n-grammes',
+    #         color=["#d1ade0", "#fec5d6", "#f8e392", "#9be1eb"]
+    #         )
+    #
+    # plt.show()

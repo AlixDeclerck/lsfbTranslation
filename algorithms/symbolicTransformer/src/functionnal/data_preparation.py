@@ -79,7 +79,7 @@ class Vocab:
         self.french_tokenizer = tokens[0]
         self.english_tokenizer = tokens[1]
         self.vocab_txt = config["learning_config"]["vocab_txt"]
-        self.english_output = config["learning_config"]["english_output"]
+        self.is_english_output = config["learning_config"]["english_output"]
         self.multi_source = config["learning_config"]["multi_sources"]
         self.row_limit = config["learning_config"]["row_limit"]
         for dia in Dialect:
@@ -96,7 +96,7 @@ class Vocab:
         self.application_path = config["configuration_path"]["application_path"]
         self.dimension = config["hyper_parameters"]["dimension"]
         self.is_fasttext = bool(config["learning_config"]["fast_text_corpus"])
-        self.english_output = bool(config["learning_config"]["english_output"])
+        self.is_english_output = bool(config["learning_config"]["english_output"])
         self.selected_db = str(config["configuration_path"]["selected_db"])
         self.txt_corpus = str(config["configuration_path"]["txt_corpus"])
 
@@ -108,7 +108,7 @@ class Vocab:
             self.src, self.tgt = torch.load(self.vocab_name)
             if self.is_fasttext:
                 self.src_vector = self.create_src_embeddings(self.dimension)
-                self.tgt_vector = self.create_tgt_embeddings(self.dimension, self.english_output)
+                self.tgt_vector = self.create_tgt_embeddings(self.dimension, self.is_english_output)
         else:
             return "No vocabulary in ", self.vocab_name
 
@@ -129,7 +129,7 @@ class Vocab:
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
         learning_corpus = []
         for env in EnvType:
-            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, self.vocab_dialect, self.english_output, self.multi_source, self.row_limit)
+            learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, self.vocab_dialect, self.is_english_output, self.multi_source, self.row_limit)
 
         def yield_tokens(data_iter, tokenizer, index):
             for from_to_tuple in data_iter:
@@ -142,7 +142,7 @@ class Vocab:
             specials=special_tag,
         )
 
-        if self.english_output:
+        if self.is_english_output:
             print("Building ENGLISH Vocabulary ...")
             vocab_tgt = build_vocab_from_iterator(
                 yield_tokens(learning_corpus, self.tokenize_en, index=Corpus.TEXT_EN.value[1]),

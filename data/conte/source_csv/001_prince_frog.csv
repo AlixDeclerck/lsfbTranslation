@@ -34,8 +34,8 @@ qui tendait hors de l'eau sa tête grosse et affreuse. ,EAU TETE GROSSE AFFREUSE
 "Ah! c'est toi, ",PRINCESSE DIRE AH TOI PARLER,AH TOI ,['Pres'],,"Oh, is it you,",33,"Oh, c'est vous,","Ah! it's you, "
 "vieille barboteuse! dit-elle,",FLEMMARDE,VIEILLE BARBOTEUSE DIRE ,['Pres'],,"old waddler? said she,",34,"vieux dandineur ? dit-elle,","old romper! she said,"
 je pleure ma balle d'or qui est tombée dans la fontaine.,MOI PLEURER CAR MA BALLE OR TOMBER DANS FONTAINE,BALLE TOMBEE FONTAINE PLEURE ,['Pres']['Pres'],,I weep because my golden ball has fallen into the well.,35,Je pleure parce que ma balle d'or est tombée dans le puits.,I cry for my golden ball that fell into the fountain.
-"Tais-toi et ne pleure plus, ",GRENOUILLE DIRE,TAIS TOI NE PLUS PLEURE ,['Pres'],,"Never mind, do not weep,",36,"Peu importe, ne pleurez pas,","Shut up and stop crying, "
-"dit la grenouille, ",TAIS TOI ARRETER PLEURER,GRENOUILLE DIT ,['Past'],,"answered the frog,",37,"répond la grenouille,","said the frog, "
+"Tais-toi et ne pleure plus, ",TAIS TOI ARRETER PLEURER,TAIS TOI NE PLUS PLEURE ,['Pres'],,"Never mind, do not weep,",36,"Peu importe, ne pleurez pas,","Shut up and stop crying, "
+"dit la grenouille, ",GRENOUILLE DIRE,GRENOUILLE DIT ,['Past'],,"answered the frog,",37,"répond la grenouille,","said the frog, "
 je vais t'aider. ,MOI T' AIDER,ALLER AIDER ,['Pres'],,I can help you;,38,Je peux vous aider ;,I will help you. 
 Mais que me donneras-tu si je te rapporte ton jouet? ,MAIS SI MOI RAMENER TON JOUET TOI ME DONNER QUOI ?,TOI JOUET DONNER RAPPORTE ,['Pres']['Pres']['Pres'],,but what will you give me if I fetch up your ball again?,39,mais que me donnerez-vous si je récupère à nouveau votre balle ?,But what will you give me if I bring back your toy? 
 "Ce que tu voudras, ",PRINCESSE REPONDRE,TOI VOUDRAS ,<unk>,,"Whatever you like,",40,"Tout ce que vous voulez,","Whatever you want, "

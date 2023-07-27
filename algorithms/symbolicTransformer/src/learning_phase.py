@@ -32,5 +32,4 @@ if __name__ == '__main__':
     # TRAINING
     trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)
 
-    # OUTPUT
-    print(trained_model)
+    print("Symbolic transformer's training completed !!")

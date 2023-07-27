@@ -24,4 +24,6 @@ if __name__ == '__main__':
 
     # VOCABULARY
     vocab = Vocab(config)
-    print(vocab.create())
+    vocab.create()
+
+    print("Vocabulary creation completed ;-)")

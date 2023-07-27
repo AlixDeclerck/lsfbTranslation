@@ -138,4 +138,4 @@ if __name__ == '__main__':
 
     # INFERENCE
     used_model, inferred_data = run_inference(config=learning_configuration)
-    plot_attention_maps(used_model, inferred_data, learning_configuration)
+    # plot_attention_maps(used_model, inferred_data, learning_configuration)

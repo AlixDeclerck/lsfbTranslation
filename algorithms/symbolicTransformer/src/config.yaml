@@ -40,7 +40,7 @@ learning_optimization:
     adam_optimizer_amsgrad:       False                              # use the AMSGrad variant of this algorithm from the paper On the Convergence of Adam and Beyond (default: False)
 
 inference_decoding:
-    beam_search:                  False                               # False for greedy search
+    beam_search:                  True                               # False for greedy search
     beam-size:                    10                                 # number of tree branches
     max-decoding-time-step:       70                                 # number of iterations during inference
     persist-approx:               True                               # False mean syntax analysis return text on screen, True mean saving in database
@@ -54,7 +54,7 @@ learning_config:
     english_output:               False                              # True if "EN", False if "GLOSS"
     distributed:                  False                              # True if Several processing unit
     fast_text_corpus:             True                               # Spacy if false
-    max_padding:                  72                                 # padding on tensors
+    max_padding:                  32                                 # padding on tensors, originally 72
     output_max_words:             16                                 # originally 80
     persist_learning_measure:     False                              # Write measures in database
     test_division:                10                                  # coefficient k for the corpus split train vs test where 1/k are test items

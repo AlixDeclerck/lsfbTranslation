@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from algorithms.symbolicTransformer.src.functionnal.tuning import tiers_list
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from common.output_decoder import subsequent_mask
-from common.constant import Tag, Corpus, Dialect
+from common.constant import Tag, Corpus, Dialect, EnvType
 
 """
 The batching file contents are coming from :
@@ -55,7 +55,7 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
     return src, tgt
 
 
-def create_dataloaders(vocab, environment, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False, shuffling=False):
+def create_dataloaders(vocab, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False, shuffling=False):
 
     def collate_fn(batch):
         return collate_batch(
@@ -68,8 +68,8 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
 
     if is_inference:
 
-        # Dataset that will do the batches
-        complete = retrieve_conte_dataset(environment, application_path, selected_db, Dialect.LSF, vocab.is_english_output, False, 10000)
+        # dataset that will be inferred
+        complete = retrieve_conte_dataset(EnvType.TEST.value, application_path, selected_db, Dialect.LSF, vocab.is_english_output, False, 10000)
 
         # sub-select from target mode
         if english_output:
@@ -96,13 +96,26 @@ def create_dataloaders(vocab, environment, device, english_output, application_p
     else:
 
         # Dataset that will do the batches
-        complete = retrieve_conte_dataset(environment, application_path, selected_db, vocab.dialect_selection, vocab.is_english_output, vocab.multi_source, vocab.row_limit)
+        complete = retrieve_conte_dataset(EnvType.TRAINING.value, application_path, selected_db, vocab.dialect_selection, vocab.is_english_output, vocab.multi_source, vocab.row_limit)
+
+        if vocab.join_vocab:
+            joined_ds = []
+            for i in range(1, len(complete)):
+                previous = i-1
+                current_txt = complete[previous]
+                current_txt[0] = current_txt[0]+complete[i][0]
+                current_txt[1] = current_txt[1]+complete[i][1]
+                current_txt[2] = current_txt[2]+complete[i][2]
+
+                joined_ds.append(current_txt)
+        else:
+            joined_ds = complete
 
         # sub-select from target mode
         if english_output:
-            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+            full = pandas.DataFrame(joined_ds, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
         else:
-            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
+            full = pandas.DataFrame(joined_ds, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
         train_iter, valid_iter = tiers_list(full, shuffling)
 

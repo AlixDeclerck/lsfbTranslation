@@ -57,6 +57,8 @@ conda install -c pytorch torchtext==0.12
 conda install -c anaconda altair
 conda install -c anaconda pyyaml
 conda install -c conda-forge unidecode
+conda install evaluate
+conda install -c conda-forge fasttext
 ```
 
 ### Words are our glosses
@@ -70,8 +72,7 @@ conda install -c anaconda nltk
 
 ### Syntax analysis
 
-A graph that bring some prior knowledge that can be use as pre-processing ?
-Visual Genome : http://visualgenome.org/
+POS tagging to generate glosses
 
 ```
 conda install -c conda-forge stanza

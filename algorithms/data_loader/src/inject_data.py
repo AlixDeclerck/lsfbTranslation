@@ -14,8 +14,10 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType, Corpus, Tag, Hypothesis
 from common.metrics.bleu import processing_bleu_score
 from algorithms.syntax_analysis.with_spacy.launcher import approximate_phrases
+from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from docopt import docopt
 import os
+from common.constant import Dialect
 
 class ConteHandler:
 
@@ -197,15 +199,46 @@ def show_bleu_score(ref, hyp):
         shrink=False,
         display=True)
 
+
+def duplicate_sentence_detection():
+    """
+    find in database a test sentence also in training
+    """
+    training_data = retrieve_conte_dataset(
+        EnvType.TRAINING.value,
+        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
+        config["configuration_path"]["selected_db"],
+        Dialect.LSF,
+        config["learning_config"]["english_output"],
+        False,
+        10000)
+
+    test_data = retrieve_conte_dataset(
+        EnvType.TEST.value,
+        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
+        config["configuration_path"]["selected_db"],
+        Dialect.LSF,
+        config["learning_config"]["english_output"],
+        False,
+        10000)
+
+    print()
+
+    i = 0
+    for data in test_data:
+        if data[0] in pandas.DataFrame(training_data)[0].tolist():
+            i += 1
+            print("duplicate "+str(i)+" : "+str(data[0]))
+
 # ----------------------------------------------------------
 
 
 if __name__ == "__main__":
 
     # CONFIGURATION
+    args = docopt(__doc__)
     config = load_config("../../symbolicTransformer/src/config.yaml")
 
-    args = docopt(__doc__)
     contes = ConteHandler(
         application_path=os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
         xlsx_path=config['configuration_path']['xlsx_path'],
@@ -224,4 +257,7 @@ if __name__ == "__main__":
     # contes.populate_db_from_csv()
 
     # show bleu score
-    show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDER DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+    # show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDER DIT BONJOUR", hyp="DAME FENETRE REGARDER")
+
+    # find duplicate txt in test set
+    duplicate_sentence_detection()

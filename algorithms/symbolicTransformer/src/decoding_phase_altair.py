@@ -225,13 +225,13 @@ if __name__ == '__main__':
     used_model, inferred_data = run_inference(config=learning_configuration, vocab=saved_vocab, test_dataset=loaded_test_set)
 
     row_example = inferred_data[0][1].source_text.split(" ")
-    col_example = inferred_data[0][1].greedy_hypothesis.split(" ")
-    # col_example = inferred_data[0][1].source_text.split(" ")
+    # col_example = inferred_data[0][1].greedy_hypothesis.split(" ")
+    col_example = inferred_data[0][1].source_text.split(" ")
     length = max(len(row_example), len(col_example))
 
     layer_viz = [
         visualize_layer(
-            used_model, layer, get_decoder_self, length, row_example, col_example
+            used_model, layer, get_encoder, length, row_example, col_example
         )
         for layer in range(6)
     ]

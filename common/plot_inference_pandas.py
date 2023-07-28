@@ -25,7 +25,7 @@ if __name__ == '__main__':
     config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "common/output/"
-    filename = "decoding_scores_2023-07-22.csv"  # "learning_symbolicTransformer_french_"+today+"_"+str(add)+case.value[1]+"_quicktranslations.csv"
+    filename = "decoding_scores_2023-07-28.csv"  # "learning_symbolicTransformer_french_"+today+"_"+str(add)+case.value[1]+"_quicktranslations.csv"
 
     # RETRIEVE SCORES
     df = pandas.read_csv(str(path)+filename)

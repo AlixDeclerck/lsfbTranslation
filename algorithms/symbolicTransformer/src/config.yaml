@@ -47,6 +47,7 @@ inference_decoding:
     max_number_of_inferences:     1                               # Number of phrases inferred
 
 learning_config:
+    join_vocab:                   True                               # To merge earch parrallels into two phrases
     multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
     dialect_selection:            1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     vocab_txt:                    False                              # If second corpus to text file
@@ -54,7 +55,7 @@ learning_config:
     english_output:               False                              # True if "EN", False if "GLOSS"
     distributed:                  False                              # True if Several processing unit
     fast_text_corpus:             True                               # Spacy if false
-    max_padding:                  32                                 # padding on tensors, originally 72
+    max_padding:                  72                                 # padding on tensors, originally 72
     output_max_words:             16                                 # originally 80
     persist_learning_measure:     False                              # Write measures in database
     test_division:                10                                  # coefficient k for the corpus split train vs test where 1/k are test items

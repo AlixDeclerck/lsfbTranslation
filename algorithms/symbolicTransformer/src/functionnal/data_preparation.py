@@ -1,6 +1,5 @@
 import os
 from os.path import exists
-import copy
 import spacy
 import torch
 import torchtext
@@ -99,6 +98,7 @@ class Vocab:
         self.is_english_output = bool(config["learning_config"]["english_output"])
         self.selected_db = str(config["configuration_path"]["selected_db"])
         self.txt_corpus = str(config["configuration_path"]["txt_corpus"])
+        self.join_vocab = bool(str(config["learning_config"]["join_vocab"]))
 
     def create(self):
         self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)
@@ -279,56 +279,6 @@ class Vocab:
             txt
             + " ".join(tokens).replace("\n", "")
         )
-
-    @staticmethod
-    def vocab_builder_fast_text(dim):
-        """A complete vocab builder that generate 10^6 embedded tokens, need big GPU"""
-        # Corpus initialization
-        fast_text_corpus = torchtext.vocab.FastText(language='fr')
-        corpus_dict = fast_text_corpus.stoi
-        corpus_embeddings = torch.matmul(fast_text_corpus.vectors, torch.ones(fast_text_corpus.vectors.shape[1], dim))
-
-        special_tags = {
-            str(Tag.START.value[0]): Tag.START.value[1],
-            str(Tag.STOP.value[0]): Tag.STOP.value[1],
-            str(Tag.BLANK.value[0]): Tag.BLANK.value[1],
-            str(Tag.UNKNOWN.value[0]): Tag.UNKNOWN.value[1]
-        }
-
-        special_embeddings = torch.cat((
-            torch.zeros(dim, 1),
-            torch.unsqueeze(corpus_embeddings[0], 1),
-            torch.zeros(dim, 1),
-            torch.zeros(dim, 1)), 1
-        )
-
-        # taking information (value, embedding, index)
-        print("Building FRENCH Vocabulary from fast text")
-        coma_tag = (list(corpus_dict.keys())[1], copy.deepcopy(corpus_embeddings[1]), corpus_dict.pop("//www"))
-        de_tag = (list(corpus_dict.keys())[2], copy.deepcopy(corpus_embeddings[2]), corpus_dict.pop("#"))
-        double_quotes_tag = (list(corpus_dict.keys())[3], copy.deepcopy(corpus_embeddings[3]), corpus_dict.pop("www"))
-
-        # first values permutations
-        corpus_dict[coma_tag[0]] = coma_tag[2]
-        corpus_embeddings[coma_tag[2]] = coma_tag[1]
-        corpus_dict[de_tag[0]] = de_tag[2]
-        corpus_embeddings[de_tag[2]] = de_tag[1]
-        corpus_dict[double_quotes_tag[0]] = double_quotes_tag[2]
-        corpus_embeddings[double_quotes_tag[2]] = double_quotes_tag[1]
-
-        # remove first entry which is into special tags
-        corpus_dict.pop(Tag.STOP.value[0])
-        corpus_embeddings = corpus_embeddings[1:]
-
-        # add special character @ first place
-        corpus_dict.update(special_tags)
-
-        corpus_embeddings = torch.cat((
-            special_embeddings.T,
-            corpus_embeddings)
-        )
-
-        return corpus_dict, corpus_embeddings
 
     @staticmethod
     def tokenize(text, tokenizer):

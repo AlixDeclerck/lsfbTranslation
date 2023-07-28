@@ -12,7 +12,7 @@ from docopt import docopt
 from common.constant import EnvType
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from algorithms.symbolicTransformer.src.core.training import load_or_train_model
+from algorithms.symbolicTransformer.src.core.training import launch
 
 
 if __name__ == '__main__':
@@ -30,6 +30,6 @@ if __name__ == '__main__':
     vocab.retrieve_from_disk()
 
     # TRAINING
-    trained_model = load_or_train_model(vocab, EnvType.TRAINING.value, config)
+    trained_model = launch(vocab, config)
 
     print("Symbolic transformer's training completed !!")

@@ -22,17 +22,17 @@ Huang, et al. 2022 / Rush, et al. 2019
 nlp.seas.harvard.edu/annotated-transformer
 """
 
-def load_or_train_model(vocab, environment, config):
+def launch(vocab, config):
     model_path = str(config["configuration_path"]["model_path"])+str(config["configuration_path"]["model_prefix"])+str(config["configuration_path"]["model_suffix"])
     if not exists(model_path):
-        train_model(vocab, environment, config)
+        train_model(vocab, config)
 
     model = NMT(vocab, config)
     model.load_state_dict(torch.load(model_path))
     return model
 
 
-def train_model(vocab, environment, config):
+def train_model(vocab, config):
     if config["learning_config"]["distributed"]:
         train_distributed_model(vocab, config)
     else:
@@ -40,7 +40,6 @@ def train_model(vocab, environment, config):
             gpu=0,
             ngpus_per_node=1,
             vocab=vocab,
-            environment=environment,
             config=config,
             model_saving_strategy=True,
             is_distributed=False
@@ -68,7 +67,7 @@ class TrainState:
     tokens: int = 0         # total # of tokens processed
 
 
-def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_strategy=False, is_distributed=False):
+def train_worker(gpu, ngpus_per_node, vocab, config, model_saving_strategy=False, is_distributed=False):
 
     persist_learning_measure = config["learning_config"]["persist_learning_measure"]
 
@@ -101,7 +100,6 @@ def train_worker(gpu, ngpus_per_node, vocab, environment, config, model_saving_s
     # BATCH SAMPLING
     train_dataloader, valid_dataloader = create_dataloaders(
         vocab,
-        environment,
         gpu,
         english_output=config["learning_config"]["english_output"],
         application_path=config["configuration_path"]["application_path"],

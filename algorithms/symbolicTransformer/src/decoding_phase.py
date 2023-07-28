@@ -21,7 +21,7 @@ from common.output_decoder import greedy_decode, beam_search
 from common.metrics.bleu_score import Translation
 
 
-def run_inference(config):
+def run_inference(config, app):
     today = d_date()
     path = "../../../common/output/decoding_scores_"+today+".csv"
     filepath = Path(path)
@@ -30,7 +30,7 @@ def run_inference(config):
     hypothesis_beam = None
     estimation_beam = None
     limit = config["inference_decoding"]["max_number_of_inferences"]
-    is_beam_search = learning_configuration["inference_decoding"]["beam_search"]
+    is_beam_search = config["inference_decoding"]["beam_search"]
     formated_test_dataset = []
     results = []
     df_scores = pandas.DataFrame({
@@ -39,7 +39,10 @@ def run_inference(config):
         'precision': None,
         'bleu': None,
         'bp': None,
-        'trigram': None
+        'unigram': None,
+        'bigram': None,
+        'trigram': None,
+        'fourgram': None
     }, index=[0])
 
     # Load Vocabulary
@@ -53,7 +56,7 @@ def run_inference(config):
     # Load test set
     test_dataset = retrieve_conte_dataset(
         EnvType.TEST.value,
-        application_path,
+        app,
         config["configuration_path"]["selected_db"],
         Dialect.LSF,
         vocab.is_english_output, False, 10000)
@@ -88,14 +91,14 @@ def run_inference(config):
             hypothesis_beam, estimation_beam = beam_search(
                 model,
                 data_val_batch,
-                beam_size=int(learning_configuration["inference_decoding"]['beam-size']),
-                max_decoding_time_step=int(learning_configuration["inference_decoding"]['max-decoding-time-step'])
+                beam_size=int(config["inference_decoding"]['beam-size']),
+                max_decoding_time_step=int(config["inference_decoding"]['max-decoding-time-step'])
             )
 
         hypothesis_greedy, estimation_greedy = greedy_decode(
             model,
             data_val_batch,
-            learning_configuration["learning_config"]["max_padding"]
+            config["learning_config"]["max_padding"]
         )
 
         # SCORING
@@ -137,5 +140,5 @@ if __name__ == '__main__':
         learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
-    used_model, inferred_data = run_inference(config=learning_configuration)
+    used_model, inferred_data = run_inference(config=learning_configuration, app=application_path)
     # plot_attention_maps(used_model, inferred_data, learning_configuration)

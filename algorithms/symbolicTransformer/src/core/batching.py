@@ -1,5 +1,6 @@
 import torch
 import pandas
+import random
 
 from torch.nn.functional import pad
 from torchtext.data.functional import to_map_style_dataset
@@ -98,18 +99,26 @@ def create_dataloaders(vocab, device, english_output, application_path, selected
         # Dataset that will do the batches
         complete = retrieve_conte_dataset(EnvType.TRAINING.value, application_path, selected_db, vocab.dialect_selection, vocab.is_english_output, vocab.multi_source, vocab.row_limit)
 
+        # bigrams
         if vocab.join_vocab:
             joined_ds = []
             for i in range(1, len(complete)):
                 previous = i-1
                 current_txt = complete[previous]
-                current_txt[0] = current_txt[0]+complete[i][0]
-                current_txt[1] = current_txt[1]+complete[i][1]
-                current_txt[2] = current_txt[2]+complete[i][2]
+                current_txt[0] = current_txt[0]+" "+complete[i][0]
+                current_txt[1] = current_txt[1]+" "+complete[i][1]
+                current_txt[2] = current_txt[2]+" "+complete[i][2]
 
                 joined_ds.append(current_txt)
         else:
             joined_ds = complete
+
+        # unigrams
+        if vocab.join_vocab:
+            joined_ds = joined_ds + complete
+
+        # shuffling
+        random.shuffle(joined_ds)
 
         # sub-select from target mode
         if english_output:

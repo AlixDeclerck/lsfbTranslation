@@ -127,6 +127,7 @@ class Vocab:
             We construct the vocabulary with valid glosses
         """
         special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0]), str(Tag.UNKNOWN.value[0])]
+        # special_tag = [str(Tag.START.value[0]), str(Tag.STOP.value[0]), str(Tag.BLANK.value[0])]
         learning_corpus = []
         for env in EnvType:
             learning_corpus += retrieve_conte_dataset(env.value, application_path, selected_db, self.vocab_dialect, self.is_english_output, self.multi_source, self.row_limit)

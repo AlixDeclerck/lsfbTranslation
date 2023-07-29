@@ -96,8 +96,8 @@ def data_preparation(a_list, shuffling=False, join_data=False):
             previous = training_set[i-1]
             current = training_set[i]
             if current[0] == (int(previous[0])+1):
-                new_row[0] = previous[1][0]+" "+current[1][0]
-                new_row[1] = previous[1][1]+" "+current[1][1]
+                new_row[0] = str(previous[1][0])+" "+str(current[1][0])
+                new_row[1] = str(previous[1][1])+" "+str(current[1][1])
                 new_tab = [i, numpy.array([new_row[0], new_row[1]])]
                 augmented_training_set.append(new_tab)
 
@@ -106,8 +106,15 @@ def data_preparation(a_list, shuffling=False, join_data=False):
         augmented_training_set = training_set
 
     # remove index
-    prepared_training = pandas.DataFrame(augmented_training_set)[1].tolist()
-    prepared_validation = pandas.DataFrame(validation_set)[1].tolist()
+    prepared_training = []
+    for k in augmented_training_set:
+        data = [str(k[1][0]), str(k[1][1])]
+        prepared_training.append(data)
+
+    prepared_validation = []
+    for k in validation_set:
+        data = [str(k[1][0]), str(k[1][1])]
+        prepared_validation.append(data)
 
     if shuffling:
         numpy.random.shuffle(prepared_training)

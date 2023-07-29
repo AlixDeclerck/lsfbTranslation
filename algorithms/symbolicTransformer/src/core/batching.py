@@ -7,7 +7,7 @@ from torchtext.data.functional import to_map_style_dataset
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
 
-from algorithms.symbolicTransformer.src.functionnal.tuning import tiers_list
+from algorithms.symbolicTransformer.src.functionnal.tuning import data_preparation
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
 from common.output_decoder import subsequent_mask
 from common.constant import Tag, Corpus, Dialect, EnvType
@@ -99,34 +99,14 @@ def create_dataloaders(vocab, device, english_output, application_path, selected
         # Dataset that will do the batches
         complete = retrieve_conte_dataset(EnvType.TRAINING.value, application_path, selected_db, vocab.dialect_selection, vocab.is_english_output, vocab.multi_source, vocab.row_limit)
 
-        # bigrams
-        if vocab.join_vocab:
-            joined_ds = []
-            for i in range(1, len(complete)):
-                previous = i-1
-                current_txt = complete[previous]
-                current_txt[0] = current_txt[0]+" "+complete[i][0]
-                current_txt[1] = current_txt[1]+" "+complete[i][1]
-                current_txt[2] = current_txt[2]+" "+complete[i][2]
-
-                joined_ds.append(current_txt)
-        else:
-            joined_ds = complete
-
-        # unigrams
-        if vocab.join_vocab:
-            joined_ds = joined_ds + complete
-
-        # shuffling
-        random.shuffle(joined_ds)
-
         # sub-select from target mode
         if english_output:
-            full = pandas.DataFrame(joined_ds, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
         else:
-            full = pandas.DataFrame(joined_ds, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
+            full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
-        train_iter, valid_iter = tiers_list(full, shuffling)
+        # prepare data for learning
+        train_iter, valid_iter = data_preparation(full, shuffling, vocab.join_vocab)
 
         # DistributedSampler needs a dataset len()
         train_iter_map = to_map_style_dataset(train_iter)

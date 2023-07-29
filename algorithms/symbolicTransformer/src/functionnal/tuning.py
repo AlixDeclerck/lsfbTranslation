@@ -1,4 +1,5 @@
 import torch
+import pandas
 import yaml
 import numpy
 import torch.nn as nn
@@ -60,15 +61,58 @@ def split_list(a_list):
     half = len(a_list)//2
     return a_list[:half], a_list[half:]
 
-def tiers_list(a_list, shuffling=False):
+def data_preparation(a_list, shuffling=False, join_data=False):
+    """
+    Divide the data into 1/3 validation and 2/3 training
+    :param a_list: list of datas
+    :param shuffling: shuffle data at the end
+    :param join_data: data augmentation by joining
+    :return: a training set and a validation set
+    """
+
     tier = len(a_list)//3
+    full_learning_set = []
+
+    # add index to keep sentences context
+    for i, k in enumerate(a_list):
+        row = [i, k]
+        full_learning_set.append(row)
+
+    # split into training and validation
     if shuffling:
-        numpy.random.shuffle(a_list)
+        numpy.random.shuffle(full_learning_set)
 
-    one_tiers_list = a_list[:tier]
-    two_tiers_list = a_list[tier:]
+    validation_set = full_learning_set[:tier]  # one tiers
+    training_set = full_learning_set[tier:]  # two tiers
 
-    return two_tiers_list, one_tiers_list
+    # sort training set
+    training_set.sort()
+
+    # data augmentation on training set (group phrases)
+    if join_data:
+        augmented_training_set = []
+        for i in range(1, len(training_set)):
+            new_row = [[], []]
+            previous = training_set[i-1]
+            current = training_set[i]
+            if current[0] == (int(previous[0])+1):
+                new_row[0] = previous[1][0]+" "+current[1][0]
+                new_row[1] = previous[1][1]+" "+current[1][1]
+                new_tab = [i, numpy.array([new_row[0], new_row[1]])]
+                augmented_training_set.append(new_tab)
+
+        augmented_training_set = augmented_training_set + training_set
+    else:
+        augmented_training_set = training_set
+
+    # remove index
+    prepared_training = pandas.DataFrame(augmented_training_set)[1].tolist()
+    prepared_validation = pandas.DataFrame(validation_set)[1].tolist()
+
+    if shuffling:
+        numpy.random.shuffle(prepared_training)
+
+    return prepared_training, prepared_validation
 
 def show_example(fn, args=[]):
     if RUN_EXAMPLES:

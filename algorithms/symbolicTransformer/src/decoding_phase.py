@@ -21,7 +21,7 @@ from common.output_decoder import greedy_decode, beam_search
 from common.metrics.bleu_score import Translation
 
 
-def run_inference(config, app):
+def run_inference(config, app, save_file):
     today = d_date()
     path = "../../../common/output/decoding_scores_"+today+".csv"
     filepath = Path(path)
@@ -116,11 +116,16 @@ def run_inference(config, app):
             estimation_greedy,
             estimation_beam])
 
-        if i+1 == limit:
+        if not save_file:
+            return model, results
+
+        elif i+1 == limit:
             df_scores.to_csv(filepath)
             return model, results
 
-    df_scores.to_csv(filepath)
+    if save_file:
+        df_scores.to_csv(filepath)
+
     return model, results
 
 
@@ -140,5 +145,5 @@ if __name__ == '__main__':
         learning_configuration["learning_config"]["using_gpu"] = False
 
     # INFERENCE
-    used_model, inferred_data = run_inference(config=learning_configuration, app=application_path)
+    used_model, inferred_data = run_inference(config=learning_configuration, app=application_path, save_file=True)
     # plot_attention_maps(used_model, inferred_data, learning_configuration)

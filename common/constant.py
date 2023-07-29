@@ -57,6 +57,9 @@ class Case(Enum):
     FIFTH = "5", "E"
     SIXTH = "6", "F"
 
+def current_session():
+    return Case.FIRST
+
 class SubCase(Enum):
     """
         To choose the file where inference is and write the title

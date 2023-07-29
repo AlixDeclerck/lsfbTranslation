@@ -27,7 +27,7 @@ hyper_parameters:
     KL_divergence_loss:           True                               # True Kullback-Leibler divergence loss criterion, False similarity
     layers_encoder:               16                                 # layers to understand the context
     layers_decoder:               16                                 # layers to perform the translation
-    num_epochs:                   120                                # Annotated transformer choose 8
+    num_epochs:                   150                                # Annotated transformer choose 8
     weight_decay:                 0                                  # L2 penalty #
     target_label_smoothing:       0.5                                # velocity of label smoothing
 
@@ -44,7 +44,7 @@ inference_decoding:
     beam-size:                    10                                 # number of tree branches
     max-decoding-time-step:       70                                 # number of iterations during inference
     persist-approx:               True                               # False mean syntax analysis return text on screen, True mean saving in database
-    max_number_of_inferences:     5                              # Number of phrases inferred
+    max_number_of_inferences:     500                             # Number of phrases inferred
 
 learning_config:
     join_vocab:                   True                               # To merge earch parrallels into two phrases

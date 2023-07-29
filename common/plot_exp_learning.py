@@ -9,12 +9,12 @@ import os
 import matplotlib.pyplot as plt
 import pandas
 
-from common.constant import Case, d_date
+from common.constant import current_session, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 28
-case = Case.SECOND
+NUMBER_OF_TRAINING_RESULTS = 55
+case = current_session()
 session = "session d'analyse"
 add = "SF_"
 experimentation_detail = "Traductions LSF"

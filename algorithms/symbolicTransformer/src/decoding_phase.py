@@ -6,24 +6,26 @@ Usage:
     decoding_phase.py cpu --app-path=<file>
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import pandas
 import torch
 from docopt import docopt
+
 from algorithms.symbolicTransformer.src.core.architecture import NMT
 from algorithms.symbolicTransformer.src.core.batching import Batch, collate_batch
-from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
-from algorithms.symbolicTransformer.src.functionnal.attention_visualization import plot_attention_maps
-from common.constant import EnvType, Dialect, Corpus, HypothesisType, d_date
-from common.output_decoder import greedy_decode, beam_search
+from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
+from common.constant import EnvType, Dialect, Corpus, HypothesisType, d_date, current_session
 from common.metrics.bleu_score import Translation
+from common.output_decoder import greedy_decode, beam_search
 
 
 def run_inference(config, app, save_file):
     today = d_date()
-    path = "../../../common/output/decoding_scores_"+today+".csv"
+    case = current_session()
+    path = "../../../common/output/decoding_scores_"+today+"_"+str(case.value[0])+".csv"
     filepath = Path(path)
     filepath.parent.mkdir(parents=True, exist_ok=True)
 

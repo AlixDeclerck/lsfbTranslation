@@ -173,7 +173,15 @@ def meteor(reference, candidate, print_details=False, detailed_result=False):
     if len(reference_set.intersection(candidate_set)) == 0:
         if print_details:
             print('Reference and candidate sentences have no matching unigrams.')
-        return 0.0
+        if not detailed_result:
+            return 0.0
+        else:
+            return dict(
+                score=0,
+                precision=None,
+                recall=None,
+                f_mean=None
+            )
 
     P, R = _unigram_precision_and_recall(reference_unigrams, candidate_unigrams)
     f_mean = _harmonic_mean(P, R)

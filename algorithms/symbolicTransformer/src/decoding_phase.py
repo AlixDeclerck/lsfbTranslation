@@ -41,6 +41,8 @@ def run_inference(config, app, save_file):
         'precision': None,
         'bleu': None,
         'bp': None,
+        'hypothesis_length': None,
+        'reference_length': None,
         'unigram': None,
         'bigram': None,
         'trigram': None,

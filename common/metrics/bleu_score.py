@@ -13,10 +13,13 @@ class Translation:
         self.source_text = source_text
         self.reference = [[reference]]
         self.approximated_hypothesis = self.approximate()
+        self.approximated_hypothesis_meteor = pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0], detailed_result=True)
         self.beam_hypothesis = None
         self.beam_score = None
+        self.beam_meteor = None
         self.greedy_hypothesis = None
         self.greedy_score = None
+        self.greedy_meteor = None
 
     def add_hypothesis(self, hypothesis_type, hypothesis):
         h = hypothesis[0][1:-1]
@@ -29,9 +32,11 @@ class Translation:
         if HypothesisType.BEAM == hypothesis_type:
             self.beam_score = result
             self.beam_hypothesis = hs
+            self.beam_meteor = pymeteor.meteor(self.reference[0][0], self.beam_hypothesis, detailed_result=True)
         elif HypothesisType.GREEDY == hypothesis_type:
             self.greedy_score = result
             self.greedy_hypothesis = hs
+            self.greedy_meteor = pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis, detailed_result=True)
         else:
             return result
 
@@ -79,8 +84,8 @@ class Translation:
             bigram=self.process_precision_n(2, self.approximated_hypothesis["text"][0]),
             trigram=self.process_precision_n(3, self.approximated_hypothesis["text"][0]),
             fourgram=self.process_precision_n(4, self.approximated_hypothesis["text"][0]),
-            meteor=pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0]),
-            detailed_meteor=pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0], detailed_result=True)
+            meteor=self.approximated_hypothesis_meteor["score"],
+            detailed_meteor=self.approximated_hypothesis_meteor
         )
 
         if self.beam_score is not None:
@@ -91,8 +96,8 @@ class Translation:
                 bigram=self.process_precision_n(2, self.beam_hypothesis),
                 trigram=self.process_precision_n(3, self.beam_hypothesis),
                 fourgram=self.process_precision_n(4, self.beam_hypothesis),
-                meteor=pymeteor.meteor(self.reference[0][0], self.beam_hypothesis),
-                detailed_meteor=pymeteor.meteor(self.reference[0][0], self.beam_hypothesis, detailed_result=True)
+                meteor=self.beam_meteor["score"],
+                detailed_meteor=self.beam_meteor
             )
 
         if self.greedy_score is not None:
@@ -103,8 +108,8 @@ class Translation:
                 bigram=self.process_precision_n(2, self.greedy_hypothesis),
                 trigram=self.process_precision_n(3, self.greedy_hypothesis),
                 fourgram=self.process_precision_n(4, self.greedy_hypothesis),
-                meteor=pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis),
-                detailed_meteor=pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis, detailed_result=True)
+                meteor=self.greedy_meteor["score"],
+                detailed_meteor=self.greedy_meteor
             )
 
         print("\n")
@@ -112,7 +117,7 @@ class Translation:
     def export(self, title, dataframe):
         dataframe.loc[len(dataframe.index)] = [
             title, self.source_text, self.reference[0][0],
-            None, None, None, None, None, None, None, None
+            None, None, None, None, None, None, None, None, None, None
         ]
         dataframe.loc[len(dataframe.index)] = [
             "Approximation",
@@ -120,12 +125,14 @@ class Translation:
             self.approximated_hypothesis["precisions"],
             round(self.approximated_hypothesis["bleu"], 2),
             round(self.approximated_hypothesis["brevity_penalty"], 2),
+            self.approximated_hypothesis["translation_length"],
+            self.approximated_hypothesis["reference_length"],
             self.process_precision_n(1, self.approximated_hypothesis["text"][0]),
             self.process_precision_n(2, self.approximated_hypothesis["text"][0]),
             self.process_precision_n(3, self.approximated_hypothesis["text"][0]),
             self.process_precision_n(4, self.approximated_hypothesis["text"][0]),
-            pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0]),
-            pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0], detailed_result=True)
+            self.approximated_hypothesis_meteor["score"],
+            self.approximated_hypothesis_meteor
         ]
 
         if self.beam_score is not None:
@@ -135,12 +142,14 @@ class Translation:
                 self.beam_score["precisions"],
                 round(self.beam_score["bleu"], 2),
                 round(self.beam_score["brevity_penalty"], 2),
+                self.beam_score["translation_length"],
+                self.beam_score["reference_length"],
                 self.process_precision_n(1, self.beam_hypothesis),
                 self.process_precision_n(2, self.beam_hypothesis),
                 self.process_precision_n(3, self.beam_hypothesis),
                 self.process_precision_n(4, self.beam_hypothesis),
-                pymeteor.meteor(self.reference[0][0], self.beam_hypothesis),
-                pymeteor.meteor(self.reference[0][0], self.beam_hypothesis, detailed_result=True)
+                self.beam_meteor["score"],
+                self.beam_meteor
             ]
 
         dataframe.loc[len(dataframe.index)] = [
@@ -149,12 +158,14 @@ class Translation:
             self.greedy_score["precisions"],
             round(self.greedy_score["bleu"], 2),
             round(self.greedy_score["brevity_penalty"], 2),
+            self.greedy_score["translation_length"],
+            self.greedy_score["reference_length"],
             self.process_precision_n(1, self.greedy_hypothesis),
             self.process_precision_n(2, self.greedy_hypothesis),
             self.process_precision_n(3, self.greedy_hypothesis),
             self.process_precision_n(4, self.greedy_hypothesis),
-            pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis),
-            pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis, detailed_result=True)
+            self.greedy_meteor["score"],
+            self.greedy_meteor
         ]
         return dataframe
 

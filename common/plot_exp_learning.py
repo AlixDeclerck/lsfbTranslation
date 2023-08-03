@@ -15,9 +15,9 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 46
 case = current_session()
-session = "session d'analyse"
+session = "Ligne de base"
 add = "SF_"
-experimentation_detail = "Traductions LSF"
+experimentation_detail = ""
 
 if __name__ == '__main__':
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "algorithms/symbolicTransformer/src/output/"
     filename = "img/learning_curves_ST_"+today+"_"+str(add)+str(case.value[1])+".png"
-    title = "Apprentissage : "+session+", cas n°"+str(case.value[0])+" : "+experimentation_detail
+    title = "Apprentissage : "+session+", cas n°"+str(case.value[0])+experimentation_detail
 
     # retrieve loss
     df = pandas.read_csv(str(path)+"learning_symbolicTransformer_french_"+today+"_"+str(add)+str(case.value[1])+".csv")
@@ -67,20 +67,25 @@ if __name__ == '__main__':
 
     # labels
     training_set = str(validation_column.values.tolist()[0]).split(" : ")[1][1:-2]
-    label_training = "entrainement "+training_set+" "
+    label_training = "Erreur d'entrainement par époques"
     score = "{:.3f}".format(pocket_eval[-1])
-    label_pocket = "meilleure erreur de validation : "+score
-    label_validation = "erreur en validation par epochs"
-    label_lr = "Taux d'apprentissage * 10 000"
+    label_pocket = "Meilleure erreur de validation : "+score
+    label_validation = "Erreur de validation par époques"
+    taux_lr = "Taux d'apprentissage * 10 000"
+    label_lr = "Taille du saut lors de l'optimisation"
 
     # display loss curve
-    plt.plot(range(len(res_eval)), res_eval, c=str(config["graphics"]["color4"]), label=label_validation)
-    plt.plot(range(len(pocket_eval)), pocket_eval, c=str(config["graphics"]["color2"]), label=label_pocket)
-    plt.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label=label_training)
-    plt.plot(range(len(res_lr)), res_lr, c=str(config["graphics"]["color3"]), label=label_lr)
-    plt.legend()
-    plt.ylabel("Divergence de Kullback-Leibler (Erreur)")
-    plt.xlabel("Epoques")
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.plot(range(len(res_eval)), res_eval, c=str(config["graphics"]["color4"]), label=label_validation)
+    ax1.plot(range(len(pocket_eval)), pocket_eval, c=str(config["graphics"]["color2"]), label=label_pocket)
+    ax1.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label=label_training)
+    ax2.plot(range(len(res_lr)), res_lr, c=str(config["graphics"]["color3"]), label=label_lr)
+    ax1.legend()
+    plt.legend(loc='center right')
     plt.title(title)
+    ax1.set_xlabel("Epoques")
+    ax1.set_ylabel("Divergence de Kullback-Leibler (Erreur)")
+    ax2.set_ylabel(taux_lr)
     plt.savefig(filename)
     plt.show()

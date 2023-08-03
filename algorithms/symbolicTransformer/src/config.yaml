@@ -25,8 +25,8 @@ hyper_parameters:
     feed_forward_dimension:       2048                               # the positionwise forward dimension
     h_attention_layers:           8                                  # h=8 parallel attention layers
     KL_divergence_loss:           True                               # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               16                                  # layers to understand the context
-    layers_decoder:               16                                  # layers to perform the translation
+    layers_encoder:               8                                  # layers to understand the context
+    layers_decoder:               24                                  # layers to perform the translation
     num_epochs:                   80                                 # Annotated transformer choose 8 (170 max)
     weight_decay:                 0                                  # L2 penalty #
     target_label_smoothing:       0.5                                # velocity of label smoothing
@@ -55,7 +55,7 @@ learning_config:
     english_output:               False                              # True if "EN", False if "GLOSS"
     distributed:                  False                              # True if Several processing unit
     fast_text_corpus:             True                               # Spacy if false
-    max_padding:                  72                                 # padding on tensors, originally 72
+    max_padding:                  32                                 # padding on tensors, originally 72
     output_max_words:             16                                 # originally 80
     persist_learning_measure:     False                              # Write measures in database
     test_division:                10                                  # coefficient k for the corpus split train vs test where 1/k are test items

@@ -100,16 +100,13 @@ if __name__ == '__main__':
 
     df['greedy'] = greedy_bp
 
-    # ax = df.plot.hist(bins=12, alpha=0.5)
-    #
-    # plt.title("pénalité de concision")
-    # plt.savefig(img_bp)
-    # plt.show()
+    ax = df.plot.hist(bins=12, alpha=0.5)
 
-    # df_ngrams_bars.plot(x='ordre', kind='bar', stacked=False, title='Mesure de traduction par n-grammes', color=["#d1ade0", "#fec5d6", "#f8e392", "#9be1eb"])
+    plt.title("pénalité de concision")
+    plt.savefig(img_bp)
+    plt.show()
 
-    # dataframe sample data
-    # numpy.random.seed(19680801)
+    df_ngrams_bars.plot(x='ordre', kind='bar', stacked=False, title='Mesure de traduction par n-grammes', color=["#d1ade0", "#fec5d6", "#f8e392", "#9be1eb"])
 
     # score by length
     score_order_approx = {"bigram": [], "trigram": [], "fourgram": [], "fivegram": [], "sixgram": [], "others": []}
@@ -164,15 +161,19 @@ if __name__ == '__main__':
     colors = ["#fec5d6", "#f8e392", "#9be1eb"]
     labels = ["Beam search", "Greedy search", "Approximation"]
 
-    ax0.hist(scores_by_orders_2, n_bins, density=True, histtype='bar', color=colors, label=labels)
+    ax0.hist(scores_approx["reference_length"], n_bins, density=True, histtype='bar', color="#fec5d6")
     ax0.legend(prop={'size': 10})
-    ax0.set_title('bigrammes')
+    ax0.set_title('distribution des références')
+
+    # ax0.hist(scores_by_orders_2, n_bins, density=True, histtype='bar', color=colors, label=labels)
+    # ax0.legend(prop={'size': 10})
+    # ax0.set_title('bigrammes')
 
     # ax0.hist(meteor, n_bins, density=True, histtype='bar', color=colors, label=labels)
     # ax0.legend(prop={'size': 10})
     # ax0.set_title('meteor scores')
 
-    ax1.hist(scores_by_orders_3, n_bins, density=True, histtype='bar', color=colors)
+    ax1.hist(scores_by_orders_3, n_bins, density=True, histtype='bar', color=colors, label=labels)
     ax1.legend(prop={'size': 10})
     ax1.set_title('trigrammes')
 

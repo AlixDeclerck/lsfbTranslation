@@ -94,6 +94,7 @@ def run_inference(config, app, save_file):
 
         # DECODING
         if is_beam_search:
+            beam_search(model, data_val_batch, beam_size=5, max_decoding_time_step=24)
             hypothesis_beam, estimation_beam = beam_search(
                 model,
                 data_val_batch,
@@ -101,6 +102,7 @@ def run_inference(config, app, save_file):
                 max_decoding_time_step=int(config["inference_decoding"]['max-decoding-time-step'])
             )
 
+        greedy_decode(model, data_val_batch, config["learning_config"]["max_padding"])
         hypothesis_greedy, estimation_greedy = greedy_decode(
             model,
             data_val_batch,

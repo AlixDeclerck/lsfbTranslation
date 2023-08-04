@@ -18,7 +18,7 @@ from algorithms.symbolicTransformer.src.core.batching import Batch, collate_batc
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType, Dialect, Corpus, HypothesisType, d_date, current_session
-from common.metrics.bleu_score import Translation
+from common.metrics.processing_score import Translation
 from common.output_decoder import greedy_decode, beam_search
 
 
@@ -48,7 +48,11 @@ def run_inference(config, app, save_file):
         'trigram': None,
         'fourgram': None,
         'score_meteor': None,
-        'detailed_meteor': None
+        'detailed_meteor': None,
+        'tp': None,
+        'fp': None,
+        'tn': None,
+        'fn': None
     }, index=[0])
 
     # Load Vocabulary

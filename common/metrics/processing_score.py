@@ -3,7 +3,7 @@ import spacy
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from algorithms.syntax_analysis.with_spacy.phrases import SpacyPhrase
 from common.constant import HypothesisType, Tag, Hypothesis
-from common.metrics import pymeteor
+from common.metrics import pymeteor, roc
 
 class Translation:
 
@@ -14,12 +14,15 @@ class Translation:
         self.reference = [[reference]]
         self.approximated_hypothesis = self.approximate()
         self.approximated_hypothesis_meteor = pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0], detailed_result=True)
+        self.approximated_roc = roc.process_confusion_dict(source=source_text, reference=self.reference[0][0], hypothesis=self.approximated_hypothesis["text"][0])
         self.beam_hypothesis = None
         self.beam_score = None
         self.beam_meteor = None
+        self.beam_roc = None
         self.greedy_hypothesis = None
         self.greedy_score = None
         self.greedy_meteor = None
+        self.greedy_roc = None
 
     def add_hypothesis(self, hypothesis_type, hypothesis):
         h = hypothesis[0][1:-1]
@@ -33,10 +36,12 @@ class Translation:
             self.beam_score = result
             self.beam_hypothesis = hs
             self.beam_meteor = pymeteor.meteor(self.reference[0][0], self.beam_hypothesis, detailed_result=True)
+            self.beam_roc = roc.process_confusion_dict(source=self.source_text, reference=self.reference[0][0], hypothesis=self.beam_hypothesis)
         elif HypothesisType.GREEDY == hypothesis_type:
             self.greedy_score = result
             self.greedy_hypothesis = hs
             self.greedy_meteor = pymeteor.meteor(self.reference[0][0], self.greedy_hypothesis, detailed_result=True)
+            self.greedy_roc = roc.process_confusion_dict(source=self.source_text, reference=self.reference[0][0], hypothesis=self.greedy_hypothesis)
         else:
             return result
 
@@ -72,8 +77,8 @@ class Translation:
         return round(res, 2)
 
     @staticmethod
-    def print_line(txt, score, unigram, bigram, trigram, fourgram, meteor, detailed_meteor):
-        print(txt + "| precision : " + str(score["precisions"]) + " | score BLEU : " + str(round(score["bleu"], 2)) + " | BP : " + str(round(score["brevity_penalty"], 2)) + " | unigram : " + str(unigram) + " | bigram : " + str(bigram) + " | trigram : " + str(trigram) + " | 4gram : " + str(fourgram) + " | meteor : " + str(meteor) + " | detailed_meteor : " + str(detailed_meteor))
+    def print_line(txt, score, unigram, bigram, trigram, fourgram, meteor, detailed_meteor, roc_confusion):
+        print(txt + "| precision : " + str(score["precisions"]) + " | score BLEU : " + str(round(score["bleu"], 2)) + " | BP : " + str(round(score["brevity_penalty"], 2)) + " | unigram : " + str(unigram) + " | bigram : " + str(bigram) + " | trigram : " + str(trigram) + " | 4gram : " + str(fourgram) + " | meteor : " + str(meteor) + " | detailed_meteor : " + str(detailed_meteor) + " | roc confusion : " + str(roc_confusion))
 
     def display_translation(self, title):
         print(title+str(self.source_text)+"| reference : "+str(self.reference[0][0]))
@@ -85,7 +90,8 @@ class Translation:
             trigram=self.process_precision_n(3, self.approximated_hypothesis["text"][0]),
             fourgram=self.process_precision_n(4, self.approximated_hypothesis["text"][0]),
             meteor=self.approximated_hypothesis_meteor["score"],
-            detailed_meteor=self.approximated_hypothesis_meteor
+            detailed_meteor=self.approximated_hypothesis_meteor,
+            roc_confusion=self.approximated_roc
         )
 
         if self.beam_score is not None:
@@ -97,7 +103,8 @@ class Translation:
                 trigram=self.process_precision_n(3, self.beam_hypothesis),
                 fourgram=self.process_precision_n(4, self.beam_hypothesis),
                 meteor=self.beam_meteor["score"],
-                detailed_meteor=self.beam_meteor
+                detailed_meteor=self.beam_meteor,
+                roc_confusion=self.beam_roc
             )
 
         if self.greedy_score is not None:
@@ -109,7 +116,8 @@ class Translation:
                 trigram=self.process_precision_n(3, self.greedy_hypothesis),
                 fourgram=self.process_precision_n(4, self.greedy_hypothesis),
                 meteor=self.greedy_meteor["score"],
-                detailed_meteor=self.greedy_meteor
+                detailed_meteor=self.greedy_meteor,
+                roc_confusion=self.greedy_roc
             )
 
         print("\n")
@@ -117,7 +125,7 @@ class Translation:
     def export(self, title, dataframe):
         dataframe.loc[len(dataframe.index)] = [
             title, self.source_text, self.reference[0][0],
-            None, None, None, None, None, None, None, None, None, None
+            None, None, None, None, None, None, None, None, None, None, None, None, None, None
         ]
         dataframe.loc[len(dataframe.index)] = [
             "Approximation",
@@ -132,7 +140,11 @@ class Translation:
             self.process_precision_n(3, self.approximated_hypothesis["text"][0]),
             self.process_precision_n(4, self.approximated_hypothesis["text"][0]),
             self.approximated_hypothesis_meteor["score"],
-            self.approximated_hypothesis_meteor
+            self.approximated_hypothesis_meteor,
+            self.approximated_roc["tp"],
+            self.approximated_roc["fp"],
+            self.approximated_roc["tn"],
+            self.approximated_roc["fn"]
         ]
 
         if self.beam_score is not None:
@@ -149,7 +161,11 @@ class Translation:
                 self.process_precision_n(3, self.beam_hypothesis),
                 self.process_precision_n(4, self.beam_hypothesis),
                 self.beam_meteor["score"],
-                self.beam_meteor
+                self.beam_meteor,
+                self.beam_roc["tp"],
+                self.beam_roc["fp"],
+                self.beam_roc["tn"],
+                self.beam_roc["fn"]
             ]
 
         dataframe.loc[len(dataframe.index)] = [
@@ -165,7 +181,11 @@ class Translation:
             self.process_precision_n(3, self.greedy_hypothesis),
             self.process_precision_n(4, self.greedy_hypothesis),
             self.greedy_meteor["score"],
-            self.greedy_meteor
+            self.greedy_meteor,
+            self.greedy_roc["tp"],
+            self.greedy_roc["fp"],
+            self.greedy_roc["tn"],
+            self.greedy_roc["fn"]
         ]
         return dataframe
 

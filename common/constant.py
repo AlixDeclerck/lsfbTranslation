@@ -57,9 +57,6 @@ class Case(Enum):
     FIFTH = "5", "E"
     SIXTH = "6", "F"
 
-def current_session():
-    return Case.FIRST
-
 class SubCase(Enum):
     """
         To choose the file where inference is and write the title
@@ -67,7 +64,6 @@ class SubCase(Enum):
     """
     FIRST = "1, sous cas 1", "A1"
     SECOND = "1, sous cas 2", "A2"
-
 
 class AttentionType(Enum):
     """
@@ -77,7 +73,6 @@ class AttentionType(Enum):
     DECODER_SELF = "Decoder self"
     DECODER_SRC = "Decoder src"
 
-
 class HypothesisType(Enum):
     """
         Types of hypothesis
@@ -86,7 +81,6 @@ class HypothesisType(Enum):
     GREEDY = "Greedy decoding"
     APPROX = "Approximation"
 
-
 class Translation:
 
     def __init__(self, source_text, beam_hypothesis, greedy_hypothesis, reference):
@@ -94,3 +88,6 @@ class Translation:
         self.beam_hypothesis = beam_hypothesis.split(" ")
         self.greedy_hypothesis = greedy_hypothesis.split(" ")
         self.reference = reference
+
+def current_session():
+    return Case.THIRD

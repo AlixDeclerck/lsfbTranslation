@@ -90,4 +90,4 @@ class Translation:
         self.reference = reference
 
 def current_session():
-    return Case.THIRD
+    return Case.FIRST

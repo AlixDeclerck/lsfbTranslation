@@ -1,2 +1,0 @@
--- EPOCH (1) - (0,N) STEP
--- EPOCH (1) - (0,1) VALIDATION

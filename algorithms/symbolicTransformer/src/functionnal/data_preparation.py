@@ -1,12 +1,14 @@
 import os
 from os.path import exists
+
 import spacy
 import torch
 import torchtext
 import unidecode
 from torchtext.vocab import build_vocab_from_iterator
-from common.constant import Tag, Corpus, EnvType, Dialect
+
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_datas_from
+from common.constant import Tag, Corpus, EnvType, Dialect
 
 """
 This code was genuinely inspired by 
@@ -187,7 +189,6 @@ class Vocab:
             :param is_en: target configuration : english or glosses
             :return: target embeddings
         """
-        # corpus initialization
         if is_en:
             fast_text_corpus = torchtext.vocab.FastText(language='en')
             corpus_stoi = fast_text_corpus.stoi

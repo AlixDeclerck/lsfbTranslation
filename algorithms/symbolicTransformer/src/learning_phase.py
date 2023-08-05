@@ -9,11 +9,10 @@ Usage:
 import os
 
 from docopt import docopt
-from common.constant import EnvType
+
+from algorithms.symbolicTransformer.src.core.training import launch
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import Vocab
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from algorithms.symbolicTransformer.src.core.training import launch
-
 
 if __name__ == '__main__':
 

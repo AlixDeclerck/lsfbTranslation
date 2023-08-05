@@ -1,8 +1,10 @@
-import torch
-import pandas
-import yaml
 import numpy
+import torch
 import torch.nn as nn
+import yaml
+import datetime
+
+from common.metrics.processing_score import Translation
 
 RUN_EXAMPLES = True
 
@@ -120,6 +122,17 @@ def data_preparation(a_list, shuffling=False, join_data=False):
         numpy.random.shuffle(prepared_training)
 
     return prepared_training, prepared_validation
+
+def approximate_src(src):
+
+    print("approximate "+str(len(src))+" sources, start @ ", datetime.datetime.now())
+    updated_src = []
+    for i, s in enumerate(src):
+        us = [Translation.approximation(s[0]), s[1]]
+        updated_src.append(us)
+
+    print("approximate "+str(len(src))+" sources, end @ ", datetime.datetime.now())
+    return updated_src
 
 def show_example(fn, args=[]):
     if RUN_EXAMPLES:

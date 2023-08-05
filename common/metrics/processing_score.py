@@ -1,6 +1,5 @@
 import evaluate
 import spacy
-from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from algorithms.syntax_analysis.with_spacy.phrases import SpacyPhrase
 from common.constant import HypothesisType, Tag, Hypothesis
 from common.metrics import pymeteor, roc
@@ -12,7 +11,7 @@ class Translation:
         self.N = config["learning_config"]['output_max_words']
         self.source_text = source_text
         self.reference = [[reference]]
-        self.approximated_hypothesis = self.approximate()
+        self.approximated_hypothesis = self.update_approx()
         self.approximated_hypothesis_meteor = pymeteor.meteor(self.reference[0][0], self.approximated_hypothesis["text"][0], detailed_result=True)
         self.approximated_roc = roc.process_confusion_dict(source=source_text, reference=self.reference[0][0], hypothesis=self.approximated_hypothesis["text"][0])
         self.beam_hypothesis = None
@@ -45,13 +44,9 @@ class Translation:
         else:
             return result
 
-    def approximate(self):
-        nlp = spacy.load("fr_core_news_sm")
-        phrases = SpacyPhrase(nlp(self.source_text))
-        phrases.preprocessing()
-        phrases.handle_scenes()
-        phrases.grammar_handler()
-        output = Tag.START.value[0]+" "+phrases.handle_output(glosses=True).split("|")[0]+" "+Tag.STOP.value[0]
+    def update_approx(self):
+        approx = self.approximation(self.source_text)
+        output = Tag.START.value[0]+" "+approx+" "+Tag.STOP.value[0]
         hyp = Hypothesis(value=output.split(" "), score=0.0)
         return self.add_hypothesis(HypothesisType.APPROX, hyp)
 
@@ -75,6 +70,15 @@ class Translation:
             res = (p1 * p2 * p3 * p4)**(1/4)
 
         return round(res, 2)
+
+    @staticmethod
+    def approximation(src_txt):
+        nlp = spacy.load("fr_core_news_sm")
+        phrases = SpacyPhrase(nlp(src_txt))
+        phrases.preprocessing()
+        phrases.handle_scenes()
+        phrases.grammar_handler()
+        return phrases.handle_output(glosses=True).split("|")[0]
 
     @staticmethod
     def print_line(txt, score, unigram, bigram, trigram, fourgram, meteor, detailed_meteor, roc_confusion):
@@ -188,18 +192,3 @@ class Translation:
             self.greedy_roc["fn"]
         ]
         return dataframe
-
-
-if __name__ == '__main__':
-
-    cfg = load_config("../../algorithms/symbolicTransformer/src/config.yaml")
-
-    translation = Translation(
-        config=cfg,
-        source_text="Le roi se réjouit de la trouver innocente ,",
-        reference="ROI CONTENT COMPRENDRE SAVOIR ELLE INNOCENTE"
-    )
-
-    translation.add_hypothesis(HypothesisType.BEAM, Hypothesis(value=str(Tag.START.value[0]+" "+"ROI CONTENT"+" "+Tag.STOP.value[0]).split(" "), score=0.0))
-    translation.add_hypothesis(HypothesisType.GREEDY, Hypothesis(value=str(Tag.START.value[0]+" "+"ROI CONTENT ELLE"+" "+Tag.STOP.value[0]).split(" "), score=0.0))
-    translation.display_translation("Traduction de ")

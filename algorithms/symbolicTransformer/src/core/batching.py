@@ -1,16 +1,14 @@
-import torch
 import pandas
-import random
-
+import torch
 from torch.nn.functional import pad
-from torchtext.data.functional import to_map_style_dataset
-from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torchtext.data.functional import to_map_style_dataset
 
-from algorithms.symbolicTransformer.src.functionnal.tuning import data_preparation
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset
-from common.output_decoder import subsequent_mask
+from algorithms.symbolicTransformer.src.functionnal.tuning import data_preparation, approximate_src
 from common.constant import Tag, Corpus, Dialect, EnvType
+from common.output_decoder import subsequent_mask
 
 """
 The batching file contents are coming from :
@@ -56,7 +54,7 @@ def collate_batch(batch, vocab, device, max_padding=128, pad_id=Tag.BLANK.value[
     return src, tgt
 
 
-def create_dataloaders(vocab, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False, shuffling=False):
+def create_dataloaders(vocab, device, english_output, application_path, selected_db, batch_size=12000, max_padding=128, is_distributed=True, is_inference=False, shuffling=False, is_src_approx=False):
 
     def collate_fn(batch):
         return collate_batch(
@@ -107,6 +105,10 @@ def create_dataloaders(vocab, device, english_output, application_path, selected
 
         # prepare data for learning
         train_iter, valid_iter = data_preparation(full, shuffling, vocab.join_vocab)
+
+        # replace sources by approximations
+        if is_src_approx:
+            train_iter = approximate_src(train_iter)
 
         # DistributedSampler needs a dataset len()
         train_iter_map = to_map_style_dataset(train_iter)

@@ -15,7 +15,7 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
 NUMBER_OF_TRAINING_RESULTS = 46
 case = current_session()
-session = "Ligne de base"
+session = "session 01"
 add = "SF_"
 experimentation_detail = ""
 

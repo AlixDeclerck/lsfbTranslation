@@ -109,6 +109,7 @@ def create_dataloaders(vocab, device, english_output, application_path, selected
         # replace sources by approximations
         if is_src_approx:
             train_iter = approximate_src(train_iter)
+            valid_iter = approximate_src(valid_iter)
 
         # DistributedSampler needs a dataset len()
         train_iter_map = to_map_style_dataset(train_iter)

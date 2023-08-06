@@ -56,6 +56,11 @@ class Case(Enum):
     FOURTH = "4", "D"
     FIFTH = "5", "E"
     SIXTH = "6", "F"
+    SEVEN = "7", "G"
+    EIGHT = "8", "H"
+    NINE = "9", "I"
+    TEN = "10", "J"
+    ELEVEN = "11", "K"
 
 class SubCase(Enum):
     """
@@ -90,4 +95,4 @@ class Translation:
         self.reference = reference
 
 def current_session():
-    return Case.FIFTH
+    return Case.ELEVEN

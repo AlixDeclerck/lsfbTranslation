@@ -100,7 +100,7 @@ class Vocab:
         self.is_english_output = bool(config["learning_config"]["english_output"])
         self.selected_db = str(config["configuration_path"]["selected_db"])
         self.txt_corpus = str(config["configuration_path"]["txt_corpus"])
-        self.join_vocab = bool(str(config["learning_config"]["join_vocab"]))
+        self.join_vocab = bool(config["learning_config"]["join_vocab"])
 
     def create(self):
         self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)

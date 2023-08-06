@@ -32,7 +32,7 @@ class NMT(nn.Module):
 
         self.vocab = vocab
         self.d_model = config["hyper_parameters"]["dimension"]
-        self.output_max = config["learning_config"]["output_max_words"]
+        self.output_max = config["inference_decoding"]["output_max_words"]
 
         if config["learning_config"]["using_gpu"]:
             self.device = torch.device('cuda', 0)

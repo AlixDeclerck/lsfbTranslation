@@ -14,7 +14,7 @@ from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import d_date, current_session
 
 case = current_session()
-session = "session d'analyse"
+session = "session 02"
 add = ""
 
 if __name__ == '__main__':

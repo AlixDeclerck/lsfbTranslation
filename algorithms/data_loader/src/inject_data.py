@@ -119,11 +119,11 @@ class ConteHandler:
             # processing parallels by language
             for lang in languages:
                 if lang[0] == Corpus.TEXT_FR.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, generation_date, env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].FR, ln[1].GENERATED_FR, generated_tense, generation_date, env_name, config["inference_decoding"]["output_max_words"])
                 elif lang[0] == Corpus.TEXT_EN.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", generation_date, env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].EN, ln[1].GENERATED_EN, "", generation_date, env_name, config["inference_decoding"]["output_max_words"])
                 elif lang[0] == Corpus.GLOSS_LSF.value[2]:
-                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", generation_date, env_name, config["learning_config"]["output_max_words"])
+                    self.parallel_insertion(conn, ln[1].NUM, lang[0], i, story_name, ln[1].GLOSS_LSF, generated_lsf, "", generation_date, env_name, config["inference_decoding"]["output_max_words"])
 
             cpt += 1
             print(f"=== {cpt_test} values added in test set ===")
@@ -194,7 +194,7 @@ def show_bleu_score(ref, hyp):
     processing_bleu_score(
         reference,
         hypothesis,
-        # output_max=config["learning_config"]["output_max_words"],
+        # output_max=config["inference_decoding"]["output_max_words"],
         output_max=3,
         shrink=False,
         display=True)

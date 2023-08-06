@@ -8,7 +8,7 @@ class Translation:
 
     def __init__(self, config, source_text, reference):
         self.bleu_eval = evaluate.load("bleu")
-        self.N = config["learning_config"]['output_max_words']
+        self.N = config["inference_decoding"]['output_max_words']
         self.source_text = source_text
         self.reference = [[reference]]
         self.approximated_hypothesis = self.update_approx()

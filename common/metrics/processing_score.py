@@ -7,6 +7,7 @@ from common.metrics import pymeteor, roc
 class Translation:
 
     def __init__(self, config, source_text, reference):
+        self.nlp = spacy.load("fr_core_news_sm")
         self.bleu_eval = evaluate.load("bleu")
         self.N = config["inference_decoding"]['output_max_words']
         self.source_text = source_text
@@ -45,7 +46,7 @@ class Translation:
             return result
 
     def update_approx(self):
-        approx = self.approximation(self.source_text)
+        approx = self.approximation(self.nlp, self.source_text)
         output = Tag.START.value[0]+" "+approx+" "+Tag.STOP.value[0]
         hyp = Hypothesis(value=output.split(" "), score=0.0)
         return self.add_hypothesis(HypothesisType.APPROX, hyp)
@@ -72,8 +73,7 @@ class Translation:
         return round(res, 2)
 
     @staticmethod
-    def approximation(src_txt):
-        nlp = spacy.load("fr_core_news_sm")
+    def approximation(nlp, src_txt):
         phrases = SpacyPhrase(nlp(src_txt))
         phrases.preprocessing()
         phrases.handle_scenes()

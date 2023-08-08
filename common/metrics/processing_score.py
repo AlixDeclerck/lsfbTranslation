@@ -7,7 +7,7 @@ from common.metrics import pymeteor, roc
 class Translation:
 
     def __init__(self, config, source_text, reference):
-        self.nlp = spacy.load("fr_core_news_sm")
+        # self.nlp = spacy.load("fr_core_news_sm")
         self.bleu_eval = evaluate.load("bleu")
         self.N = config["inference_decoding"]['output_max_words']
         self.source_text = source_text
@@ -46,7 +46,7 @@ class Translation:
             return result
 
     def update_approx(self):
-        approx = self.approximation(self.nlp, self.source_text)
+        approx = self.approximation(self.source_text)
         output = Tag.START.value[0]+" "+approx+" "+Tag.STOP.value[0]
         hyp = Hypothesis(value=output.split(" "), score=0.0)
         return self.add_hypothesis(HypothesisType.APPROX, hyp)
@@ -73,7 +73,8 @@ class Translation:
         return round(res, 2)
 
     @staticmethod
-    def approximation(nlp, src_txt):
+    def approximation(src_txt):
+        nlp = spacy.load("fr_core_news_sm")
         phrases = SpacyPhrase(nlp(src_txt))
         phrases.preprocessing()
         phrases.handle_scenes()
@@ -129,7 +130,7 @@ class Translation:
     def export(self, title, dataframe):
         dataframe.loc[len(dataframe.index)] = [
             title, self.source_text, self.reference[0][0],
-            None, None, None, None, None, None, None, None, None, None, None, None, None, None
+            None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None
         ]
         dataframe.loc[len(dataframe.index)] = [
             "Approximation",
@@ -148,7 +149,10 @@ class Translation:
             self.approximated_roc["tp"],
             self.approximated_roc["fp"],
             self.approximated_roc["tn"],
-            self.approximated_roc["fn"]
+            self.approximated_roc["fn"],
+            self.source_text,
+            self.reference[0][0],
+            self.approximated_hypothesis["text"][0]
         ]
 
         if self.beam_score is not None:
@@ -169,7 +173,10 @@ class Translation:
                 self.beam_roc["tp"],
                 self.beam_roc["fp"],
                 self.beam_roc["tn"],
-                self.beam_roc["fn"]
+                self.beam_roc["fn"],
+                self.source_text,
+                self.reference[0][0],
+                self.beam_hypothesis
             ]
 
         dataframe.loc[len(dataframe.index)] = [
@@ -189,6 +196,9 @@ class Translation:
             self.greedy_roc["tp"],
             self.greedy_roc["fp"],
             self.greedy_roc["tn"],
-            self.greedy_roc["fn"]
+            self.greedy_roc["fn"],
+            self.source_text,
+            self.reference[0][0],
+            self.greedy_hypothesis
         ]
         return dataframe

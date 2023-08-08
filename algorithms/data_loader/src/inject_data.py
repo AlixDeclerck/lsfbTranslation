@@ -10,6 +10,7 @@ import pandas
 import datetime
 import dal as db
 import retrieve_data as ff
+from data_validation import duplicate_sentence_detection
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 from common.constant import EnvType, Corpus, Tag, Hypothesis
 from common.metrics.bleu import processing_bleu_score
@@ -199,36 +200,10 @@ def show_bleu_score(ref, hyp):
         shrink=False,
         display=True)
 
-
-def duplicate_sentence_detection():
-    """
-    find in database a test sentence also in training
-    """
-    training_data = retrieve_conte_dataset(
-        EnvType.TRAINING.value,
-        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
-        config["configuration_path"]["selected_db"],
-        Dialect.LSF,
-        config["learning_config"]["english_output"],
-        False,
-        10000)
-
-    test_data = retrieve_conte_dataset(
-        EnvType.TEST.value,
-        os.environ['HOME']+config['configuration_path']['application_path']+args['--app-path']+config['configuration_path']['application_path'],
-        config["configuration_path"]["selected_db"],
-        Dialect.LSF,
-        config["learning_config"]["english_output"],
-        False,
-        10000)
-
-    print()
-
-    i = 0
-    for data in test_data:
-        if data[0] in pandas.DataFrame(training_data)[0].tolist():
-            i += 1
-            print("duplicate "+str(i)+" : "+str(data[0]))
+def display_duplicate_sentence():
+    items = duplicate_sentence_detection(config=config, args=args)
+    for i, item in enumerate(items):
+        print("duplicate "+str(i)+" : "+item)
 
 # ----------------------------------------------------------
 
@@ -260,4 +235,4 @@ if __name__ == "__main__":
     # show_bleu_score(ref="BLANCHE NEIGE FENETRE REGARDER DIT BONJOUR", hyp="DAME FENETRE REGARDER")
 
     # find duplicate txt in test set
-    duplicate_sentence_detection()
+    display_duplicate_sentence()

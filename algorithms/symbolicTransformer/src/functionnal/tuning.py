@@ -125,11 +125,12 @@ def data_preparation(a_list, shuffling=False, join_data=False):
     return prepared_training, prepared_validation
 
 def approximate_src(src):
-    nlp = spacy.load("fr_core_news_sm")
+    # nlp = spacy.load("fr_core_news_sm")
     print("approximate "+str(len(src))+" sources, start @ ", datetime.datetime.now())
     updated_src = []
     for i, s in enumerate(src):
-        us = [Translation.approximation(nlp, s[0]), s[1]]
+        # us = [Translation.approximation(nlp, s[0]), s[1]]
+        us = [Translation.approximation(s[0]), s[1]]
         updated_src.append(us)
 
     print("approximate "+str(len(src))+" sources, end @ ", datetime.datetime.now())

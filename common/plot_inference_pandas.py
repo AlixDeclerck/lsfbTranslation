@@ -11,29 +11,52 @@ import matplotlib.pyplot as plt
 import pandas
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
-from common.constant import d_date, current_session
+from algorithms.data_loader.src.data_validation import duplicate_sentence_detection
+from common.constant import d_date, current_session, HypothesisType
 
-case = current_session()
-session = "session 02"
+case = current_session()[0]
+session = current_session()[1]
 add = ""
+
+class BiasDataDetection:
+    def __init__(self):
+        self.duplicate_items = duplicate_sentence_detection(config, args)
+        self.approx = []
+        self.beam = []
+        self.greedy = []
+
+    def filter_dataframe(self, df_to_filter, hypothesis_type):
+        updated_df = []
+        for index, row in df_to_filter.iterrows():
+            if row["src"] in self.duplicate_items:
+                self.quarantine_value(hypothesis_type, row["src"])
+            else:
+                updated_df.append(row)
+
+        return pandas.DataFrame(updated_df)
+
+    def quarantine_value(self, hypothesis_type, value):
+        if HypothesisType.BEAM == hypothesis_type:
+            self.beam.append(value)
+        elif HypothesisType.GREEDY == hypothesis_type:
+            self.greedy.append(value)
+        else:
+            self.approx.append(value)
+
 
 if __name__ == '__main__':
 
     # CONFIG
     today = d_date()
-    config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
-    args = docopt(__doc__)
-    path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "common/output/"
-    filename = "decoding_scores_"+today+"_"+str(add)+case.value[1]+".csv"
-
     colors_1 = ["#d1ade0"]
     colors_2 = ["#fec5d6", "#f8e392"]
     colors_3 = ["#fec5d6", "#f8e392", "#9be1eb"]
     colors_4 = ["#d1ade0", "#fec5d6", "#f8e392", "#9be1eb"]
     labels_3 = ["Beam search", "Greedy search", "Approximation"]
-
-    # RETRIEVE SCORES
-    df = pandas.read_csv(str(path)+filename)
+    config = load_config("../algorithms/symbolicTransformer/src/config.yaml")
+    args = docopt(__doc__)
+    path = os.environ['HOME'] + config["configuration_path"]["application_path"] + args['--app-path'] + config["configuration_path"]["application_path"] + "common/output/"
+    filename = "decoding_scores_"+today+"_"+str(add)+case.value[1]+".csv"
     img_precision = "img/precision_"+today+"_"+str(add)+str(case.value[1])+".png"
     img_unigram = "img/unigram_" + today + "_" + str(add) + str(case.value[1]) + ".png"
     img_bp = "img/bp_"+today+"_"+str(add)+str(case.value[1])+".png"
@@ -43,16 +66,24 @@ if __name__ == '__main__':
     roc_greedy = "img/roc_greedy_"+today+"_"+str(add)+str(case.value[1])+".png"
     title = "Inférences : "+str(session)+", cas n°"+str(case.value[0])
 
-    scores_beam = pandas.DataFrame(df[(df['title'] == "Beam")], columns=["bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn"])
-    scores_greedy = pandas.DataFrame(df[(df['title'] == "Greedy")], columns=["bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn"])
-    scores_approx = pandas.DataFrame(df[(df['title'] == "Approximation")], columns=["bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn"])
+    # RETRIEVE SCORES
+    df = pandas.read_csv(str(path)+filename)
+    brut_score_beam = pandas.DataFrame(df[(df['title'] == "Beam")], columns=["precision", "bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn", "src", "ref", "hyp"])
+    brut_score_greedy = pandas.DataFrame(df[(df['title'] == "Greedy")], columns=["precision", "bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn", "src", "ref", "hyp"])
+    brut_score_approx = pandas.DataFrame(df[(df['title'] == "Approximation")], columns=["precision", "bleu", "bp", "unigram", "bigram", "trigram", "score_meteor", "hypothesis_length", "reference_length", "tp", "fp", "tn", "fn", "src", "ref", "hyp"])
+
+    # FILTERING
+    filter_bias = BiasDataDetection()
+    scores_beam = filter_bias.filter_dataframe(brut_score_beam, HypothesisType.APPROX)
+    scores_greedy = filter_bias.filter_dataframe(brut_score_greedy, HypothesisType.APPROX)
+    scores_approx = filter_bias.filter_dataframe(brut_score_approx, HypothesisType.APPROX)
     number_of_scores = len(scores_approx)
 
     # PRECISION : n-gram extraction
     inference_method = ("Beam", "Greedy", "Approximation")
-    precision_beam = pandas.DataFrame(df[(df['title'] == "Beam")], columns=["precision"])
-    precision_greedy = pandas.DataFrame(df[(df['title'] == "Greedy")], columns=["precision"])
-    precision_approx = pandas.DataFrame(df[(df['title'] == "Approximation")], columns=["precision"])
+    precision_beam = pandas.DataFrame(scores_beam, columns=["precision"])
+    precision_greedy = pandas.DataFrame(scores_greedy, columns=["precision"])
+    precision_approx = pandas.DataFrame(scores_approx, columns=["precision"])
     beam_ngrams = []
     greedy_ngrams = []
     approx_ngrams = []
@@ -76,8 +107,7 @@ if __name__ == '__main__':
             kind='bar',
             stacked=False,
             title='Mesure de traduction par n-grammes',
-            color=colors_4
-            )
+            color=colors_4)
 
     plt.savefig(img_precision)
     plt.show()
@@ -104,13 +134,13 @@ if __name__ == '__main__':
     beam_bp = [float(x) for x in scores_beam["bp"]]
     greedy_bp = [float(x) for x in scores_greedy["bp"]]
 
-    df = pandas.DataFrame(
+    df_bp_beam = pandas.DataFrame(
         beam_bp,
         columns=['beam'])
 
-    df['greedy'] = greedy_bp
+    df_bp_beam['greedy'] = greedy_bp
 
-    ax = df.plot.hist(bins=12, alpha=0.5, color=colors_2)
+    ax = df_bp_beam.plot.hist(bins=12, alpha=0.5, color=colors_2)
 
     plt.title("pénalité de concision")
     plt.savefig(img_bp)

@@ -24,7 +24,7 @@ from common.output_decoder import greedy_decode, beam_search
 
 def run_inference(config, app, save_file):
     today = d_date()
-    case = current_session()
+    case = current_session()[0]
     path = "../../../common/output/decoding_scores_"+today+"_"+str(case.value[1])+".csv"
     filepath = Path(path)
     filepath.parent.mkdir(parents=True, exist_ok=True)
@@ -52,7 +52,10 @@ def run_inference(config, app, save_file):
         'tp': None,
         'fp': None,
         'tn': None,
-        'fn': None
+        'fn': None,
+        'src': None,
+        'ref': None,
+        'hyp': None
     }, index=[0])
 
     # Load Vocabulary

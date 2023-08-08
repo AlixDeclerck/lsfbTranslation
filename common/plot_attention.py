@@ -106,7 +106,7 @@ def visualize_layer(model, layer, getter_fn, ntokens, row_tokens, col_tokens):
 if __name__ == '__main__':
 
     # CONFIGURATION
-    case = current_session()
+    case = current_session()[0]
     args = docopt(__doc__)
     learning_configuration = load_config()
     application_path = os.environ['HOME'] + learning_configuration["configuration_path"]["application_path"] + args['--app-path'] + learning_configuration["configuration_path"]["application_path"]

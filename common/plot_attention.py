@@ -122,8 +122,8 @@ if __name__ == '__main__':
     used_model, inferred_data = run_inference(config=learning_configuration, app=application_path, save_file=False)
 
     row_example = inferred_data[0][1].source_text.split(" ")
-    # col_example = inferred_data[0][1].greedy_hypothesis.split(" ")
-    col_example = inferred_data[0][1].source_text.split(" ")
+    col_example = inferred_data[0][1].greedy_hypothesis.split(" ")
+    # col_example = inferred_data[0][1].source_text.split(" ")
     length = max(len(row_example), len(col_example))
 
     layer_viz = [

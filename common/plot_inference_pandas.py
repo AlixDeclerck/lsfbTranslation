@@ -44,6 +44,32 @@ class BiasDataDetection:
             self.approx.append(value)
 
 
+def meteor_score_staffing(scores, staff):
+    for i in range(len(scores)):
+        if scores[i] < 0.1:
+            staff[0] += 1
+        elif scores[i] < 0.2:
+            staff[1] += 1
+        elif scores[i] < 0.3:
+            staff[2] += 1
+        elif scores[i] < 0.4:
+            staff[3] += 1
+        elif scores[i] < 0.5:
+            staff[4] += 1
+        elif scores[i] < 0.6:
+            staff[5] += 1
+        elif scores[i] < 0.7:
+            staff[6] += 1
+        elif scores[i] < 0.8:
+            staff[7] += 1
+        elif scores[i] < 0.9:
+            staff[8] += 1
+        else:
+            staff[9] += 1
+
+    return staff
+
+
 if __name__ == '__main__':
 
     # CONFIG
@@ -64,7 +90,10 @@ if __name__ == '__main__':
     roc_approx = "img/roc_approx_"+today+"_"+str(add)+str(case.value[1])+".png"
     roc_beam = "img/roc_beam_"+today+"_"+str(add)+str(case.value[1])+".png"
     roc_greedy = "img/roc_greedy_"+today+"_"+str(add)+str(case.value[1])+".png"
+    img_meteor = "img/meteor_"+today+"_"+str(add)+str(case.value[1])+".png"
+    img_meteor_brut = "img/meteor_brut_"+today+"_"+str(add)+str(case.value[1])+".png"
     title = "Inférences : "+str(session)+", cas n°"+str(case.value[0])
+    n_bins = 10
 
     # RETRIEVE SCORES
     df = pandas.read_csv(str(path)+filename)
@@ -78,6 +107,8 @@ if __name__ == '__main__':
     scores_greedy = filter_bias.filter_dataframe(brut_score_greedy, HypothesisType.APPROX)
     scores_approx = filter_bias.filter_dataframe(brut_score_approx, HypothesisType.APPROX)
     number_of_scores = len(scores_approx)
+    title_meteor = "Score METEOR pour "+str(number_of_scores)+" inférences"
+    title_meteor_brut = "Score METEOR pour "+str(len(brut_score_approx))+" inférences"
 
     # PRECISION : n-gram extraction
     inference_method = ("Beam", "Greedy", "Approximation")
@@ -124,7 +155,7 @@ if __name__ == '__main__':
     df_bigram['greedy'] = greedy_scores_ngram
     df_bigram['approximation'] = approx_scores_ngram
 
-    ax = df_bigram.plot.hist(bins=12, alpha=0.5, color=colors_3)
+    ax = df_bigram.plot.hist(bins=n_bins, alpha=0.5, color=colors_3)
 
     plt.title("score des unigrammes")
     plt.savefig(img_unigram)
@@ -140,7 +171,9 @@ if __name__ == '__main__':
 
     df_bp_beam['greedy'] = greedy_bp
 
-    ax = df_bp_beam.plot.hist(bins=12, alpha=0.5, color=colors_2)
+    ax = df_bp_beam.plot.hist(bins=n_bins, alpha=0.5, color=colors_2)
+    plt.xlabel('Valeur de la pénalité')
+    plt.ylabel('Fréquence')
 
     plt.title("pénalité de concision")
     plt.savefig(img_bp)
@@ -177,14 +210,6 @@ if __name__ == '__main__':
             score_order_beam["others"].append(scores_beam[key].tolist()[k])
             score_order_greedy["others"].append(scores_greedy[key].tolist()[k])
 
-    n_bins = 10
-    x_old = numpy.random.randn(1000, 3)
-    meteor = [
-        [float(x) for x in scores_beam["score_meteor"]],
-        [float(x) for x in scores_greedy["score_meteor"]],
-        [float(x) for x in scores_approx["score_meteor"]],
-    ]
-
     scores_by_orders_2 = [score_order_beam["bigram"], score_order_greedy["bigram"], score_order_approx["bigram"]]
     scores_by_orders_3 = [score_order_beam["trigram"], score_order_greedy["trigram"], score_order_approx["trigram"]]
     scores_by_orders_4 = [score_order_beam["fourgram"], score_order_greedy["fourgram"], score_order_approx["fourgram"]]
@@ -196,25 +221,33 @@ if __name__ == '__main__':
 
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(nrows=2, ncols=2)
 
-    ax0.hist(scores_approx["reference_length"], n_bins, density=True, histtype='bar', color=colors_1)
+    ax0.hist(scores_approx["reference_length"], n_bins, density=True, histtype='bar', color="#d1ade0")
     ax0.legend(prop={'size': 10})
-    ax0.set_title('distribution des références')
+    ax0.set_title('Nombre de mots de la référence')
+
+    ax1.hist(scores_approx["hypothesis_length"], n_bins, density=True, histtype='bar', color="#9be1eb")
+    ax1.legend(prop={'size': 10})
+    ax1.set_title("Nbr de mots de l'approximation")
+
+    ax2.hist(scores_beam["hypothesis_length"], n_bins, density=True, histtype='bar', color="#fec5d6")
+    ax2.legend(prop={'size': 10})
+    ax2.set_title("Nbr de mots de l'inférence beam")
+
+    ax3.hist(scores_greedy["hypothesis_length"], n_bins, density=True, histtype='bar', color="#f8e392")
+    ax3.legend(prop={'size': 10})
+    ax3.set_title("Nbr de mots de l'inférence greedy")
 
     # ax0.hist(scores_by_orders_2, n_bins, density=True, histtype='bar', color=colors, label=labels)
     # ax0.legend(prop={'size': 10})
     # ax0.set_title('bigrammes des références d'ordre 2')
 
-    ax1.hist(scores_by_orders_3, n_bins, density=True, histtype='bar', color=colors_3)
-    ax1.legend(prop={'size': 10})
-    ax1.set_title("bigrammes des références d'ordre 3")
+    # ax1.hist(scores_by_orders_3, n_bins, density=True, histtype='bar', color=colors_3)
+    # ax1.legend(prop={'size': 10})
+    # ax1.set_title("bigrammes des références d'ordre 3")
 
-    ax2.hist(scores_by_orders_4, n_bins, density=True, histtype='bar', color=colors_3)
-    ax2.legend(prop={'size': 10})
-    ax2.set_title("bigrammes des références d'ordre 4")
-
-    ax3.hist(meteor, n_bins, density=True, histtype='bar', color=colors_3, label=labels_3)
-    ax3.legend(prop={'size': 10})
-    ax3.set_title('meteor scores')
+    # ax2.hist(scores_by_orders_4, n_bins, density=True, histtype='bar', color=colors_3)
+    # ax2.legend(prop={'size': 10})
+    # ax2.set_title("bigrammes des références d'ordre 4")
 
     # ax3.hist(scores_by_orders_5, n_bins, density=True, histtype='bar', color=colors_3)
     # ax3.legend(prop={'size': 10})
@@ -266,3 +299,86 @@ if __name__ == '__main__':
         total_greedy_scores["tn"] += len(list(scores_greedy["tn"])[i].split(", "))-1
 
     plot_confusion_matrix(total_greedy_scores, "Matrice de Confusion greedy", roc_greedy)
+
+    # METEOR
+    beam_scores_meteor = [float(x) for x in scores_beam["score_meteor"]]
+    greedy_scores_meteor = [float(x) for x in scores_greedy["score_meteor"]]
+    approx_scores_meteor = [float(x) for x in scores_approx["score_meteor"]]
+
+    np_meteor_beam = meteor_score_staffing(scores=beam_scores_meteor, staff=numpy.zeros(n_bins))
+    np_meteor_greedy = meteor_score_staffing(scores=greedy_scores_meteor, staff=numpy.zeros(n_bins))
+    np_meteor_approx = meteor_score_staffing(scores=approx_scores_meteor, staff=numpy.zeros(n_bins))
+
+    df_meteor = pandas.DataFrame(
+        np_meteor_beam,
+        columns=['beam'])
+
+    df_meteor['greedy'] = np_meteor_greedy
+    df_meteor['approximation'] = np_meteor_approx
+
+    # df_meteor = pandas.DataFrame([
+    #     ['Beam', df_meteor[0], df_meteor[1], df_meteor[2], df_meteor[3], df_meteor[4], df_meteor[5], df_meteor[6], df_meteor[7], df_meteor[8], df_meteor[9]],
+    #     ['Greedy', df_meteor[0], df_meteor[1], df_meteor[2], df_meteor[3], df_meteor[4], df_meteor[5], df_meteor[6], df_meteor[7], df_meteor[8], df_meteor[9]],
+    #     ['Approx', df_meteor[0], df_meteor[1], df_meteor[2], df_meteor[3], df_meteor[4], df_meteor[5], df_meteor[6], df_meteor[7], df_meteor[8], df_meteor[9]]],
+    #     columns=['type', '<1', '<2', '<3', '<4', '<5', '<6', '<7', '<8', '<9', '<10'])
+
+    df_meteor = pandas.DataFrame([
+        ['<1', np_meteor_beam[0], np_meteor_greedy[0], np_meteor_approx[0]],
+        ['<2', np_meteor_beam[1], np_meteor_greedy[1], np_meteor_approx[1]],
+        ['<3', np_meteor_beam[2], np_meteor_greedy[2], np_meteor_approx[2]],
+        ['<4', np_meteor_beam[3], np_meteor_greedy[3], np_meteor_approx[3]],
+        ['<5', np_meteor_beam[4], np_meteor_greedy[4], np_meteor_approx[4]],
+        ['<6', np_meteor_beam[5], np_meteor_greedy[5], np_meteor_approx[5]],
+        ['<7', np_meteor_beam[6], np_meteor_greedy[6], np_meteor_approx[6]],
+        ['<8', np_meteor_beam[7], np_meteor_greedy[7], np_meteor_approx[7]],
+        ['<9', np_meteor_beam[8], np_meteor_greedy[8], np_meteor_approx[8]],
+        ['<10', np_meteor_beam[9], np_meteor_greedy[9], np_meteor_approx[9]]],
+        columns=['type', 'beam', 'greedy', 'approximation']
+    )
+
+    df_meteor.plot(x='type',
+                        kind='bar',
+                        stacked=False,
+                        title='Mesure METEOR par inférences',
+                        color=colors_3)
+
+    plt.xlabel('Score')
+    plt.ylabel("Nombre d'occurences")
+    plt.title(title_meteor)
+    plt.savefig(img_meteor)
+    plt.show()
+
+    # METEOR BRUT
+    beam_scores_meteor_brut = [float(x) for x in brut_score_beam["score_meteor"]]
+    greedy_scores_meteor_brut = [float(x) for x in brut_score_greedy["score_meteor"]]
+    approx_scores_meteor_brut = [float(x) for x in brut_score_approx["score_meteor"]]
+
+    np_meteor_beam_brut = meteor_score_staffing(scores=beam_scores_meteor_brut, staff=numpy.zeros(n_bins))
+    np_meteor_greedy_brut = meteor_score_staffing(scores=greedy_scores_meteor_brut, staff=numpy.zeros(n_bins))
+    np_meteor_approx_brut = meteor_score_staffing(scores=approx_scores_meteor_brut, staff=numpy.zeros(n_bins))
+
+    df_meteor_brut = pandas.DataFrame([
+        ['<1', np_meteor_beam_brut[0], np_meteor_greedy_brut[0], np_meteor_approx_brut[0]],
+        ['<2', np_meteor_beam_brut[1], np_meteor_greedy_brut[1], np_meteor_approx_brut[1]],
+        ['<3', np_meteor_beam_brut[2], np_meteor_greedy_brut[2], np_meteor_approx_brut[2]],
+        ['<4', np_meteor_beam_brut[3], np_meteor_greedy_brut[3], np_meteor_approx_brut[3]],
+        ['<5', np_meteor_beam_brut[4], np_meteor_greedy_brut[4], np_meteor_approx_brut[4]],
+        ['<6', np_meteor_beam_brut[5], np_meteor_greedy_brut[5], np_meteor_approx_brut[5]],
+        ['<7', np_meteor_beam_brut[6], np_meteor_greedy_brut[6], np_meteor_approx_brut[6]],
+        ['<8', np_meteor_beam_brut[7], np_meteor_greedy_brut[7], np_meteor_approx_brut[7]],
+        ['<9', np_meteor_beam_brut[8], np_meteor_greedy_brut[8], np_meteor_approx_brut[8]],
+        ['<10', np_meteor_beam_brut[9], np_meteor_greedy_brut[9], np_meteor_approx_brut[9]]],
+        columns=['type', 'beam', 'greedy', 'approximation']
+    )
+
+    df_meteor_brut.plot(x='type',
+                   kind='bar',
+                   stacked=False,
+                   title='Mesure METEOR BRUT par inférences',
+                   color=colors_3)
+
+    plt.xlabel('Score')
+    plt.ylabel("Nombre d'occurences")
+    plt.title(title_meteor_brut)
+    plt.savefig(img_meteor_brut)
+    plt.show()

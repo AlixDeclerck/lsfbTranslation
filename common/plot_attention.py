@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     layer_viz = [
         visualize_layer(
-            used_model, layer, get_encoder, length, row_example, col_example
+            used_model, layer, get_decoder_self, length, row_example, col_example
         )
         for layer in range(6)
     ]

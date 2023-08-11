@@ -71,8 +71,8 @@ if __name__ == '__main__':
     score = "{:.3f}".format(pocket_eval[-1])
     label_pocket = "Meilleure erreur de validation : "+score
     label_validation = "Erreur de validation par époques"
-    taux_lr = "Taux d'apprentissage * 10 000"
-    label_lr = "Taille du saut lors de l'optimisation"
+    taux_lr = "(T.A) Taux d'apprentissage * 10 000"
+    label_lr = "Valeur du paramètre eta : T.A"
 
     # display loss curve
     fig, ax1 = plt.subplots()
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     ax1.plot(range(len(res)), res, c=str(config["graphics"]["color1"]), label=label_training)
     ax2.plot(range(len(res_lr)), res_lr, c=str(config["graphics"]["color3"]), label=label_lr)
     ax1.legend()
-    plt.legend(loc='center right')
+    plt.legend(loc='lower right')
     plt.title(title)
     ax1.set_xlabel("Epoques")
     ax1.set_ylabel("Divergence de Kullback-Leibler (Erreur)")

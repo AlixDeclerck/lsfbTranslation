@@ -61,6 +61,10 @@ class Case(Enum):
     NINE = "9", "I"
     TEN = "10", "J"
     ELEVEN = "11", "K"
+    TWELVE = "12", "L"
+    THIRTEEN = "13", "M"
+    FOURTEEN = "14", "N"
+    FIFTEEN = "15", "O"
 
 class SubCase(Enum):
     """
@@ -95,4 +99,4 @@ class Translation:
         self.reference = reference
 
 def current_session():
-    return Case.TEN, "session 03"
+    return Case.FOURTEEN, "session 03"

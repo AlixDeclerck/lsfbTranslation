@@ -21,12 +21,12 @@ hyper_parameters:
     accum_step:                   10                                 # Write loss only each n steps! Originally 40 but shrank due to small training corpus
     batch_size:                   8                                  # Annotated transformer choose 32
     dimension:                    512                                # Model dimension {attention, feed_forward, positional_encoding, encoder_layer, decoder_layer, embeddings, generator}
-    dropout:                      0.15                                # drop out regularization technique
+    dropout:                      0.1                                # drop out regularization technique
     feed_forward_dimension:       1024                               # the positionwise forward dimension
     h_attention_layers:           8                                  # h=8 parallel attention layers
     KL_divergence_loss:           True                               # True Kullback-Leibler divergence loss criterion, False similarity
-    layers_encoder:               16                                  # layers to understand the context
-    layers_decoder:               64                                  # layers to perform the translation
+    layers_encoder:               8                                  # layers to understand the context
+    layers_decoder:               16                                  # layers to perform the translation
     num_epochs:                   120                                # Annotated transformer choose 8 (170 max)
     weight_decay:                 0                                # L2 penalty #
     target_label_smoothing:       0.5                                # velocity of label smoothing

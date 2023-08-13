@@ -16,7 +16,7 @@ from docopt import docopt
 from algorithms.symbolicTransformer.src.core.architecture import NMT
 from algorithms.symbolicTransformer.src.core.batching import Batch, collate_batch
 from algorithms.symbolicTransformer.src.functionnal.data_preparation import retrieve_conte_dataset, Vocab
-from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
+from algorithms.symbolicTransformer.src.functionnal.tuning import load_config, approximate_src
 from common.constant import EnvType, Dialect, Corpus, HypothesisType, d_date, current_session
 from common.metrics.processing_score import Translation
 from common.output_decoder import greedy_decode, beam_search
@@ -33,6 +33,7 @@ def run_inference(config, app, save_file):
     estimation_beam = None
     limit = config["inference_decoding"]["max_number_of_inferences"]
     is_beam_search = config["inference_decoding"]["beam_search"]
+    is_src_approx = config["learning_config"]["src_approximation"]
     formated_test_dataset = []
     results = []
     df_scores = pandas.DataFrame({
@@ -88,6 +89,10 @@ def run_inference(config, app, save_file):
         filtered_test_dataset = pandas.DataFrame(test_dataset, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2]]].to_numpy()
     else:
         filtered_test_dataset = pandas.DataFrame(test_dataset, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
+
+    # replace sources by approximations
+    if is_src_approx:
+        filtered_test_dataset = approximate_src(filtered_test_dataset)
 
     for f in filtered_test_dataset:
         lst = [f]

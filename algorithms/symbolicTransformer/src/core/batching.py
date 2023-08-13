@@ -76,6 +76,10 @@ def create_dataloaders(vocab, device, english_output, application_path, selected
         else:
             full = pandas.DataFrame(complete, columns=[Corpus.TEXT_FR.value[2], Corpus.TEXT_EN.value[2], Corpus.GLOSS_LSF.value[2]])[[Corpus.TEXT_FR.value[2], Corpus.GLOSS_LSF.value[2]]].to_numpy()
 
+        # replace sources by approximations
+        if is_src_approx:
+            full = approximate_src(full)
+
         test_iter_map = to_map_style_dataset(full)
 
         test_sampler = (

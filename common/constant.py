@@ -90,13 +90,5 @@ class HypothesisType(Enum):
     GREEDY = "Greedy decoding"
     APPROX = "Approximation"
 
-class Translation:
-
-    def __init__(self, source_text, beam_hypothesis, greedy_hypothesis, reference):
-        self.source_text = source_text
-        self.beam_hypothesis = beam_hypothesis.split(" ")
-        self.greedy_hypothesis = greedy_hypothesis.split(" ")
-        self.reference = reference
-
 def current_session():
-    return Case.FOURTEEN, "session 03"
+    return Case.FIFTH, "session 04"

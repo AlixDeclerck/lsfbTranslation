@@ -1,10 +1,9 @@
-import numpy
-import pandas
-import torch
-import matplotlib.pyplot as plt
 import math
-from common.constant import Case, d_date, Translation
-# from common.metrics.bleu_score import Translation
+
+import matplotlib.pyplot as plt
+import torch
+
+from common.constant import Case, d_date
 
 """
 The attention visualization was initially inspired from :
@@ -106,20 +105,3 @@ def plot_attention_map(model, txt_translation, getter_fn, att_to_display):
 
     # https://matplotlib.org/stable/gallery/statistics/hist.html
     # figsize : fig, axs = plt.subplots(3, 1, figsize=(5, 15), sharex=True, sharey=True, tight_layout=True)
-
-def plot_att_panda():
-    print("todo")
-    # df = pandas.DataFrame([
-    #     ['Beam', beam_ngrams[0].mean(), beam_ngrams[1].mean(), beam_ngrams[2].mean(), beam_ngrams[3].mean()],
-    #     ['Greedy', greedy_ngrams[0].mean(), greedy_ngrams[1].mean(), greedy_ngrams[2].mean(), greedy_ngrams[3].mean()],
-    #     ['Approx', approx_ngrams[0].mean(), approx_ngrams[1].mean(), approx_ngrams[2].mean(), approx_ngrams[3].mean()]],
-    #     columns=['ordre', 'unigram', 'bigram', '3-gram', '4-gram'])
-    #
-    # df.plot(x='ordre',
-    #         kind='bar',
-    #         stacked=False,
-    #         title='Mesure de traduction par n-grammes',
-    #         color=["#d1ade0", "#fec5d6", "#f8e392", "#9be1eb"]
-    #         )
-    #
-    # plt.show()

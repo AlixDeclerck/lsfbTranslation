@@ -91,4 +91,4 @@ class HypothesisType(Enum):
     APPROX = "Approximation"
 
 def current_session():
-    return Case.FIFTH, "session 04"
+    return Case.SIXTH, "session 04"

@@ -13,7 +13,7 @@ from common.constant import current_session, d_date
 from docopt import docopt
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config
 
-NUMBER_OF_TRAINING_RESULTS = 87
+NUMBER_OF_TRAINING_RESULTS = 107
 case = current_session()[0]
 session = current_session()[1]
 add = "SF_"

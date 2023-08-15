@@ -103,8 +103,8 @@ if __name__ == '__main__':
 
     # FILTERING
     filter_bias = BiasDataDetection()
-    scores_beam = filter_bias.filter_dataframe(brut_score_beam, HypothesisType.APPROX)
-    scores_greedy = filter_bias.filter_dataframe(brut_score_greedy, HypothesisType.APPROX)
+    scores_beam = filter_bias.filter_dataframe(brut_score_beam, HypothesisType.BEAM)
+    scores_greedy = filter_bias.filter_dataframe(brut_score_greedy, HypothesisType.GREEDY)
     scores_approx = filter_bias.filter_dataframe(brut_score_approx, HypothesisType.APPROX)
     number_of_scores = len(scores_approx)
     title_meteor = "Score METEOR pour "+str(number_of_scores)+" inférences"

@@ -79,16 +79,6 @@ conda install -c conda-forge stanza
 conda install -c conda-forge textacy
 ```
 
-## Documentation links
-Some useful documentations
-
-- https://www.tensorflow.org/s/results/?q=vocab&hl=fr
-- memory usage : https://www.kaggle.com/getting-started/140636
-- code optimization : https://towardsdatascience.com/optimize-pytorch-performance-for-speed-and-memory-efficiency-2022-84f453916ea6
-- https://pytorch.org/text/0.8.1/datasets.html
-- https://developers.google.com/machine-learning/guides/text-classification/step-3?hl=fr
-
-
 ## Credit and sources
 
 Please see on each packages for details

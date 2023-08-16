@@ -101,6 +101,7 @@ class Vocab:
         self.selected_db = str(config["configuration_path"]["selected_db"])
         self.txt_corpus = str(config["configuration_path"]["txt_corpus"])
         self.join_vocab = bool(config["learning_config"]["join_vocab"])
+        self.src_approx = bool(config["learning_config"]["src_approximation"])
 
     def create(self):
         self.vocab_handler(self.vocab_name, self.application_path, self.selected_db)
@@ -137,12 +138,19 @@ class Vocab:
             for from_to_tuple in data_iter:
                 yield tokenizer(from_to_tuple[index])
 
-        print("Building FRENCH Vocabulary ...")
-        vocab_src = build_vocab_from_iterator(
-            yield_tokens(learning_corpus, self.tokenize_fr, index=Corpus.TEXT_FR.value[1]),
-            min_freq=1,
-            specials=special_tag,
-        )
+        if self.src_approx:
+            print("Building FRENCH Vocabulary (glosses) ...")
+            vocab_src = build_vocab_from_iterator(
+                yield_tokens(learning_corpus, self.tokenize_gloss, index=Corpus.GLOSS_LSF.value[1]),
+                min_freq=1,
+                specials=special_tag)
+        else:
+            print("Building FRENCH Vocabulary ...")
+            vocab_src = build_vocab_from_iterator(
+                yield_tokens(learning_corpus, self.tokenize_fr, index=Corpus.TEXT_FR.value[1]),
+                min_freq=1,
+                specials=special_tag,
+            )
 
         if self.is_english_output:
             print("Building ENGLISH Vocabulary ...")
@@ -173,12 +181,22 @@ class Vocab:
             :param dim: the embeddings goes (token, 300)x(300, dim) with a Linear
             :return: source embeddings
         """
-        # corpus initialization
-        fast_text_corpus = torchtext.vocab.FastText(language='fr')
+        if self.src_approx:
+            # corpus initialization
+            fast_text_corpus = torchtext.vocab.FastText(language='fr')
 
-        # embedding
-        embedding, dimension = self.align_tokens(fast_text_corpus.stoi, fast_text_corpus.vectors, self.src.vocab.itos_[4:])
-        output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
+            # embedding
+            corpus_stoi, corpus_vectors = self.add_embeddings(fast_text_corpus)
+            embedding, dimension = self.align_tokens(corpus_stoi, corpus_vectors, self.src.vocab.itos_[4:])
+            output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
+
+        else:
+            # corpus initialization
+            fast_text_corpus = torchtext.vocab.FastText(language='fr')
+
+            # embedding
+            embedding, dimension = self.align_tokens(fast_text_corpus.stoi, fast_text_corpus.vectors, self.src.vocab.itos_[4:])
+            output = torch.nn.Linear(dimension, dim, bias=False, device=None, dtype=None)
 
         return output(embedding.T)
 

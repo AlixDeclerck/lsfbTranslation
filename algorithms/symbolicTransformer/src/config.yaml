@@ -48,11 +48,11 @@ inference_decoding:
     output_max_words:             16                                 # originally 80
 
 learning_config:
-    join_vocab:                   True                              # To merge earch parrallels into two phrases
+    join_vocab:                   True                               # To merge earch parrallels into two phrases
     multi_sources:                False                              # If we have FR & FR generated we take both to learn and vocab
-    dialect_selection:            0                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
+    dialect_selection:            1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for training
     vocab_txt:                    False                              # If second corpus to text file
-    vocab_dialect:                0                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
+    vocab_dialect:                1                                  # choosing between {0:"both", 1:"LSF", 2:"generated"} for vocabulary
     english_output:               False                              # True if "EN", False if "GLOSS"
     distributed:                  False                              # True if Several processing unit
     fast_text_corpus:             True                               # Spacy if false

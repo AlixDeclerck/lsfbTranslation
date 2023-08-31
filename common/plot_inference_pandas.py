@@ -148,17 +148,42 @@ if __name__ == '__main__':
     greedy_scores_ngram = [float(x) for x in scores_greedy["unigram"]]
     approx_scores_ngram = [float(x) for x in scores_approx["unigram"]]
 
-    df_bigram = pandas.DataFrame(
-        beam_scores_ngram,
-        columns=['beam'])
+    # deux versions de présentation :
 
-    df_bigram['greedy'] = greedy_scores_ngram
-    df_bigram['approximation'] = approx_scores_ngram
+    # première version
+    # df_bigram = pandas.DataFrame(
+    #     beam_scores_ngram,
+    #     columns=['beam'])
+    #
+    # df_bigram['greedy'] = greedy_scores_ngram
+    # df_bigram['approximation'] = approx_scores_ngram
+    # ax = df_bigram.plot.hist(bins=n_bins, alpha=0.5, color=colors_3)
 
-    ax = df_bigram.plot.hist(bins=n_bins, alpha=0.5, color=colors_3)
+    # deuxième version
 
-    plt.title("score des unigrammes")
+    np_unigram_beam = meteor_score_staffing(scores=beam_scores_ngram, staff=numpy.zeros(n_bins)).tolist()
+    np_unigram_greedy = meteor_score_staffing(scores=greedy_scores_ngram, staff=numpy.zeros(n_bins)).tolist()
+    np_unigram_approx = meteor_score_staffing(scores=approx_scores_ngram, staff=numpy.zeros(n_bins)).tolist()
+
+    fig, (ax0, ax1, ax2) = plt.subplots(nrows=3, ncols=1)
+
+    # ax0.hist(np_unigram_beam, len(np_unigram_beam), density=True, histtype='bar', color=colors_3[0])
+    ax0.hist(beam_scores_ngram, len(beam_scores_ngram), density=True, histtype='bar', color=colors_3[0], label="transformer, recherche par faisceau")
+    ax0.legend(prop={'size': 10})
+    ax0.set_title("Nombre d'occurences de scores de précisions (unigrammes)")
+
+    # ax1.hist(np_unigram_greedy, len(np_unigram_greedy), density=True, histtype='bar', color=colors_3[1])
+    ax1.hist(greedy_scores_ngram, len(greedy_scores_ngram), density=True, histtype='bar', color=colors_3[1], label="transformer, recherche gloutonne")
+    ax1.legend(prop={'size': 10})
+    # ax1.set_title("Nbr de mots recherche gloutonne")
+
+    # ax2.hist(np_unigram_approx, len(np_unigram_approx), density=True, histtype='bar', color=colors_3[2])
+    ax2.hist(approx_scores_ngram, len(approx_scores_ngram), density=True, histtype='bar', color=colors_3[2], label="approximation")
+    ax2.legend(prop={'size': 10})
+    # ax2.set_title("Nbr de mots approximation")
+
     plt.savefig(img_unigram)
+    # plt.title("score des unigrammes")
     plt.show()
 
     # BP

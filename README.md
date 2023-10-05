@@ -5,11 +5,13 @@ This `UMONS` project under the `PhD Dupont` direction is intended to translate F
 
 This repository gather algorithms they are used to do NLP learning.
 
-## Installation documentation
+## Corpus
 
 The corpus `Contes en gloses (LSF)` is 
 - distributed via https://www.ortolang.fr
 - a 3500 lines FR to LSF documents
+
+## Installation documentation
 
 https://conda.io/projects/conda/en/latest/commands.html
 

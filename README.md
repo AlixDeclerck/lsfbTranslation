@@ -7,7 +7,9 @@ This repository gather algorithms they are used to do NLP learning.
 
 ## Installation documentation
 
-The corpus `Contes en gloses (LSF)` is distributed via https://www.ortolang.fr
+The corpus `Contes en gloses (LSF)` is 
+- distributed via https://www.ortolang.fr
+- a 3500 lines FR to LSF documents
 
 https://conda.io/projects/conda/en/latest/commands.html
 

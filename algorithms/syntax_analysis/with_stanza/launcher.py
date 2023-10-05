@@ -3,7 +3,7 @@
 
 import stanza
 from algorithms.syntax_analysis.with_stanza import sentenza
-from data.conte import samples
+from data.other_conte import samples
 
 # CONFIGURATION
 phrases = [

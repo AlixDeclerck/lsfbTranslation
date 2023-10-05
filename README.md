@@ -1,11 +1,13 @@
 # lsfbTranslation
 Implementing and compare state-of-the-art model to generate sign language glosses wih NLP.
 
-This `umons` project under the `PhD Dupont` direction is intended to translate French texts to glosses where glosses are a temporary step to generate visual signs. This is the Alix Declerck's Master 1 memory. 
+This `UMONS` project under the `PhD Dupont` direction is intended to translate French texts to glosses where glosses are a temporary step to generate visual signs. This is the Alix Declerck's Master 1 memory. 
 
 This repository gather algorithms they are used to do NLP learning.
 
 ## Installation documentation
+
+The corpus `Contes en gloses (LSF)` is distributed via https://www.ortolang.fr
 
 https://conda.io/projects/conda/en/latest/commands.html
 

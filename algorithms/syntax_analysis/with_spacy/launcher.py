@@ -10,7 +10,7 @@ import os
 import spacy
 from docopt import docopt
 from algorithms.syntax_analysis.with_spacy.phrases import SpacyPhrase
-from data.conte import samples
+from data.other_conte import samples
 from algorithms.data_loader.src.retrieve_data import retrieve_mysql_conte, show_mysql_conte
 from common.constant import Corpus
 from algorithms.symbolicTransformer.src.functionnal.tuning import load_config

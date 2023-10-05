@@ -1,5 +1,5 @@
 # lsfbTranslation
-Implementing and compare old fashion POS tagging and state-of-the-art model to generate sign language glosses wih NLP.
+Implementing and compare POS tagging and state-of-the-art model to generate sign language glosses wih NLP.
 
 This `UMONS` project under the `PhD Dupont` direction is intended to translate French texts to glosses where glosses are a temporary step to generate visual signs. This is the Alix Declerck's Master 1 memory. 
 
